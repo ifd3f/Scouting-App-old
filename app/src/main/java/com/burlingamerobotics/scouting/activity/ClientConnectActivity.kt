@@ -14,6 +14,7 @@ import android.widget.*
 import com.burlingamerobotics.scouting.Constants
 import com.burlingamerobotics.scouting.R
 import com.burlingamerobotics.scouting.Utils
+import com.burlingamerobotics.scouting.client.ScoutingClient
 import kotlinx.android.synthetic.main.activity_client_connect.*
 import java.io.IOException
 
@@ -53,6 +54,7 @@ class ClientConnectActivity : AppCompatActivity() {
                     Log.i("ClientConnect", "Attempting to connect to $dev")
                     try {
                         sock.connect()
+                        ScoutingClient.start(sock)
                         Log.i("ClientConnect", "  Connection success!")
                         startActivity(Intent(this, ClientBrowser::class.java))
                     } catch (ex: IOException) {
