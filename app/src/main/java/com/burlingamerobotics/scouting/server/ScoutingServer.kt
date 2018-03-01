@@ -3,7 +3,7 @@ package com.burlingamerobotics.scouting.server
 /**
  * Manages all the client threads
  */
-object MatchScoutingServer {
+object ScoutingServer {
 
     val clients: MutableList<ClientResponseThread> = mutableListOf()
 

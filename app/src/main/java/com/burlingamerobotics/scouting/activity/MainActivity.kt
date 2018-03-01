@@ -12,8 +12,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<Button>(R.id.client_connect).setOnClickListener { view ->
+        findViewById<Button>(R.id.use_as_client).setOnClickListener { view ->
             startActivity(Intent(this, ClientConnectActivity::class.java))
+        }
+
+        findViewById<Button>(R.id.use_as_server).setOnClickListener { view ->
+            startActivity(Intent(this, MasterManagementActivity::class.java))
         }
     }
 }

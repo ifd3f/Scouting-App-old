@@ -5,15 +5,15 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/client_connect"
+        android:id="@+id/use_as_client"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/connect_as_client" />
+        android:text="@string/use_as_client" />
 
     <Button
-        android:id="@+id/server_connect"
+        android:id="@+id/use_as_server"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/start_server" />
+        android:text="@string/use_as_server" />
 
 </LinearLayout>
