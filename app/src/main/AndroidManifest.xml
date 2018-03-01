@@ -36,6 +36,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.burlingamerobotics.scouting.activity.MainActivity" />
         </activity>
+        <activity
+            android:name=".activity.ClientBrowser"
+            android:label="@string/title_activity_client_browser"
+            android:parentActivityName=".activity.ClientConnectActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.burlingamerobotics.scouting.activity.ClientConnectActivity" />
+        </activity>
     </application>
 
 </manifest>

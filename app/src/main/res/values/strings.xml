@@ -4,4 +4,9 @@
     <string name="connect_as_client">Connect as Client</string>
     <string name="title_activity_client_connect">Connect as Client</string>
     <string name="title_activity_master_management">Master Management</string>
+    <string name="title_activity_client_browser">ClientBrowser</string>
+
+    <string name="title_home">Matches</string>
+    <string name="title_dashboard">Teams</string>
+    <string name="title_notifications">Competitions</string>
 </resources>
