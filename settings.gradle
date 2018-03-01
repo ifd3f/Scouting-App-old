@@ -1,1 +1,1 @@
-include ':pantherscoutclient', ':pantherscoutserver', ':pantherscoutcommon'
+include ':app-client', ':app-server', ':common'

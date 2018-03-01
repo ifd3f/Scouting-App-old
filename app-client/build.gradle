@@ -7,7 +7,7 @@ android {
 
 
     defaultConfig {
-        applicationId "com.burlingamerobotics.scouting"
+        applicationId "com.burlingamerobotics.scouting.client"
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
@@ -15,7 +15,6 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -40,7 +39,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-    compile project(':pantherscoutcommon')
+    compile project(':common')
 }
 repositories {
     mavenCentral()

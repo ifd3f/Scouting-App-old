@@ -4,9 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Scouting-App.iml" filepath="$PROJECT_DIR$/Scouting-App.iml" />
       <module fileurl="file://$PROJECT_DIR$/ScoutingApp.iml" filepath="$PROJECT_DIR$/ScoutingApp.iml" />
-      <module fileurl="file://$PROJECT_DIR$/pantherscoutclient/pantherscoutclient.iml" filepath="$PROJECT_DIR$/pantherscoutclient/pantherscoutclient.iml" />
-      <module fileurl="file://$PROJECT_DIR$/pantherscoutcommon/pantherscoutcommon.iml" filepath="$PROJECT_DIR$/pantherscoutcommon/pantherscoutcommon.iml" />
-      <module fileurl="file://$PROJECT_DIR$/pantherscoutserver/pantherscoutserver.iml" filepath="$PROJECT_DIR$/pantherscoutserver/pantherscoutserver.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app-client/pantherscoutclient.iml" filepath="$PROJECT_DIR$/app-client/pantherscoutclient.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app-server/pantherscoutserver.iml" filepath="$PROJECT_DIR$/app-server/pantherscoutserver.iml" />
+      <module fileurl="file://$PROJECT_DIR$/common/pantherscoutcommon.iml" filepath="$PROJECT_DIR$/common/pantherscoutcommon.iml" />
       <module fileurl="file://$PROJECT_DIR$/pantherscoutcommon/scoutingcommon.iml" filepath="$PROJECT_DIR$/pantherscoutcommon/scoutingcommon.iml" />
     </modules>
   </component>
