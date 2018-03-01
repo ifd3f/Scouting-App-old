@@ -7,11 +7,12 @@ import com.burlingamerobotics.scouting.R
 import com.burlingamerobotics.scouting.fragment.MatchListFragment
 import kotlinx.android.synthetic.main.activity_client_browser.*
 
-class ClientBrowser : AppCompatActivity() {
+class ClientBrowserActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_client_browser)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(false)
         //setSupportActionBar(toolbar)
 
         //val fragmentFrame = findViewById<FrameLayout>(R.id.client_main_fragment_container)
@@ -19,7 +20,9 @@ class ClientBrowser : AppCompatActivity() {
         navigation.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_matches -> {
-                    supportFragmentManager.beginTransaction().add(R.id.client_main_fragment_container, MatchListFragment()).commit()
+                    supportFragmentManager.beginTransaction()
+                            .add(R.id.client_main_fragment_container, MatchListFragment(), "match_list")
+                            .commit()
                     supportActionBar!!.setTitle(R.string.title_matches)
                     return@OnNavigationItemSelectedListener true
                 }
@@ -38,6 +41,5 @@ class ClientBrowser : AppCompatActivity() {
         navigation.selectedItemId = R.id.navigation_matches
 
     }
-
 
 }

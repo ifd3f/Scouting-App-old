@@ -3,12 +3,12 @@ package com.burlingamerobotics.scouting.client
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import com.burlingamerobotics.scouting.Utils
-import com.burlingamerobotics.scouting.data.MatchInfoRequest
 import com.burlingamerobotics.scouting.data.Request
 import java.io.Closeable
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
-import java.util.concurrent.*
+import java.util.concurrent.Callable
+import java.util.concurrent.Future
 
 /**
  * The client's view of the server.

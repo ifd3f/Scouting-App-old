@@ -4,6 +4,8 @@ import java.util.*
 
 object Constants {
 
-    val SCOUTING_UUID = UUID.nameUUIDFromBytes("ironpanthers-scouting-v${BuildConfig.VERSION_NAME}".toByteArray())
+    val PROTOCOL_VERSION = "1.0.06"
+
+    val SCOUTING_UUID = UUID.nameUUIDFromBytes("ironpanthers-scouting-v$PROTOCOL_VERSION".toByteArray())
 
 }

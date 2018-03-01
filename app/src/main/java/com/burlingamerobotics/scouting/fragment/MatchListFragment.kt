@@ -14,6 +14,7 @@ import android.widget.ListView
 import com.burlingamerobotics.scouting.R
 import com.burlingamerobotics.scouting.Utils
 import com.burlingamerobotics.scouting.client.ScoutingClient
+import com.burlingamerobotics.scouting.data.MatchInfoRequest
 import com.burlingamerobotics.scouting.data.MatchListRequest
 import com.burlingamerobotics.scouting.data.SimpMatch
 
@@ -24,11 +25,12 @@ class MatchListFragment : Fragment() {
 
     lateinit var matchesList: ListView
     lateinit var refresher: SwipeRefreshLayout
+    lateinit var matches: List<SimpMatch>
 
     private val refreshHandler = Handler({ msg ->
         refresher.isRefreshing = true
         @Suppress("UNCHECKED_CAST")
-        val matches = msg.obj as List<SimpMatch>
+        matches = msg.obj as List<SimpMatch>
         matchesList.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, matches.map {
             it.number
         })
@@ -47,9 +49,17 @@ class MatchListFragment : Fragment() {
         matchesList = view.findViewById<ListView>(R.id.list_matches)
         refresher = view.findViewById<SwipeRefreshLayout>(R.id.refresh_list_matches)
 
-        refresher.setOnRefreshListener {
-            refreshMatches()
+        matchesList.setOnItemClickListener { parent, _, position, id ->
+            val simpMatch = matches[position]
+            Utils.ioExecutor.execute {
+                val match = ScoutingClient.blockingRequest(MatchInfoRequest(simpMatch))!!
+                fragmentManager.beginTransaction()
+                        .replace(R.id.client_main_fragment_container, MatchInfoFragment.newInstance(match), "match_info")
+                        .addToBackStack(null)
+                        .commit()
+            }
         }
+        refresher.setOnRefreshListener { refreshMatches() }
         return view
     }
 

@@ -1,6 +1,6 @@
 package com.burlingamerobotics.scouting
 
-import java.util.concurrent.*
+import java.util.concurrent.Executors
 
 object Utils {
 

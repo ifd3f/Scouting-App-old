@@ -10,7 +10,10 @@ import android.os.Message
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ListView
+import android.widget.Toast
 import com.burlingamerobotics.scouting.Constants
 import com.burlingamerobotics.scouting.R
 import com.burlingamerobotics.scouting.Utils
@@ -56,7 +59,7 @@ class ClientConnectActivity : AppCompatActivity() {
                         sock.connect()
                         ScoutingClient.start(sock)
                         Log.i("ClientConnect", "  Connection success!")
-                        startActivity(Intent(this, ClientBrowser::class.java))
+                        startActivity(Intent(this, ClientBrowserActivity::class.java))
                     } catch (ex: IOException) {
                         Log.e("ClientConnect", "Failed to connect to $dev!", ex)
                         fireToast("Failed to connect!")

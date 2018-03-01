@@ -11,14 +11,13 @@
         android:roundIcon="@drawable/panther_scouting"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activity.ClientConnectActivity"
             android:label="@string/title_activity_client_connect"
@@ -28,7 +27,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.burlingamerobotics.scouting.activity.MainActivity" />
         </activity>
-
         <activity
             android:name=".activity.MasterManagementActivity"
             android:label="@string/title_activity_master_management"
@@ -38,16 +36,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.burlingamerobotics.scouting.activity.MainActivity" />
         </activity>
-
         <activity
-            android:name=".activity.ClientBrowser"
+            android:name=".activity.ClientBrowserActivity"
             android:label="@string/title_activity_client_browser"
             android:parentActivityName=".activity.ClientConnectActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.burlingamerobotics.scouting.activity.ClientConnectActivity" />
         </activity>
-
     </application>
 
 </manifest>
