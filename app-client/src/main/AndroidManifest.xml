@@ -12,7 +12,7 @@
         android:theme="@style/AppTheme" >
 
         <activity
-            android:name=".activity.ClientConnectActivity"
+            android:name=".activity.ConnectToServerActivity"
             android:label="@string/title_activity_client_connect"
             android:theme="@style/AppTheme.NoActionBar">
 
@@ -24,12 +24,12 @@
         </activity>
 
         <activity
-            android:name=".activity.ClientBrowserActivity"
+            android:name=".activity.BrowserActivity"
             android:label="@string/title_activity_client_browser"
-            android:parentActivityName=".activity.ClientConnectActivity">
+            android:parentActivityName=".activity.ConnectToServerActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.burlingamerobotics.scouting.client.activity.ClientConnectActivity" />
+                android:value="com.burlingamerobotics.scouting.client.activity.ConnectToServerActivity" />
         </activity>
 
     </application>

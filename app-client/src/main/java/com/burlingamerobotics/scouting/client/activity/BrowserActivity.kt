@@ -5,13 +5,13 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
 import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.fragment.MatchListFragment
-import kotlinx.android.synthetic.main.activity_client_browser.*
+import kotlinx.android.synthetic.main.activity_browser.*
 
-class ClientBrowserActivity : AppCompatActivity() {
+class BrowserActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_client_browser)
+        setContentView(R.layout.activity_browser)
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
         //setSupportActionBar(toolbar)
 

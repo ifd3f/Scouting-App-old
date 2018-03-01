@@ -5,7 +5,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.burlingamerobotics.scouting.client.activity.ClientBrowserActivity">
+    tools:context="com.burlingamerobotics.scouting.client.activity.BrowserActivity">
 
     <FrameLayout
         android:id="@+id/client_main_fragment_container"

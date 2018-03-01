@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.burlingamerobotics.scouting.client.activity.ClientConnectActivity"
-    tools:showIn="@layout/activity_client_connect">
+    tools:context="com.burlingamerobotics.scouting.client.activity.ConnectToServerActivity"
+    tools:showIn="@layout/activity_connect">
     <ListView
         android:id="@+id/bt_list"
         android:layout_width="match_parent"

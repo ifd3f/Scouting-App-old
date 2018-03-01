@@ -18,10 +18,10 @@ import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.ScoutingClient
 import com.burlingamerobotics.scouting.common.Constants
 import com.burlingamerobotics.scouting.common.Utils
-import kotlinx.android.synthetic.main.activity_client_connect.*
+import kotlinx.android.synthetic.main.activity_connect.*
 import java.io.IOException
 
-class ClientConnectActivity : AppCompatActivity() {
+class ConnectToServerActivity : AppCompatActivity() {
 
     lateinit var btAdapter: BluetoothAdapter
     lateinit var btList: ListView
@@ -33,7 +33,7 @@ class ClientConnectActivity : AppCompatActivity() {
             val bundle = msg!!.data
             val toastText = bundle.getString("text")
             if (toastText != null) {
-                Toast.makeText(this@ClientConnectActivity, toastText, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ConnectToServerActivity, toastText, Toast.LENGTH_SHORT).show()
                 return
             }
         }
@@ -41,7 +41,7 @@ class ClientConnectActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_client_connect)
+        setContentView(R.layout.activity_connect)
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
 
@@ -60,7 +60,7 @@ class ClientConnectActivity : AppCompatActivity() {
                         sock.connect()
                         ScoutingClient.start(sock)
                         Log.i("ClientConnect", "  Connection success!")
-                        startActivity(Intent(this, ClientBrowserActivity::class.java))
+                        startActivity(Intent(this, BrowserActivity::class.java))
                     } catch (ex: IOException) {
                         Log.e("ClientConnect", "Failed to connect to $dev!", ex)
                         fireToast("Failed to connect!")
