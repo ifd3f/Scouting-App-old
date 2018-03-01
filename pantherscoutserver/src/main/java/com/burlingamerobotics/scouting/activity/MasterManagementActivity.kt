@@ -15,6 +15,7 @@ import com.burlingamerobotics.scouting.R
 import com.burlingamerobotics.scouting.ScoutingServer
 import com.burlingamerobotics.scouting.common.Constants
 import com.burlingamerobotics.scouting.common.Utils
+import kotlinx.android.synthetic.main.activity_master_management.*
 
 class MasterManagementActivity : AppCompatActivity() {
 
@@ -31,7 +32,7 @@ class MasterManagementActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_master_management)
-        //setSupportActionBar(toolbar)
+        setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
 
         btAdapter = BluetoothAdapter.getDefaultAdapter()

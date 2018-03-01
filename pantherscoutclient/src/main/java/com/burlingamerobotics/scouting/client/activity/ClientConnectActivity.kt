@@ -18,6 +18,7 @@ import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.ScoutingClient
 import com.burlingamerobotics.scouting.common.Constants
 import com.burlingamerobotics.scouting.common.Utils
+import kotlinx.android.synthetic.main.activity_client_connect.*
 import java.io.IOException
 
 class ClientConnectActivity : AppCompatActivity() {
@@ -41,7 +42,7 @@ class ClientConnectActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_client_connect)
-        //setSupportActionBar(toolbar)
+        setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
 
         btAdapter = BluetoothAdapter.getDefaultAdapter()

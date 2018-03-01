@@ -5,6 +5,7 @@ import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
 import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.fragment.MatchListFragment
+import kotlinx.android.synthetic.main.activity_client_browser.*
 
 class ClientBrowserActivity : AppCompatActivity() {
 
