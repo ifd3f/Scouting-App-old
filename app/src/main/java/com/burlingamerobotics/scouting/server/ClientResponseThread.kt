@@ -2,10 +2,7 @@ package com.burlingamerobotics.scouting.server
 
 import android.bluetooth.BluetoothSocket
 import android.util.Log
-import com.burlingamerobotics.scouting.data.Match
-import com.burlingamerobotics.scouting.data.MatchInfoRequest
-import com.burlingamerobotics.scouting.data.Request
-import com.burlingamerobotics.scouting.data.TeamPerformance
+import com.burlingamerobotics.scouting.data.*
 import java.io.Closeable
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
@@ -18,7 +15,7 @@ class ClientResponseThread(private val btSocket: BluetoothSocket) : Thread(), Cl
     val device = btSocket.remoteDevice
 
     init {
-        name = "ClientInterfaceThread-${device.address}"
+        name = "ClientInterfaceThread[${device.address}]"
     }
 
     override fun run() {
@@ -34,7 +31,11 @@ class ClientResponseThread(private val btSocket: BluetoothSocket) : Thread(), Cl
                 when (obj) {
                     is MatchInfoRequest -> {
                         Log.d(name, "  It's a request for match info")
-                        oos.writeObject(Match(320, listOf(TeamPerformance(10, 10))))
+                        oos.writeObject(Match(320, 1, listOf(TeamPerformance(10, 10))))
+                    }
+                    is MatchListRequest -> {
+                        Log.d(name, "  It's a request for match list")
+                        oos.writeObject(listOf(SimpMatch(320, 1), SimpMatch(320, 2), SimpMatch(320, 3)))
                     }
                     else -> {
                         Log.e(name, "Failed to respond to $obj!")

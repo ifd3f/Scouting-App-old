@@ -6,9 +6,9 @@
     <string name="title_activity_master_management">Master Management</string>
     <string name="title_activity_client_browser">ClientBrowser</string>
 
-    <string name="title_home">Matches</string>
-    <string name="title_dashboard">Teams</string>
-    <string name="title_notifications">Competitions</string>
+    <string name="title_matches">Matches</string>
+    <string name="title_teams">Teams</string>
+    <string name="title_competitions">Competitions</string>
 
     <string name="start_server">Start Server</string>
     <string name="stop_server">Stop Server</string>

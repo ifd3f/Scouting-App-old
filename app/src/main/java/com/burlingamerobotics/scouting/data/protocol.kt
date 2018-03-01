@@ -12,6 +12,8 @@ interface Request<ResponseType> : Serializable
  */
 interface Post : Serializable
 
+data class MatchListRequest(val competition: Long) : Request<List<SimpMatch>>
+
 data class MatchInfoRequest(val competition: Long, val match: Int) : Request<Match>
 
 data class TeamInfoRequest(val team: Int) : Request<Team>

@@ -67,6 +67,7 @@ class MasterManagementActivity : AppCompatActivity() {
                     val client = ClientResponseThread(serverSocket.accept())
                     Log.i("MasterMgmt", "Bluetooth device at ${client.device.address} connected")
                     ScoutingServer.clients.add(client)
+                    client.start()
                     msgRefreshListHandler.sendMessage(Message())
                 }
             }
