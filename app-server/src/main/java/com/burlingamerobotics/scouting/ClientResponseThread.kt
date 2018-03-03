@@ -29,13 +29,19 @@ class ClientResponseThread(private val btSocket: BluetoothSocket) : Thread(), Cl
                 val obj = ois.readObject()
                 Log.d(name, "Received $obj")
                 when (obj) {
-                    is MatchInfoRequest -> {
-                        Log.d(name, "  It's a request for match info")
-                        oos.writeObject(Match(320, 1, listOf(TeamPerformance(10, 10))))
+                    is CompetitionRequest -> {
+                        Log.d(name, "  It's a request for competition")
+                        oos.writeObject(ScoutingServer.competition)
+                        //oos.writeObject(listOf(SimpMatch(320, 1), SimpMatch(320, 2), SimpMatch(320, 3)))
                     }
-                    is MatchListRequest -> {
-                        Log.d(name, "  It's a request for match list")
-                        oos.writeObject(listOf(SimpMatch(320, 1), SimpMatch(320, 2), SimpMatch(320, 3)))
+                    is QualifierMatchRequest -> {
+                        Log.d(name, "  It's a request for match info")
+                        oos.writeObject(ScoutingServer.competition.qualifiers[obj.number])
+                        //oos.writeObject(Match(320, 1, listOf(TeamPerformance(10, 10))))
+                    }
+                    is TeamInfoRequest -> {
+                        Log.d(name, "  It's a request for team info")
+                        //oos.writeObject(Team())
                     }
                     else -> {
                         Log.e(name, "Failed to respond to $obj!")

@@ -24,7 +24,7 @@ import java.io.IOException
 class ConnectToServerActivity : AppCompatActivity() {
 
     lateinit var btAdapter: BluetoothAdapter
-    lateinit var btList: ListView
+    lateinit var btListView: ListView
     lateinit var btDevices: List<BluetoothDevice>
 
     @SuppressLint("HandlerLeak")
@@ -46,11 +46,11 @@ class ConnectToServerActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
 
         btAdapter = BluetoothAdapter.getDefaultAdapter()
-        btList = findViewById(R.id.bt_list)
+        btListView = findViewById(R.id.bt_list)
 
         val swipeRefresh = findViewById<SwipeRefreshLayout>(R.id.client_connect_swiperefresh)
 
-        btList.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+        btListView.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
             val dev = btDevices[position]
             try {
                 val sock = dev.createRfcommSocketToServiceRecord(Constants.SCOUTING_UUID)
@@ -94,7 +94,7 @@ class ConnectToServerActivity : AppCompatActivity() {
         btDevices.forEach {
             Log.d("ClientConnect", "Found ${it.name} at ${it.address}")
         }
-        btList.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, btDevices.map {
+        btListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, btDevices.map {
             "${it.name} at ${it.address}"
         })
     }

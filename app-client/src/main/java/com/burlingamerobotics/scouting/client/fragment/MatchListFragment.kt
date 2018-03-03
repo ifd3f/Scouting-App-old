@@ -14,26 +14,23 @@ import android.widget.ListView
 import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.ScoutingClient
 import com.burlingamerobotics.scouting.common.Utils
-import com.burlingamerobotics.scouting.common.data.MatchInfoRequest
-import com.burlingamerobotics.scouting.common.data.MatchListRequest
-import com.burlingamerobotics.scouting.common.data.SimpMatch
+import com.burlingamerobotics.scouting.common.data.QualifierMatchRequest
 
 /**
  * Lists all the matches at a certain competition.
  */
 class MatchListFragment : Fragment() {
 
-    lateinit var matchesList: ListView
+    lateinit var lvMatches: ListView
     lateinit var refresher: SwipeRefreshLayout
-    lateinit var matches: List<SimpMatch>
+    //lateinit var matches: Array<Match>
 
     private val refreshHandler = Handler({ msg ->
         refresher.isRefreshing = true
-        @Suppress("UNCHECKED_CAST")
-        matches = msg.obj as List<SimpMatch>
-        matchesList.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, matches.map {
-            it.number
-        })
+        val matches = ScoutingClient.getQualifiers().mapIndexed { index, match ->
+            index
+        }
+        lvMatches.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, matches)
         refresher.isRefreshing = false
         true
     })
@@ -46,13 +43,12 @@ class MatchListFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.fragment_match_list, container, false)
 
-        matchesList = view.findViewById<ListView>(R.id.list_matches)
+        lvMatches = view.findViewById<ListView>(R.id.list_matches)
         refresher = view.findViewById<SwipeRefreshLayout>(R.id.refresh_list_matches)
 
-        matchesList.setOnItemClickListener { parent, _, position, id ->
-            val simpMatch = matches[position]
+        lvMatches.setOnItemClickListener { parent, _, position, id ->
             Utils.ioExecutor.execute {
-                val match = ScoutingClient.blockingRequest(MatchInfoRequest(simpMatch))!!
+                val match = ScoutingClient.blockingRequest(QualifierMatchRequest(position))!!
                 fragmentManager.beginTransaction()
                         .replace(R.id.client_main_fragment_container, MatchInfoFragment.newInstance(match), "match_info")
                         .addToBackStack(null)
@@ -60,6 +56,9 @@ class MatchListFragment : Fragment() {
             }
         }
         refresher.setOnRefreshListener { refreshMatches() }
+
+        refreshMatches()
+
         return view
     }
 
@@ -78,9 +77,9 @@ class MatchListFragment : Fragment() {
     }
 
     fun refreshMatches() {
+        ScoutingClient.invalidateCache()
         Utils.ioExecutor.execute {
             val msg = Message()
-            msg.obj = ScoutingClient.blockingRequest(MatchListRequest(320))!!
             refreshHandler.sendMessage(msg)
         }
     }

@@ -18,7 +18,6 @@ class MatchInfoAdapter(val match: Match) : RecyclerView.Adapter<MatchAttrViewHol
 
     override fun onBindViewHolder(holder: MatchAttrViewHolder?, position: Int) {
         val pair = when (position) {
-            0 -> "Competition ID" to match.competition.toString()
             1 -> "Match Number" to match.number.toString()
             else -> "Error" to "Error"
         }

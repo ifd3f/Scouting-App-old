@@ -3,6 +3,9 @@ package com.burlingamerobotics.scouting.client
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import com.burlingamerobotics.scouting.common.Utils
+import com.burlingamerobotics.scouting.common.data.Competition
+import com.burlingamerobotics.scouting.common.data.CompetitionRequest
+import com.burlingamerobotics.scouting.common.data.Match
 import com.burlingamerobotics.scouting.common.data.Request
 import java.io.Closeable
 import java.io.ObjectInputStream
@@ -20,11 +23,31 @@ object ScoutingClient : Closeable {
     lateinit var ois: ObjectInputStream
     lateinit var device: BluetoothDevice
 
+    private var _cache: Competition? = null
+
+    val cache get(): Competition {
+        var c = _cache
+        if (c == null) {
+            c = blockingRequest(CompetitionRequest)!!
+        }
+        return c
+    }
+
+    fun invalidateCache() {
+        _cache = null
+    }
+
     fun start(socket: BluetoothSocket) {
         ScoutingClient.socket = socket
         oos = ObjectOutputStream(socket.outputStream)
         ois = ObjectInputStream(socket.inputStream)
         device = socket.remoteDevice
+
+        invalidateCache()
+    }
+
+    fun getQualifiers(): Array<Match?> {
+        return cache.qualifiers
     }
 
     fun <T> request(rq: Request<T>): Future<T?> {
@@ -41,6 +64,7 @@ object ScoutingClient : Closeable {
         ois.close()
         oos.close()
         socket.close()
+        invalidateCache()
     }
 
 }

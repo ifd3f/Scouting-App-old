@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.activity_server_manager.*
 class ServerManagerActivity : AppCompatActivity() {
 
     lateinit var btAdapter: BluetoothAdapter
-    lateinit var listConnectedClients: ListView
+    lateinit var lvClients: ListView
     lateinit var btnStartServer: Button
     lateinit var txtServerIndicator: TextView
 
@@ -36,7 +36,7 @@ class ServerManagerActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
 
         btAdapter = BluetoothAdapter.getDefaultAdapter()
-        listConnectedClients = findViewById(R.id.list_connected_clients)
+        lvClients = findViewById(R.id.list_connected_clients)
 
         btnStartServer = findViewById<Button>(R.id.btn_start_server)
         txtServerIndicator = findViewById(R.id.txt_server_indicator)
@@ -52,7 +52,7 @@ class ServerManagerActivity : AppCompatActivity() {
         clients.forEach {
             Log.d("MasterMgmt", "Found ${it.device.address}")
         }
-        listConnectedClients.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, clients.map { it.device.name })
+        lvClients.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, clients.map { it.device.name })
     }
 
     private fun setServerState(state: Boolean) {

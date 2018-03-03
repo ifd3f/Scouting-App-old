@@ -12,11 +12,9 @@ interface Request<ResponseType> : Serializable
  */
 interface Post : Serializable
 
-data class MatchListRequest(val competition: Long) : Request<List<SimpMatch>>
+object CompetitionRequest : Request<Competition>
 
-data class MatchInfoRequest(val competition: Long, val number: Int) : Request<Match> {
-    constructor(sm: SimpMatch) : this(sm.competition, sm.number)
-}
+data class QualifierMatchRequest(val number: Int) : Request<Match>
 
 data class TeamInfoRequest(val team: Int) : Request<Team>
 

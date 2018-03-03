@@ -1,6 +1,6 @@
 package com.burlingamerobotics.scouting
 
-import com.burlingamerobotics.scouting.ClientResponseThread
+import com.burlingamerobotics.scouting.common.data.Competition
 
 /**
  * Manages all the client threads
@@ -9,8 +9,10 @@ object ScoutingServer {
 
     val clients: MutableList<ClientResponseThread> = mutableListOf()
 
-    fun start() {
+    lateinit var competition: Competition
 
+    fun start(competition: Competition) {
+        this.competition = competition
     }
 
 }
