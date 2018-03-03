@@ -1,6 +1,10 @@
 package com.burlingamerobotics.scouting.activity
 
 import android.bluetooth.BluetoothAdapter
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -8,6 +12,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.*
 import com.burlingamerobotics.scouting.ClientResponseThread
+import com.burlingamerobotics.scouting.INTENT_CLIENT_CONNECTED
 import com.burlingamerobotics.scouting.R
 import com.burlingamerobotics.scouting.ScoutingServer
 import com.burlingamerobotics.scouting.common.Constants
@@ -39,6 +44,13 @@ class ServerManagerActivity : AppCompatActivity() {
             setServerState(isChecked)
         }
 
+        val itf = IntentFilter(INTENT_CLIENT_CONNECTED)
+        registerReceiver(object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                refreshList()
+            }
+        }, itf)
+
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         setServerState(false)
@@ -59,19 +71,11 @@ class ServerManagerActivity : AppCompatActivity() {
             Log.i("MasterMgmt", "Starting bluetooth server")
 
             val serverSocket = btAdapter.listenUsingRfcommWithServiceRecord("Scouting Server", Constants.SCOUTING_UUID)
-            Utils.ioExecutor.submit {
-                for (i in 1..6) {
-                    val client = ClientResponseThread(serverSocket.accept())
-                    Log.i("MasterMgmt", "Bluetooth device at ${client.device.address} connected")
-                    ScoutingServer.clients.add(client)
-                    client.start()
-                    msgRefreshListHandler.sendMessage(Message())
-                }
-            }
+            ScoutingServer.start(this, serverSocket, )  // TODO: ADD SHIT HERE
 
         } else {
             Log.i("MasterMgmt", "Stopping bluetooth server... (not really)")
-
+            ScoutingServer.stop()
             // TODO: STOP THE SERVER
         }
     }
