@@ -17,6 +17,7 @@ object ScoutingServer {
     const val TAG = "ScoutingServer"
 
     val clients: MutableList<ClientResponseThread> = mutableListOf()
+
     lateinit var competition: Competition
     lateinit var serverListener: Future<*>
     lateinit var serverSocket: BluetoothServerSocket

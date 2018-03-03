@@ -93,4 +93,6 @@ data class Competition(
     }
 }
 
+data class CompetitionFileHeader(val uuid: UUID, val name: String, val time: Date)
+
 data class Team(val number: Int, val name: String) : Serializable

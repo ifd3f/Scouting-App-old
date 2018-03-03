@@ -12,14 +12,32 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activity.ServerManagerActivity"
-            android:label="@string/title_activity_master_management"
+            android:name=".activity.CompetitionSelectionActivity"
+            android:label="@string/title_activity_competition_selection"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".activity.ServerManagerActivity"
+            android:label="@string/title_activity_master_management"
+            android:parentActivityName=".activity.CompetitionSelectionActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.burlingamerobotics.scouting.activity.CompetitionSelectionActivity" />
+        </activity>
+
+        <activity
+            android:name=".activity.CompetitionEditorActivity"
+            android:label="@string/title_activity_competition_editor"
+            android:parentActivityName=".activity.CompetitionSelectionActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.burlingamerobotics.scouting.activity.CompetitionSelectionActivity" />
         </activity>
     </application>
 

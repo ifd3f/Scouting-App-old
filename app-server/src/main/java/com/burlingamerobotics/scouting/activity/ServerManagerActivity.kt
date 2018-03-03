@@ -18,6 +18,7 @@ import com.burlingamerobotics.scouting.ScoutingServer
 import com.burlingamerobotics.scouting.common.Constants
 import com.burlingamerobotics.scouting.common.Utils
 import kotlinx.android.synthetic.main.activity_server_manager.*
+import java.util.*
 
 class ServerManagerActivity : AppCompatActivity() {
 
@@ -71,7 +72,7 @@ class ServerManagerActivity : AppCompatActivity() {
             Log.i("MasterMgmt", "Starting bluetooth server")
 
             val serverSocket = btAdapter.listenUsingRfcommWithServiceRecord("Scouting Server", Constants.SCOUTING_UUID)
-            ScoutingServer.start(this, serverSocket, )  // TODO: ADD SHIT HERE
+            //ScoutingServer.start(this, serverSocket, )  // TODO: ADD SHIT HERE
 
         } else {
             Log.i("MasterMgmt", "Stopping bluetooth server... (not really)")
