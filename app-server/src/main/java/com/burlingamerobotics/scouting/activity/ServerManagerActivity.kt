@@ -6,10 +6,7 @@ import android.os.Handler
 import android.os.Message
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.ListView
-import android.widget.TextView
+import android.widget.*
 import com.burlingamerobotics.scouting.ClientResponseThread
 import com.burlingamerobotics.scouting.R
 import com.burlingamerobotics.scouting.ScoutingServer
@@ -21,8 +18,7 @@ class ServerManagerActivity : AppCompatActivity() {
 
     lateinit var btAdapter: BluetoothAdapter
     lateinit var lvClients: ListView
-    lateinit var btnStartServer: Button
-    lateinit var txtServerIndicator: TextView
+    lateinit var switchStartServer: Switch
 
     val msgRefreshListHandler = Handler({ msg ->
         refreshList()
@@ -38,8 +34,10 @@ class ServerManagerActivity : AppCompatActivity() {
         btAdapter = BluetoothAdapter.getDefaultAdapter()
         lvClients = findViewById(R.id.list_connected_clients)
 
-        btnStartServer = findViewById<Button>(R.id.btn_start_server)
-        txtServerIndicator = findViewById(R.id.txt_server_indicator)
+        switchStartServer = findViewById(R.id.switch_server)
+        switchStartServer.setOnCheckedChangeListener { buttonView, isChecked ->
+            setServerState(isChecked)
+        }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -57,8 +55,6 @@ class ServerManagerActivity : AppCompatActivity() {
 
     private fun setServerState(state: Boolean) {
         if (state) {
-            txtServerIndicator.text = getString(R.string.server_is_on)
-            btnStartServer.text = getString(R.string.stop_server)
 
             Log.i("MasterMgmt", "Starting bluetooth server")
 
@@ -73,17 +69,10 @@ class ServerManagerActivity : AppCompatActivity() {
                 }
             }
 
-            btnStartServer.setOnClickListener {
-                setServerState(false)
-            }
         } else {
-            Log.i("MasterMgmt", "Stopping bluetooth server...")
-            txtServerIndicator.text = getString(R.string.server_is_off)
-            btnStartServer.text = getString(R.string.start_server)
+            Log.i("MasterMgmt", "Stopping bluetooth server... (not really)")
 
-            btnStartServer.setOnClickListener { view ->
-                setServerState(true)
-            }
+            // TODO: STOP THE SERVER
         }
     }
 

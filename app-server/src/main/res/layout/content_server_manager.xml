@@ -9,23 +9,31 @@
     tools:context="com.burlingamerobotics.scouting.activity.ServerManagerActivity"
     tools:showIn="@layout/activity_server_manager">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/btn_start_server"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/start_server"/>
+
         <TextView
-            android:id="@+id/txt_server_indicator"
+            style="@style/TextAppearance.AppCompat.Headline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/server_is_off"/>
+            android:layout_alignParentLeft="true"
+            android:text="@string/server_status"/>
 
-    </LinearLayout>
+        <Switch
+            android:id="@+id/switch_server"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"/>
+
+    </RelativeLayout>
 
 
+    <TextView
+        style="@style/TextAppearance.AppCompat.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/clients_list"/>
     <ListView
         android:id="@+id/list_connected_clients"
         android:layout_width="match_parent"
