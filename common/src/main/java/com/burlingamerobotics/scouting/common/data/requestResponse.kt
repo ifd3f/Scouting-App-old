@@ -8,9 +8,9 @@ import java.io.Serializable
 interface Request<ResponseType> : Serializable
 
 /**
- * Base interface for an object sent to the server for writing data.
+ * A response to a [Request].
  */
-interface Post : Serializable
+data class Response<T>(val payload: T) : Serializable
 
 object CompetitionRequest : Request<Competition>
 
@@ -19,7 +19,3 @@ object TeamListRequest : Request<List<Team>>
 data class QualifierMatchRequest(val number: Int) : Request<Match>
 
 data class TeamInfoRequest(val team: Int) : Request<Team>
-
-data class PostMatchInfo(
-        val team: Int
-) : Post

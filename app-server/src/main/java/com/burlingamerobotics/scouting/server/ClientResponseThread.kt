@@ -29,11 +29,26 @@ class ClientResponseThread(private val btSocket: BluetoothSocket, private val db
         try {
             Log.i(TAG, "Successfully started!")
             while (true) {
-                val request = ois.readObject() as Request<*>
-                Log.d(TAG, "Received $request")
-                val response = getItemByRequest(request)
-                Log.d(TAG, "Writing $response")
-                oos.writeObject(response)
+
+                val obj = ois.readObject()
+
+                Log.d(TAG, "Received $obj")
+                when (obj) {
+                    is Request<*> -> {
+                        Log.d(TAG, "It's a request")
+                        val response = Response(getItemByRequest(obj))
+                        Log.d(TAG, "Writing $response")
+                        oos.writeObject(response)
+                    }
+                    is Post -> {
+                        Log.d(TAG, "It's a post")
+                        // TODO DO SHIT WITH POSTS
+                    }
+                    else -> {
+                        Log.e(TAG, "Received a $obj but we don't know what to do with it!")
+                    }
+                }
+
             }
         } catch (ex: InterruptedException) {
             Log.i(TAG, "Interrupted, gracefully stopping thread")

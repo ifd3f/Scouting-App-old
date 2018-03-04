@@ -27,6 +27,7 @@ class TeamListFragment : Fragment() {
     lateinit var refresher: SwipeRefreshLayout
 
     val refreshHandler = Handler {
+        @Suppress("UNCHECKED_CAST")
         teamList = it.obj as List<Team>
         Log.d(TAG, "Received request to refresh team list, with ${teamList.size} teams")
         lvTeamList.adapter = ArrayAdapter(activity, android.R.layout.simple_list_item_1, teamList)
@@ -44,7 +45,7 @@ class TeamListFragment : Fragment() {
             refresh()
         }
 
-        lvTeamList.setOnItemClickListener { parent, view, position, id ->
+        lvTeamList.setOnItemClickListener { parent, _, position, id ->
             Log.i(TAG, "selected $position which corresponds to ${teamList[position]}")
         }
 
@@ -54,7 +55,6 @@ class TeamListFragment : Fragment() {
 
     fun refresh() {
         Log.d(TAG, "Submitting request to refresh team list")
-        refresher.isRefreshing = true
         Utils.ioExecutor.submit {
             refreshHandler.dispatchMessage(Message().apply {
                 obj = ScoutingClient.blockingRequest(TeamListRequest)!!
