@@ -19,7 +19,8 @@ data class MatchTree(val match: Match?, val left: MatchTree?, val right: MatchTr
             if (rounds == 1) {
                 return MatchTree(null, null, null)
             }
-            return MatchTree(null, generateTournament(rounds - 1), generateTournament(rounds - 1))
+            val newRounds = rounds - 1
+            return MatchTree(null, generateTournament(newRounds), generateTournament(newRounds))
         }
     }
 }

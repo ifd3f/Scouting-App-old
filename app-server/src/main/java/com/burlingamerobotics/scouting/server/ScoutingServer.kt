@@ -18,8 +18,9 @@ object ScoutingServer {
     val clients: MutableList<ClientResponseThread> = mutableListOf()
 
     lateinit var competition: Competition
-    lateinit var serverListener: Future<*>
     lateinit var serverSocket: BluetoothServerSocket
+
+    private var serverListener: Future<*>? = null
 
     fun start(context: Context, serverSocket: BluetoothServerSocket, competition: Competition) {
         ScoutingServer.competition = competition
@@ -37,7 +38,7 @@ object ScoutingServer {
     }
 
     fun stop() {
-        serverListener.cancel(true)
+        serverListener?.cancel(true)
         clients.forEach { it.close() }
         clients.clear()
     }

@@ -12,7 +12,9 @@ import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Switch
+import android.widget.TextView
 import com.burlingamerobotics.scouting.common.Constants
+import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.server.INTENT_CLIENT_CONNECTED
 import com.burlingamerobotics.scouting.server.R
 import com.burlingamerobotics.scouting.server.ScoutingServer
@@ -23,6 +25,8 @@ class ServerManagerActivity : AppCompatActivity() {
     lateinit var btAdapter: BluetoothAdapter
     lateinit var lvClients: ListView
     lateinit var switchStartServer: Switch
+    lateinit var competition: Competition
+    lateinit var txtCompetitionName: TextView
 
     val msgRefreshListHandler = Handler({ msg ->
         refreshList()
@@ -32,11 +36,15 @@ class ServerManagerActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_server_manager)
-        setSupportActionBar(toolbar)
+        //setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
 
         btAdapter = BluetoothAdapter.getDefaultAdapter()
+        competition = intent.getSerializableExtra("competition") as Competition
+
         lvClients = findViewById(R.id.list_connected_clients)
+        txtCompetitionName = findViewById(R.id.text_competition_name)
+        txtCompetitionName.text = competition.name
 
         switchStartServer = findViewById(R.id.switch_server)
         switchStartServer.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -70,12 +78,11 @@ class ServerManagerActivity : AppCompatActivity() {
             Log.i("MasterMgmt", "Starting bluetooth server")
 
             val serverSocket = btAdapter.listenUsingRfcommWithServiceRecord("Scouting Server", Constants.SCOUTING_UUID)
-            //ScoutingServer.start(this, serverSocket, )  // TODO: ADD SHIT HERE
+            ScoutingServer.start(this, serverSocket, competition)
 
         } else {
-            Log.i("MasterMgmt", "Stopping bluetooth server... (not really)")
+            Log.i("MasterMgmt", "Stopping bluetooth server")
             ScoutingServer.stop()
-            // TODO: STOP THE SERVER
         }
     }
 

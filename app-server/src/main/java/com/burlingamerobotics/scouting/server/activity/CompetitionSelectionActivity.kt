@@ -52,6 +52,13 @@ class CompetitionSelectionActivity : Activity() {
             refreshCompetitions()
         }
 
+        lvCompetitions.setOnItemClickListener { parent, view, position, id ->
+            val comp = dbScouting.getCompetition(listComps[position].uuid)
+            startActivity(Intent(this, CompetitionInfoActivity::class.java).apply {
+                putExtra("competition", comp)
+            })
+        }
+
         refreshCompetitions()
     }
 

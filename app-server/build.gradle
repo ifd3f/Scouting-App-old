@@ -7,7 +7,7 @@ android {
 
 
     defaultConfig {
-        applicationId "com.burlingamerobotics.scouting"
+        applicationId "com.burlingamerobotics.scouting.server"
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
