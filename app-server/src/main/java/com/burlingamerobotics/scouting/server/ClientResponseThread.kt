@@ -2,7 +2,7 @@ package com.burlingamerobotics.scouting.server
 
 import android.bluetooth.BluetoothSocket
 import android.util.Log
-import com.burlingamerobotics.scouting.common.data.*
+import com.burlingamerobotics.scouting.common.protocol.*
 import java.io.Closeable
 import java.io.IOException
 import java.io.ObjectInputStream

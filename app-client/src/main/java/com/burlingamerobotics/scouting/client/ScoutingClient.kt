@@ -5,6 +5,10 @@ import android.bluetooth.BluetoothSocket
 import android.util.Log
 import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.*
+import com.burlingamerobotics.scouting.common.protocol.CompetitionRequest
+import com.burlingamerobotics.scouting.common.protocol.Event
+import com.burlingamerobotics.scouting.common.protocol.Request
+import com.burlingamerobotics.scouting.common.protocol.Response
 import java.io.Closeable
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
@@ -22,13 +26,13 @@ object ScoutingClient : Closeable {
     lateinit var oos: ObjectOutputStream
     lateinit var ois: ObjectInputStream
     lateinit var device: BluetoothDevice
-    lateinit var listenerThread: Thread
+    lateinit var listenerThread: ClientListenerThread
 
     private var _cache: Competition? = null
     private val cacheLock = Object()
 
     private val responseQueue = ArrayBlockingQueue<Any?>(20)
-    private val eventQueue = ArrayBlockingQueue<Any>(20)
+    private val eventQueue = ArrayBlockingQueue<Event>(20)
 
     val cache get(): Competition {
         synchronized(cacheLock) {
@@ -48,28 +52,8 @@ object ScoutingClient : Closeable {
         ois = ObjectInputStream(socket.inputStream)
         device = socket.remoteDevice
 
-        listenerThread = thread(start = true) {
-
-            val TAG = "ScoutlingThread"
-            try {
-                while (true) {
-                    val obj = ois.readObject()
-                    Log.d(TAG, "Received object $obj")
-                    when (obj) {
-                        is Response<*> -> {
-                            Log.d(TAG, "It's a response, putting it in the response queue")
-                            responseQueue.put(obj.payload)
-                        }
-                        else -> {
-                            Log.e(TAG, "Unrecognized type!")
-                        }
-                    }
-                }
-            } catch (ex: InterruptedException) {
-                Log.i(TAG, "Listener thread interrupted, stopping thread")
-            }
-
-        }
+        listenerThread = ClientListenerThread(responseQueue, eventQueue)
+        listenerThread.start()
 
         invalidateCache()
     }
@@ -96,7 +80,7 @@ object ScoutingClient : Closeable {
         ois.close()
         oos.close()
         socket.close()
-        listenerThread.interrupt()
+        listenerThread.close()
         invalidateCache()
     }
 

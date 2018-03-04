@@ -15,8 +15,7 @@ import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.ScoutingClient
 import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.Competition
-import com.burlingamerobotics.scouting.common.data.CompetitionRequest
-import com.burlingamerobotics.scouting.common.data.QualifierMatchRequest
+import com.burlingamerobotics.scouting.common.protocol.QualifierMatchRequest
 
 /**
  * Lists all the matches at a certain competition.

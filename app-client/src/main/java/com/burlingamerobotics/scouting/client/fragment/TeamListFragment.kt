@@ -15,7 +15,7 @@ import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.ScoutingClient
 import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.Team
-import com.burlingamerobotics.scouting.common.data.TeamListRequest
+import com.burlingamerobotics.scouting.common.protocol.TeamListRequest
 
 
 class TeamListFragment : Fragment() {
