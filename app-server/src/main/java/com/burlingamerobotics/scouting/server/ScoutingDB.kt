@@ -2,18 +2,33 @@ package com.burlingamerobotics.scouting.server
 
 import android.content.Context
 import android.util.Log
+import com.beust.klaxon.JsonArray
+import com.beust.klaxon.JsonReader
+import com.beust.klaxon.Klaxon
 import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.common.data.CompetitionFileHeader
+import com.burlingamerobotics.scouting.common.data.Team
 import java.io.*
 import java.util.*
 
 
-class ScoutingDB(private val context: Context) {
+class ScoutingDB(context: Context) {
 
     val TAG = "ScoutingDB-${context.packageName}"
 
     val dirCompetitions = File(context.filesDir, "competitions/")
-    val dirTeamData = File(context.filesDir, "teams.json")
+    val dirTeamsData = File(context.filesDir, "teams.json")
+
+    private var teams: Lazy<SortedMap<Int, Team>> = lazy {
+        if (dirTeamsData.exists()) {
+            val teams = Klaxon().parse<JsonArray<Team>>(dirTeamsData)
+            teams!!.map { it.number to it }.toMap().toSortedMap()
+        } else {
+            sortedMapOf()
+        }
+    }
+
+    private var teamsChanged = false
 
     fun prepareDirs() {
         dirCompetitions.mkdirs()
@@ -48,6 +63,30 @@ class ScoutingDB(private val context: Context) {
             it.writeObject(comp.getHeader())
             it.writeObject(comp)
         }
+    }
+
+    fun putTeam(team: Team) {
+        teams.value[team.number] = team
+        teamsChanged = true
+    }
+
+    fun commitTeams() {
+        if (teamsChanged) {
+            val write = JsonArray(listTeams())
+            val json = Klaxon().toJsonString(write)
+            FileWriter(dirTeamsData).use {
+                it.write(json)
+            }
+            teamsChanged = false
+        }
+    }
+
+    fun getTeam(number: Int): Team? {
+        return teams.value[number]
+    }
+
+    fun listTeams(): List<Team> {
+        return teams.value.toList().map { it.second }
     }
 
 }

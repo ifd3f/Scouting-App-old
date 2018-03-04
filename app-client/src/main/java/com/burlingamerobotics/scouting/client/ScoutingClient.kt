@@ -2,6 +2,7 @@ package com.burlingamerobotics.scouting.client
 
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
+import android.util.Log
 import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.common.data.CompetitionRequest
@@ -17,6 +18,8 @@ import java.util.concurrent.Future
  * The client's view of the server.
  */
 object ScoutingClient : Closeable {
+
+    val TAG = "ScoutingClient"
 
     lateinit var socket: BluetoothSocket
     lateinit var oos: ObjectOutputStream
@@ -46,7 +49,7 @@ object ScoutingClient : Closeable {
         invalidateCache()
     }
 
-    fun getQualifiers(): Array<Match?> {
+    fun getQualifiers(): MutableList<Match?> {
         return cache.qualifiers
     }
 
@@ -56,8 +59,10 @@ object ScoutingClient : Closeable {
 
     fun <T> blockingRequest(rq: Request<T>): T? {
         oos.writeObject(rq)
+        val obj = ois.readObject()
+        Log.d(TAG, "Received object of type ${obj.javaClass}: $obj")
         @Suppress("UNCHECKED_CAST")
-        return ois.readObject() as T?
+        return obj as T?
     }
 
     override fun close() {

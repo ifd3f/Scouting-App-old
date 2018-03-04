@@ -9,14 +9,14 @@ import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.common.data.Match
 
 
-class MatchInfoAdapter(val match: Match) : RecyclerView.Adapter<MatchAttrViewHolder>() {
+class MatchInfoAdapter(val match: Match) : RecyclerView.Adapter<SimpleRowViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): MatchAttrViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): SimpleRowViewHolder {
         val view = LayoutInflater.from(parent!!.context).inflate(R.layout.item_data_row, parent, false)
-        return MatchAttrViewHolder(view)
+        return SimpleRowViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: MatchAttrViewHolder?, position: Int) {
+    override fun onBindViewHolder(holder: SimpleRowViewHolder?, position: Int) {
         val pair = when (position) {
             1 -> "Match Number" to match.number.toString()
             else -> "Error" to "Error"
@@ -31,7 +31,7 @@ class MatchInfoAdapter(val match: Match) : RecyclerView.Adapter<MatchAttrViewHol
 
 }
 
-class MatchAttrViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class SimpleRowViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     val labelView: TextView = itemView.findViewById(R.id.text_attr_name)
     val dataView: TextView = itemView.findViewById(R.id.text_attr_data)
 }

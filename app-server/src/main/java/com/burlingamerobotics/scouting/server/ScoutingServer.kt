@@ -5,7 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.burlingamerobotics.scouting.common.Utils
-import com.burlingamerobotics.scouting.common.data.Competition
+import com.burlingamerobotics.scouting.common.data.*
+import java.io.Serializable
 import java.util.concurrent.Future
 
 /**
@@ -19,15 +20,17 @@ object ScoutingServer {
 
     lateinit var competition: Competition
     lateinit var serverSocket: BluetoothServerSocket
+    lateinit var db: ScoutingDB
 
     private var serverListener: Future<*>? = null
 
-    fun start(context: Context, serverSocket: BluetoothServerSocket, competition: Competition) {
+    fun start(context: Context, db: ScoutingDB, serverSocket: BluetoothServerSocket, competition: Competition) {
+        this.db = db
         ScoutingServer.competition = competition
         ScoutingServer.serverSocket = serverSocket
         serverListener = Utils.ioExecutor.submit {
             while (true) {
-                val client = ClientResponseThread(serverSocket.accept())
+                val client = ClientResponseThread(serverSocket.accept(), db)
                 Log.i(TAG, "Bluetooth device at ${client.device.address} connected")
                 clients.add(client)
                 client.start()
@@ -41,6 +44,10 @@ object ScoutingServer {
         serverListener?.cancel(true)
         clients.forEach { it.close() }
         clients.clear()
+    }
+
+    fun onClientDisconnected(thread: ClientResponseThread) {
+
     }
 
 }

@@ -31,7 +31,7 @@ class CompetitionEditorActivity : Activity() {
         when (intent.action) {
             INTENT_EDIT_COMPETITION -> {
                 val oldCompetition = intent.extras["competition"] as Competition
-                date = oldCompetition.date
+                date = Calendar.getInstance().apply { time = oldCompetition.date }
                 uuid = oldCompetition.uuid
                 editName.setText(oldCompetition.name)
             }

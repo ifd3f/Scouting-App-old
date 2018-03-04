@@ -8,7 +8,11 @@ data class TeamPerformance(
         val team: Int,
         val boxes: Int,
         val climbed: Boolean  // TODO POPULATE WITH FIELDS
-) : Serializable
+) : Serializable {
+    companion object {
+        private const val serialVersionUID: Long = 92387465
+    }
+}
 
 sealed class Match(val number: Int) : Serializable
 
@@ -22,7 +26,10 @@ data class MatchTree(val match: Match?, val left: MatchTree?, val right: MatchTr
             val newRounds = rounds - 1
             return MatchTree(null, generateTournament(newRounds), generateTournament(newRounds))
         }
+
+        private const val serialVersionUID: Long = 3546987
     }
+
 }
 
 class PlannedMatch(number: Int, var red: Array<Int>, var blue: Array<Int>): Match(number) {
@@ -43,30 +50,52 @@ class PlannedMatch(number: Int, var red: Array<Int>, var blue: Array<Int>): Matc
         result = 31 * result + Arrays.hashCode(blue)
         return result
     }
+    companion object {
+        private const val serialVersionUID: Long = 8935476
+    }
+
 }
 
 class CompletedMatch(
         number: Int,
         val time: Date,
         var red: List<TeamPerformance>,
-        var blue: List<TeamPerformance>) : Match(number)
+        var blue: List<TeamPerformance>) : Match(number) {
+    companion object {
+        private const val serialVersionUID: Long = 234905687
+    }
+}
 
-data class Competition(
+class Competition(
         val uuid: UUID,
         val name: String,
-        val date: Calendar,
+        cal: Calendar,
         val qualifiers: MutableList<Match?>,
         val finals: MatchTree
 ) : Serializable {
+
+    val date = cal.time
 
     fun getHeader(): CompetitionFileHeader = CompetitionFileHeader(uuid, name, date, qualifiers.size)
 
     fun getFilename(): String = "$uuid.dat"
 
+    companion object {
+        private const val serialVersionUID: Long = 1793484567
+    }
+
 }
 
-data class CompetitionFileHeader(val uuid: UUID, val name: String, val time: Calendar, val qualifiers: Int) : Serializable {
-    fun getTitle() = "$name (${SimpleDateFormat.getDateInstance().format(time.time)})"
+class CompetitionFileHeader(val uuid: UUID, val name: String, val date: Date, val qualifiers: Int) : Serializable {
+
+    fun getTitle() = "$name (${SimpleDateFormat.getDateInstance().format(date.time)})"
+    companion object {
+        private const val serialVersionUID: Long = 1723544567
+    }
 }
 
-data class Team(val number: Int, val name: String) : Serializable
+data class Team(val number: Int, val name: String) : Serializable {
+    companion object {
+        private const val serialVersionUID: Long = 7928534234
+    }
+}

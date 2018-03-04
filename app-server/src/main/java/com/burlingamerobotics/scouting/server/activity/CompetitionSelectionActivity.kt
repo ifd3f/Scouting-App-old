@@ -14,6 +14,7 @@ import com.burlingamerobotics.scouting.common.data.MatchTree
 import com.burlingamerobotics.scouting.server.R
 import com.burlingamerobotics.scouting.server.REQUEST_CODE_CREATE_COMPETITION
 import com.burlingamerobotics.scouting.server.ScoutingDB
+import com.burlingamerobotics.scouting.server.ScoutingServer
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -35,6 +36,7 @@ class CompetitionSelectionActivity : Activity() {
 
         dbScouting = ScoutingDB(this)
         dbScouting.prepareDirs()
+        ScoutingServer.db = dbScouting
 
         lvCompetitions = findViewById(R.id.list_competitions)
         btnAddCompetition = findViewById(R.id.btn_add_competition)

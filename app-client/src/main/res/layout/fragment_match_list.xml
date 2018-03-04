@@ -6,7 +6,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
 
     android:id="@+id/refresh_list_matches"
-    android:name="com.burlingamerobotics.scouting.fragment.MatchListFragment"
+    android:name="com.burlingamerobotics.scouting.client.fragment.MatchListFragment"
     tools:context="com.burlingamerobotics.scouting.client.fragment.MatchListFragment"
     app:layoutManager="LinearLayoutManager"
     android:layout_height="match_parent"

@@ -18,7 +18,6 @@ import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.server.INTENT_CLIENT_CONNECTED
 import com.burlingamerobotics.scouting.server.R
 import com.burlingamerobotics.scouting.server.ScoutingServer
-import kotlinx.android.synthetic.main.activity_server_manager.*
 
 class ServerManagerActivity : AppCompatActivity() {
 
@@ -54,7 +53,9 @@ class ServerManagerActivity : AppCompatActivity() {
         val itf = IntentFilter(INTENT_CLIENT_CONNECTED)
         registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                refreshList()
+                if (intent!!.action == INTENT_CLIENT_CONNECTED) {
+                    refreshList()
+                }
             }
         }, itf)
 
@@ -78,7 +79,7 @@ class ServerManagerActivity : AppCompatActivity() {
             Log.i("MasterMgmt", "Starting bluetooth server")
 
             val serverSocket = btAdapter.listenUsingRfcommWithServiceRecord("Scouting Server", Constants.SCOUTING_UUID)
-            ScoutingServer.start(this, serverSocket, competition)
+            ScoutingServer.start(this, ScoutingServer.db, serverSocket, competition)
 
         } else {
             Log.i("MasterMgmt", "Stopping bluetooth server")
