@@ -43,21 +43,6 @@
 
     <View style="@style/Divider"/>
 
-    <TextView
-        android:text="Number of Qualifier Matches"
-        style="@style/TextAppearance.AppCompat.Headline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <EditText
-        android:id="@+id/edit_qualifiers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="number"
-        android:hint="60"/>
-
-    <View style="@style/Divider"/>
-
     <Button
         android:id="@+id/btn_submit"
         android:layout_width="wrap_content"

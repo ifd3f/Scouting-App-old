@@ -14,6 +14,7 @@ import com.burlingamerobotics.scouting.common.data.MatchTree
 import com.burlingamerobotics.scouting.server.R
 import com.burlingamerobotics.scouting.server.REQUEST_CODE_CREATE_COMPETITION
 import com.burlingamerobotics.scouting.server.ScoutingDB
+import java.text.SimpleDateFormat
 import java.util.*
 
 class CompetitionSelectionActivity : Activity() {
@@ -57,6 +58,7 @@ class CompetitionSelectionActivity : Activity() {
     fun refreshCompetitions() {
         Log.i(TAG, "Refreshing competition list")
         listComps = dbScouting.listCompetitions()
+        Log.d(TAG, "Found ${listComps.size} competitions")
         lvCompetitions.adapter = ArrayAdapter(
                 this, android.R.layout.simple_list_item_1,
                 listComps.map { it.getTitle() }
@@ -73,12 +75,11 @@ class CompetitionSelectionActivity : Activity() {
                 }
                 val date = data!!.getSerializableExtra("date") as Calendar
                 val name = data.getStringExtra("name")
-                val quals = data.getIntExtra("qualifiers", -1)
-                assert(quals > 0, { "Error! No qualifiers field found!" })
+                val uuid = data.getSerializableExtra("uuid") as UUID
 
-                Log.i(TAG, "Received competition creation data: $name on $date has $quals qualifier matches")
+                Log.i(TAG, "Received competition creation data: $name on ${SimpleDateFormat.getDateInstance().format(date.time)} ($uuid)")
 
-                val comp = Competition(UUID.randomUUID(), name, date, Array(30, { null }), MatchTree.generateTournament(3))
+                val comp = Competition(uuid, name, date, mutableListOf(), MatchTree.generateTournament(3))
                 dbScouting.save(comp)
                 refreshCompetitions()
             }

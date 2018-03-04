@@ -47,35 +47,14 @@ class PlannedMatch(number: Int, var red: Array<Int>, var blue: Array<Int>): Matc
 class CompletedMatch(
         number: Int,
         val time: Date,
-        var red: Array<TeamPerformance>,
-        var blue: Array<TeamPerformance>) : Match(number) {
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as CompletedMatch
-
-        if (time != other.time) return false
-        if (!Arrays.equals(red, other.red)) return false
-        if (!Arrays.equals(blue, other.blue)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = time.hashCode()
-        result = 31 * result + Arrays.hashCode(red)
-        result = 31 * result + Arrays.hashCode(blue)
-        return result
-    }
-}
+        var red: List<TeamPerformance>,
+        var blue: List<TeamPerformance>) : Match(number)
 
 data class Competition(
         val uuid: UUID,
         val name: String,
         val date: Calendar,
-        var qualifiers: Array<Match?>,
+        val qualifiers: MutableList<Match?>,
         val finals: MatchTree
 ) : Serializable {
 
@@ -83,29 +62,6 @@ data class Competition(
 
     fun getFilename(): String = "$uuid.dat"
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Competition
-
-        if (uuid != other.uuid) return false
-        if (name != other.name) return false
-        if (date != other.date) return false
-        if (!Arrays.equals(qualifiers, other.qualifiers)) return false
-        if (finals != other.finals) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = uuid.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + date.hashCode()
-        result = 31 * result + Arrays.hashCode(qualifiers)
-        result = 31 * result + finals.hashCode()
-        return result
-    }
 }
 
 data class CompetitionFileHeader(val uuid: UUID, val name: String, val time: Calendar, val qualifiers: Int) : Serializable {
