@@ -1,4 +1,4 @@
-package com.burlingamerobotics.scouting
+package com.burlingamerobotics.scouting.server
 
 import android.content.Context
 import com.burlingamerobotics.scouting.common.data.Competition

@@ -5,35 +5,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.burlingamerobotics.scouting.activity.CompetitionEditorActivity">
+    tools:context="com.burlingamerobotics.scouting.server.activity.CompetitionEditorActivity">
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:theme="@style/TextAppearance.AppCompat.Headline"
+        android:text="@string/hdr_compname_name"/>
+    <EditText
         android:id="@+id/edit_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:theme="@style/TextAppearance.AppCompat.Headline"
-        android:text="Name"/>
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Silicon Valley Regional"/>
+        android:hint="@string/hdr_compname_hint"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:theme="@style/TextAppearance.AppCompat.Headline"
-        android:text="Date"/>
+        android:text="@string/hdr_date"/>
     <Button
         android:id="@+id/btn_pick_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pick a date"/>
+        android:text="@string/pick_date"/>
 
     <Button
         android:id="@+id/btn_submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Submit"/>
+        android:text="@string/btn_submit"/>
 
 
 </LinearLayout>

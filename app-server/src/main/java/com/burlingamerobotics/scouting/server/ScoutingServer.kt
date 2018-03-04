@@ -1,9 +1,8 @@
-package com.burlingamerobotics.scouting
+package com.burlingamerobotics.scouting.server
 
 import android.bluetooth.BluetoothServerSocket
 import android.content.Context
 import android.content.Intent
-import android.os.Message
 import android.util.Log
 import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.Competition
@@ -23,13 +22,13 @@ object ScoutingServer {
     lateinit var serverSocket: BluetoothServerSocket
 
     fun start(context: Context, serverSocket: BluetoothServerSocket, competition: Competition) {
-        this.competition = competition
-        this.serverSocket = serverSocket
+        ScoutingServer.competition = competition
+        ScoutingServer.serverSocket = serverSocket
         serverListener = Utils.ioExecutor.submit {
             while (true) {
                 val client = ClientResponseThread(serverSocket.accept())
                 Log.i(TAG, "Bluetooth device at ${client.device.address} connected")
-                ScoutingServer.clients.add(client)
+                clients.add(client)
                 client.start()
                 context.sendBroadcast(Intent(INTENT_CLIENT_CONNECTED))
             }

@@ -7,18 +7,14 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
-import android.os.Message
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.*
-import com.burlingamerobotics.scouting.ClientResponseThread
-import com.burlingamerobotics.scouting.INTENT_CLIENT_CONNECTED
+import com.burlingamerobotics.scouting.server.INTENT_CLIENT_CONNECTED
 import com.burlingamerobotics.scouting.R
-import com.burlingamerobotics.scouting.ScoutingServer
+import com.burlingamerobotics.scouting.server.ScoutingServer
 import com.burlingamerobotics.scouting.common.Constants
-import com.burlingamerobotics.scouting.common.Utils
 import kotlinx.android.synthetic.main.activity_server_manager.*
-import java.util.*
 
 class ServerManagerActivity : AppCompatActivity() {
 

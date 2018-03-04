@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Scouting-App.iml" filepath="$PROJECT_DIR$/Scouting-App.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ScoutingApp.iml" filepath="$PROJECT_DIR$/ScoutingApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app-client/app-client.iml" filepath="$PROJECT_DIR$/app-client/app-client.iml" />
       <module fileurl="file://$PROJECT_DIR$/app-server/app-server.iml" filepath="$PROJECT_DIR$/app-server/app-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/common/common.iml" filepath="$PROJECT_DIR$/common/common.iml" />

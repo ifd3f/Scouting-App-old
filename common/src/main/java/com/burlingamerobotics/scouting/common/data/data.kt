@@ -6,7 +6,7 @@ import java.util.*
 data class TeamPerformance(
         val team: Int,
         val boxes: Int,
-        val climbed: Boolean
+        val climbed: Boolean  // TODO POPULATE WITH FIELDS
 ) : Serializable
 
 sealed class Match(val number: Int) : Serializable

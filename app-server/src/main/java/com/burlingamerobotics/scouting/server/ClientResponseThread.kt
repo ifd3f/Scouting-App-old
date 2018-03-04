@@ -1,4 +1,4 @@
-package com.burlingamerobotics.scouting
+package com.burlingamerobotics.scouting.server
 
 import android.bluetooth.BluetoothSocket
 import android.util.Log

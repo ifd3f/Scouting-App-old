@@ -8,11 +8,9 @@ import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.burlingamerobotics.scouting.R
-import com.burlingamerobotics.scouting.ScoutingDB
-import com.burlingamerobotics.scouting.common.data.Competition
-import com.burlingamerobotics.scouting.common.data.PlannedMatch
+import com.burlingamerobotics.scouting.server.ScoutingDB
+import com.burlingamerobotics.scouting.server.activity.CompetitionEditorActivity
 
-import kotlinx.android.synthetic.main.activity_competition_selection.*
 import java.util.*
 
 class CompetitionSelectionActivity : Activity() {

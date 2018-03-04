@@ -32,7 +32,7 @@
         </activity>
 
         <activity
-            android:name=".activity.CompetitionEditorActivity"
+            android:name=".server.activity.CompetitionEditorActivity"
             android:label="@string/title_activity_competition_editor"
             android:parentActivityName=".activity.CompetitionSelectionActivity">
             <meta-data
