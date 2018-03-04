@@ -1,13 +1,18 @@
 package com.burlingamerobotics.scouting.client
 
 import android.util.Log
+import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.protocol.Event
 import com.burlingamerobotics.scouting.common.protocol.Response
 import java.io.Closeable
+import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.BlockingQueue
+import java.util.concurrent.TimeUnit
 
-class ClientListenerThread(val responseQueue: BlockingQueue<Any?>, val eventQueue: BlockingQueue<Event>) : Thread("ScoutlingThread"), Closeable {
+class ClientListenerThread() : Thread("ScoutlingThread"), Closeable {
     val TAG = name
+
+    private val responseQueue: BlockingQueue<Response<*>> = ArrayBlockingQueue<Response<*>>(20)
 
     override fun run() {
         try {
@@ -17,11 +22,11 @@ class ClientListenerThread(val responseQueue: BlockingQueue<Any?>, val eventQueu
                 when (obj) {
                     is Response<*> -> {
                         Log.d(TAG, "It's a response, putting it in the response queue")
-                        responseQueue.put(obj.payload)
+                        responseQueue.put(obj)
                     }
                     is Event -> {
-                        Log.d(TAG, "It's an event, putting it in the event queue")
-                        eventQueue.put(obj)
+                        Log.d(TAG, "It's an event, firing event listeners")
+                        ScoutingClient.eventListener.fire(obj)
                     }
                     else -> {
                         Log.e(TAG, "Unrecognized type!")
@@ -31,6 +36,10 @@ class ClientListenerThread(val responseQueue: BlockingQueue<Any?>, val eventQueu
         } catch (ex: InterruptedException) {
             Log.i(TAG, "Listener thread interrupted, stopping thread")
         }
+    }
+
+    fun pollResponse(timeout: Long): Response<*> {
+        return responseQueue.poll(10000, TimeUnit.MILLISECONDS)
     }
 
     override fun close() {

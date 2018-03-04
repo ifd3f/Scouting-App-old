@@ -42,7 +42,7 @@ class ClientResponseThread(private val btSocket: BluetoothSocket, private val db
                     }
                     is Post -> {
                         Log.d(TAG, "It's a post")
-                        // TODO DO SHIT WITH POSTS
+                        processPost(obj)
                     }
                     else -> {
                         Log.e(TAG, "Received a $obj but we don't know what to do with it!")
@@ -58,6 +58,14 @@ class ClientResponseThread(private val btSocket: BluetoothSocket, private val db
             btSocket.close()
         }
         ScoutingServer.onClientDisconnected(this)
+    }
+
+    fun processPost(post: Post) {
+        when (post) {
+            is PostTeamInfo -> {
+
+            }
+        }
     }
 
     fun <T> getItemByRequest(request: Request<T>): Any? {
