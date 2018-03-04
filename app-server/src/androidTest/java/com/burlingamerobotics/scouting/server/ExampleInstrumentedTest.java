@@ -1,4 +1,4 @@
-package com.burlingamerobotics.scouting;
+package com.burlingamerobotics.scouting.server;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.burlingamerobotics.scouting", appContext.getPackageName());
+        assertEquals("com.burlingamerobotics.scouting.server", appContext.getPackageName());
     }
 }

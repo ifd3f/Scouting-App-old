@@ -1,18 +1,19 @@
 package com.burlingamerobotics.scouting.server.activity
 
-import android.os.Bundle
 import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import com.burlingamerobotics.scouting.R
-
+import android.widget.TextView
+import com.burlingamerobotics.scouting.server.R
+import java.text.SimpleDateFormat
 import java.util.*
 
 class CompetitionEditorActivity : Activity() {
 
-    lateinit var date: Calendar
+    val date: Calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,19 +21,26 @@ class CompetitionEditorActivity : Activity() {
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
         val name = findViewById<EditText>(R.id.edit_name)
+        val dateDisplay = findViewById<TextView>(R.id.text_show_date)
+
         findViewById<Button>(R.id.btn_pick_date).setOnClickListener {
             DatePickerDialog(this, { dp, y, m, d ->
-                date = Calendar.getInstance()
                 date.set(y, m, d)
-            }, 1, 1, 1).show()
+                dateDisplay.text = SimpleDateFormat.getDateInstance().format(date.time)
+            }, date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH)).show()
         }
+
+        val quals = findViewById<EditText>(R.id.edit_qualifiers)
+
+        setResult(Activity.RESULT_CANCELED)
 
         findViewById<Button>(R.id.btn_submit).setOnClickListener {
             setResult(Activity.RESULT_OK, Intent().apply {
-                putExtra("name", name.text)
+                putExtra("name", name.text.toString())
                 putExtra("date", date)
-                finish()
+                putExtra("qualifiers", quals.text.toString().toInt())
             })
+            finish()
         }
     }
 

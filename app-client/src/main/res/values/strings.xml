@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">5026 Scouting Server</string>
+    <string name="title_activity_client_connect">PScout Client</string>
+    <string name="title_activity_client_browser">ClientBrowser</string>
+
+</resources>

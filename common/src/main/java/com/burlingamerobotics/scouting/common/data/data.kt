@@ -1,6 +1,7 @@
 package com.burlingamerobotics.scouting.common.data
 
 import java.io.Serializable
+import java.text.SimpleDateFormat
 import java.util.*
 
 data class TeamPerformance(
@@ -11,7 +12,17 @@ data class TeamPerformance(
 
 sealed class Match(val number: Int) : Serializable
 
-data class MatchTree(val match: Match, val left: MatchTree?, val right: MatchTree?)
+data class MatchTree(val match: Match?, val left: MatchTree?, val right: MatchTree?) : Serializable {
+    companion object {
+        fun generateTournament(rounds: Int): MatchTree {
+            assert(rounds > 0)
+            if (rounds == 1) {
+                return MatchTree(null, null, null)
+            }
+            return MatchTree(null, generateTournament(rounds - 1), generateTournament(rounds - 1))
+        }
+    }
+}
 
 class PlannedMatch(number: Int, var red: Array<Int>, var blue: Array<Int>): Match(number) {
     override fun equals(other: Any?): Boolean {
@@ -63,11 +74,15 @@ class CompletedMatch(
 data class Competition(
         val uuid: UUID,
         val name: String,
-        val time: Date,
-        val qualifiers: Array<Match?>,
+        val date: Calendar,
+        var qualifiers: Array<Match?>,
         val finals: MatchTree
 ) : Serializable {
-    
+
+    fun getHeader(): CompetitionFileHeader = CompetitionFileHeader(uuid, name, date, qualifiers.size)
+
+    fun getFilename(): String = "$uuid.dat"
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -76,7 +91,7 @@ data class Competition(
 
         if (uuid != other.uuid) return false
         if (name != other.name) return false
-        if (time != other.time) return false
+        if (date != other.date) return false
         if (!Arrays.equals(qualifiers, other.qualifiers)) return false
         if (finals != other.finals) return false
 
@@ -86,13 +101,15 @@ data class Competition(
     override fun hashCode(): Int {
         var result = uuid.hashCode()
         result = 31 * result + name.hashCode()
-        result = 31 * result + time.hashCode()
+        result = 31 * result + date.hashCode()
         result = 31 * result + Arrays.hashCode(qualifiers)
         result = 31 * result + finals.hashCode()
         return result
     }
 }
 
-data class CompetitionFileHeader(val uuid: UUID, val name: String, val time: Date)
+data class CompetitionFileHeader(val uuid: UUID, val name: String, val time: Calendar, val qualifiers: Int) : Serializable {
+    fun getTitle() = "$name (${SimpleDateFormat.getDateInstance().format(time.time)})"
+}
 
 data class Team(val number: Int, val name: String) : Serializable

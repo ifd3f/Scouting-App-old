@@ -1,4 +1,4 @@
-package com.burlingamerobotics.scouting.activity
+package com.burlingamerobotics.scouting.server.activity
 
 import android.bluetooth.BluetoothAdapter
 import android.content.BroadcastReceiver
@@ -9,11 +9,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.widget.*
-import com.burlingamerobotics.scouting.server.INTENT_CLIENT_CONNECTED
-import com.burlingamerobotics.scouting.R
-import com.burlingamerobotics.scouting.server.ScoutingServer
+import android.widget.ArrayAdapter
+import android.widget.ListView
+import android.widget.Switch
 import com.burlingamerobotics.scouting.common.Constants
+import com.burlingamerobotics.scouting.server.INTENT_CLIENT_CONNECTED
+import com.burlingamerobotics.scouting.server.R
+import com.burlingamerobotics.scouting.server.ScoutingServer
 import kotlinx.android.synthetic.main.activity_server_manager.*
 
 class ServerManagerActivity : AppCompatActivity() {

@@ -1,10 +1,4 @@
 <resources>
-    <string name="app_name">Iron Panthers Scouting</string>
-    <string name="use_as_server">Use as server</string>
-    <string name="use_as_client">Use as Client</string>
-    <string name="title_activity_client_connect">PScout Client</string>
-    <string name="title_activity_master_management">PScout Server</string>
-    <string name="title_activity_client_browser">ClientBrowser</string>
 
     <string name="title_matches">Matches</string>
     <string name="title_teams">Teams</string>

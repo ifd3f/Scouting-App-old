@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">5026 Scouting Server</string>
     <string name="server_status">Server Status</string>
     <string name="clients_list">Clients</string>
-    <string name="title_activity_competition_selection">CompetitionSelectionActivity</string>
+    <string name="title_activity_competition_selection">PScout Server</string>
     <string name="title_activity_competition_editor">CompetitionEditorActivity</string>
+    <string name="title_activity_master_management">PScout Server</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
