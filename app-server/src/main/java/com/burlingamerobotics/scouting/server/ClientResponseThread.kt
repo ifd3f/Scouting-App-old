@@ -16,15 +16,22 @@ class ClientResponseThread(private val btSocket: BluetoothSocket, private val db
     val TAG: String
     val device = btSocket.remoteDevice
 
+    lateinit var ois: ObjectInputStream
+    lateinit var oos: ObjectOutputStream
+
     init {
         name = "ClientInterfaceThread[${device.address}]"
         TAG = name
     }
 
+    fun sendEvent(event: Event) {
+        oos.writeObject(event)
+    }
+
     override fun run() {
         Log.i(TAG, "Starting ObjectStreams")
-        val ois = ObjectInputStream(btSocket.inputStream)
-        val oos = ObjectOutputStream(btSocket.outputStream)
+        ois = ObjectInputStream(btSocket.inputStream)
+        oos = ObjectOutputStream(btSocket.outputStream)
 
         try {
             Log.i(TAG, "Successfully started!")
@@ -35,17 +42,17 @@ class ClientResponseThread(private val btSocket: BluetoothSocket, private val db
                 Log.d(TAG, "Received $obj")
                 when (obj) {
                     is Request<*> -> {
-                        Log.d(TAG, "It's a request")
+                        Log.d(TAG, "  It's a request")
                         val response = Response(getItemByRequest(obj))
                         Log.d(TAG, "Writing $response")
                         oos.writeObject(response)
                     }
                     is Post -> {
-                        Log.d(TAG, "It's a post")
+                        Log.d(TAG, "  It's a post")
                         processPost(obj)
                     }
                     else -> {
-                        Log.e(TAG, "Received a $obj but we don't know what to do with it!")
+                        Log.e(TAG, "  We don't know what to do with it!")
                     }
                 }
 
@@ -63,7 +70,16 @@ class ClientResponseThread(private val btSocket: BluetoothSocket, private val db
     fun processPost(post: Post) {
         when (post) {
             is PostTeamInfo -> {
-
+                Log.d(TAG, "  The post is a team change")
+                db.putTeam(post.team)
+                ScoutingServer.broadcast(EventTeamChange(post.team))
+            }
+            is PostChatMessage -> {
+                Log.d(TAG, "  The post is a chat message")
+                ScoutingServer.broadcast(EventChatMessage(device.name, post.message))
+            }
+            else -> {
+                Log.e(TAG, "  We don't know how to react to $post!")
             }
         }
     }
@@ -71,23 +87,23 @@ class ClientResponseThread(private val btSocket: BluetoothSocket, private val db
     fun <T> getItemByRequest(request: Request<T>): Any? {
         return when (request) {
             is CompetitionRequest -> {
-                Log.d(TAG, "It's a request for all competition data")
+                Log.d(TAG, "  The request is for all competition data")
                 ScoutingServer.competition
             }
             is QualifierMatchRequest -> {
-                Log.d(TAG, "It's a request for .match info")
+                Log.d(TAG, "  The request is for .match info")
                 ScoutingServer.competition.qualifiers[request.number]
             }
             is TeamInfoRequest -> {
-                Log.d(TAG, "It's a request for team info")
+                Log.d(TAG, "  The request is for team info")
                 db.getTeam(request.team)
             }
             is TeamListRequest -> {
-                Log.d(TAG, "It's a request for a list of teams")
+                Log.d(TAG, "  The request is for a list of teams")
                 db.listTeams()
             }
             else -> {
-                Log.e(TAG, "Failed to respond to $request!")
+                Log.e(TAG, "  We don't know how to respond to $request!")
                 null
             }
         }

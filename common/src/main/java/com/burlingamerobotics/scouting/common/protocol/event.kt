@@ -11,6 +11,6 @@ interface Event : Serializable
 
 data class EventTeamChange(val team: Team) : Event
 
-data class EventMatchChange(val number: Int, val match: Match)
+data class EventMatchChange(val number: Int, val match: Match) : Event
 
-data class EventChatMessage(val from: String, val message: String)
+data class EventChatMessage(val from: String, val message: String) : Event

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.util.Log
 import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.*
+import com.burlingamerobotics.scouting.common.protocol.Event
 import java.io.Serializable
 import java.util.concurrent.Future
 
@@ -38,6 +39,10 @@ object ScoutingServer {
             }
         }
 
+    }
+
+    fun broadcast(event: Event) {
+        clients.forEach { it.sendEvent(event) }
     }
 
     fun stop() {
