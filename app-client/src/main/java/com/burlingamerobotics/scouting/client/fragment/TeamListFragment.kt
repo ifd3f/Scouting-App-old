@@ -1,9 +1,9 @@
 package com.burlingamerobotics.scouting.client.fragment
 
-import android.app.Fragment
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
 import android.util.Log
 import android.view.LayoutInflater
@@ -28,6 +28,7 @@ class TeamListFragment : Fragment() {
 
     val refreshHandler = Handler {
         teamList = it.obj as List<Team>
+        Log.d(TAG, "Received request to refresh team list, with ${teamList.size} teams")
         lvTeamList.adapter = ArrayAdapter(activity, android.R.layout.simple_list_item_1, teamList)
         refresher.isRefreshing = false
         true
@@ -52,6 +53,7 @@ class TeamListFragment : Fragment() {
     }
 
     fun refresh() {
+        Log.d(TAG, "Submitting request to refresh team list")
         refresher.isRefreshing = true
         Utils.ioExecutor.submit {
             refreshHandler.dispatchMessage(Message().apply {

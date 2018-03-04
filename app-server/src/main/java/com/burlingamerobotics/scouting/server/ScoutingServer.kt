@@ -47,7 +47,7 @@ object ScoutingServer {
     }
 
     fun onClientDisconnected(thread: ClientResponseThread) {
-
+        clients.remove(thread)
     }
 
 }

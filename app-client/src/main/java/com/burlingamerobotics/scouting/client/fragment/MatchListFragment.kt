@@ -14,6 +14,8 @@ import android.widget.ListView
 import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.ScoutingClient
 import com.burlingamerobotics.scouting.common.Utils
+import com.burlingamerobotics.scouting.common.data.Competition
+import com.burlingamerobotics.scouting.common.data.CompetitionRequest
 import com.burlingamerobotics.scouting.common.data.QualifierMatchRequest
 
 /**
@@ -27,10 +29,8 @@ class MatchListFragment : Fragment() {
 
     private val refreshHandler = Handler({ msg ->
         refresher.isRefreshing = true
-        val matches = ScoutingClient.getQualifiers().mapIndexed { index, match ->
-            index
-        }
-        lvMatches.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, matches)
+        val comp = msg.obj as Competition
+        lvMatches.adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, comp.qualifiers)
         refresher.isRefreshing = false
         true
     })
@@ -79,8 +79,9 @@ class MatchListFragment : Fragment() {
     fun refreshMatches() {
         ScoutingClient.invalidateCache()
         Utils.ioExecutor.execute {
-            val msg = Message()
-            refreshHandler.sendMessage(msg)
+            refreshHandler.sendMessage(Message().apply {
+                obj = ScoutingClient.cache
+            })
         }
     }
 

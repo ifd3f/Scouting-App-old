@@ -27,13 +27,16 @@ object ScoutingClient : Closeable {
     lateinit var device: BluetoothDevice
 
     private var _cache: Competition? = null
+    private val cacheLock = Object()
 
     val cache get(): Competition {
-        var c = _cache
-        if (c == null) {
-            c = blockingRequest(CompetitionRequest)!!
+        synchronized(cacheLock) {
+            var c = _cache
+            if (c == null) {
+                c = blockingRequest(CompetitionRequest)!!
+            }
+            return c
         }
-        return c
     }
 
     fun invalidateCache() {
@@ -58,7 +61,9 @@ object ScoutingClient : Closeable {
     }
 
     fun <T> blockingRequest(rq: Request<T>): T? {
+        Log.d(TAG, "Requesting with object $rq")
         oos.writeObject(rq)
+        Log.d(TAG, "Awaiting response to request")
         val obj = ois.readObject()
         Log.d(TAG, "Received object of type ${obj.javaClass}: $obj")
         @Suppress("UNCHECKED_CAST")

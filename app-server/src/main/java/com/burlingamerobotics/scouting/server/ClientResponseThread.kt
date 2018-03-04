@@ -25,9 +25,9 @@ class ClientResponseThread(private val btSocket: BluetoothSocket, private val db
         Log.i(TAG, "Starting ObjectStreams")
         val ois = ObjectInputStream(btSocket.inputStream)
         val oos = ObjectOutputStream(btSocket.outputStream)
-        Log.i(TAG, "Successfully started!")
 
         try {
+            Log.i(TAG, "Successfully started!")
             while (true) {
                 val request = ois.readObject() as Request<*>
                 Log.d(TAG, "Received $request")
@@ -40,8 +40,6 @@ class ClientResponseThread(private val btSocket: BluetoothSocket, private val db
         } catch (ex: IOException) {
             Log.w(TAG, "Client disconnected", ex)
         } finally {
-            ois.close()
-            oos.close()
             btSocket.close()
         }
         ScoutingServer.onClientDisconnected(this)
