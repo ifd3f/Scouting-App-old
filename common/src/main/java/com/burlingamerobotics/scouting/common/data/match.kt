@@ -1,5 +1,10 @@
 package com.burlingamerobotics.scouting.common.data
 
+import android.content.res.Resources
+import android.view.View
+import android.widget.RelativeLayout
+import android.widget.TextView
+import com.burlingamerobotics.scouting.common.R
 import java.io.Serializable
 import java.util.*
 
@@ -73,12 +78,46 @@ class Match(
 
     val scheduledMatch get(): ScheduledMatch = ScheduledMatch(red.alliance, blue.alliance)
 
+    fun applyTo(view: View, index: Int) {
+
+        view.findViewById<TextView>(R.id.label_match_number).text = index.toString()
+        view.findViewById<TextView>(R.id.text_alliance_red_score).text = red.points.toString()
+        view.findViewById<TextView>(R.id.text_team_red1).text = red.alliance.a.toString()
+        view.findViewById<TextView>(R.id.text_team_red2).text = red.alliance.b.toString()
+        view.findViewById<TextView>(R.id.text_team_red3).text = red.alliance.c.toString()
+        view.findViewById<TextView>(R.id.text_alliance_blue_score).text = blue.points.toString()
+        view.findViewById<TextView>(R.id.text_team_blue1).text = blue.alliance.a.toString()
+        view.findViewById<TextView>(R.id.text_team_blue2).text = blue.alliance.b.toString()
+        view.findViewById<TextView>(R.id.text_team_blue3).text = blue.alliance.c.toString()
+
+        val (winner, color) = when (matchResult) {
+            GameResult.RED_VICTORY -> {
+                Pair("Red Victory", R.color.team_red)
+            }
+            GameResult.BLUE_VICTORY -> {
+                Pair("Blue Victory", R.color.team_blue)
+            }
+            GameResult.DRAW -> {
+                Pair("Draw", R.color.team_neutral)
+            }
+            else -> Pair("Scheduled", R.color.team_neutral)
+        }
+
+        val result = view.findViewById<TextView>(R.id.text_match_result)
+        result.text = winner
+        (result.parent as RelativeLayout).setBackgroundResource(color)
+    }
+
     val hasHappened get() = time != null
-    val winner get(): GameResult? = when {
+    val matchResult get(): GameResult? = when {
         !hasHappened -> null
         red.points > blue.points -> GameResult.RED_VICTORY
         red.points < blue.points -> GameResult.BLUE_VICTORY
         else -> GameResult.DRAW
+    }
+
+    override fun toString(): String {
+        return "Match(${red.alliance} vs ${blue.alliance})"
     }
 
     companion object {

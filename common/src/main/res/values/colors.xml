@@ -5,4 +5,5 @@
     <color name="colorAccent">#FF4081</color>
     <color name="team_red">#EE0000</color>
     <color name="team_blue">#0033DD</color>
+    <color name="team_neutral">#AAAAAA</color>
 </resources>

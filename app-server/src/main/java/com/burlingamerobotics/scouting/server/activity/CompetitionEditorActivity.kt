@@ -82,6 +82,14 @@ class CompetitionEditorActivity : Activity() {
             Log.i(TAG, "Submitting data to parent")
             val name = editName.text.toString()
             builder.name = name
+            rows.zip(builder.qualSchedule.matches).map { (v, m) ->
+                m.red.a = v.findViewById<TextView>(R.id.edit_team_red1).text.toString().toInt()
+                m.red.b = v.findViewById<TextView>(R.id.edit_team_red2).text.toString().toInt()
+                m.red.c = v.findViewById<TextView>(R.id.edit_team_red3).text.toString().toInt()
+                m.blue.a = v.findViewById<TextView>(R.id.edit_team_blue1).text.toString().toInt()
+                m.blue.b = v.findViewById<TextView>(R.id.edit_team_blue2).text.toString().toInt()
+                m.blue.c = v.findViewById<TextView>(R.id.edit_team_blue3).text.toString().toInt()
+            }
             setResult(Activity.RESULT_OK, Intent().apply {
                 putExtra("builder", builder)
             })
