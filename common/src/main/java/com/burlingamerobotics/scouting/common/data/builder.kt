@@ -27,7 +27,7 @@ class CompetitionBuilder(
 }
 
 class MatchSchedule : Serializable {
-    val matches: MutableList<Pair<IntArray, IntArray>> = mutableListOf() /*MutableList(number, {
+    val matches: ArrayList<Pair<IntArray, IntArray>> = arrayListOf() /*MutableList(number, {
         Pair(
                 IntArray(3, {0}),
                 IntArray(3, {0})
@@ -40,6 +40,26 @@ class MatchSchedule : Serializable {
                     AlliancePerformance.fromTeams(red[0], red[1], red[2]),
                     AlliancePerformance.fromTeams(blue[0], blue[1], blue[2]))
         }.toMutableList()
+    }
+
+    fun changeSizeTo(newSize: Int) {
+        val currentSize = matches.size
+        if (newSize < currentSize) {
+            for (i in currentSize downTo newSize) {
+                matches.removeAt(i - 1)
+            }
+        } else if (newSize > currentSize) {
+            for (i in 1..(newSize - currentSize)) {
+                addEmpty()
+            }
+        }
+    }
+
+    fun addEmpty() {
+        matches.add(Pair(
+                intArrayOf(0, 0, 0),
+                intArrayOf(0, 0, 0)
+        ))
     }
 
     companion object {
