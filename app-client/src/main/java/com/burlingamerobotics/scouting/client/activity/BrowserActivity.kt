@@ -34,8 +34,8 @@ class BrowserActivity : AppCompatActivity() {
                     supportActionBar!!.setTitle(R.string.title_teams)
                     return@OnNavigationItemSelectedListener true
                 }
-                R.id.navigation_competitions -> {
-                    supportActionBar!!.setTitle(R.string.title_competitions)
+                R.id.navigation_messaging -> {
+                    supportActionBar!!.setTitle(R.string.title_chat)
                     return@OnNavigationItemSelectedListener true
                 }
             }
