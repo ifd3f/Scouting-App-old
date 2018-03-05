@@ -70,6 +70,10 @@ object ScoutingClient : Closeable {
         oos.writeObject(post)
     }
 
+    fun post(post: Post): Future<*> {
+        return Utils.ioExecutor.submit { blockingPost(post) }
+    }
+
     inline fun <reified T> blockingRequest(rq: Request<T>): T {
         Log.d(TAG, "Requesting with object $rq")
         oos.writeObject(rq)
