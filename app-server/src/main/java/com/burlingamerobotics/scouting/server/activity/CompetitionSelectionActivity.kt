@@ -9,8 +9,8 @@ import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.burlingamerobotics.scouting.common.data.Competition
+import com.burlingamerobotics.scouting.common.data.CompetitionBuilder
 import com.burlingamerobotics.scouting.common.data.CompetitionFileHeader
-import com.burlingamerobotics.scouting.common.data.MatchSchedule
 import com.burlingamerobotics.scouting.common.data.MatchTree
 import com.burlingamerobotics.scouting.server.*
 import java.text.SimpleDateFormat
@@ -61,15 +61,15 @@ class CompetitionSelectionActivity : Activity() {
             true
         }
 
-        refresher.setOnRefreshListener {
-            refreshCompetitions()
-        }
-
         lvCompetitions.setOnItemClickListener { _, _, position, _ ->
             val comp = dbScouting.getCompetition(listComps[position].uuid)
             startActivity(Intent(this, CompetitionInfoActivity::class.java).apply {
                 putExtra("competition", comp)
             })
+        }
+
+        refresher.setOnRefreshListener {
+            refreshCompetitions()
         }
 
         refreshCompetitions()
@@ -93,13 +93,11 @@ class CompetitionSelectionActivity : Activity() {
                     Log.i(TAG, "User cancelled competition creation")
                     return
                 }
-                val date = data!!.getSerializableExtra("date") as Calendar
-                val name = data.getStringExtra("name")
-                val uuid = data.getSerializableExtra("uuid") as UUID
+                val builder = data!!.getSerializableExtra("builder") as CompetitionBuilder
 
-                Log.i(TAG, "Received competition creation data: $name on ${SimpleDateFormat.getDateInstance().format(date.time)} ($uuid)")
+                Log.i(TAG, "Received competition builder $builder")
 
-                val comp = Competition(uuid, name, date, 0, MatchTree.generateTournament(3))
+                val comp = builder.create()
                 dbScouting.save(comp)
                 refreshCompetitions()
             }

@@ -8,14 +8,16 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import com.burlingamerobotics.scouting.common.data.Competition
+import com.burlingamerobotics.scouting.common.data.CompetitionBuilder
 import com.burlingamerobotics.scouting.server.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 class CompetitionEditorActivity : Activity() {
 
-    lateinit var date: Calendar
     lateinit var dateDisplay: TextView
+    lateinit var builder: CompetitionBuilder
+    var baseComp: Competition? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,14 +31,13 @@ class CompetitionEditorActivity : Activity() {
 
         when (intent.getIntExtra("request", -3524768)) {
             REQUEST_CODE_NEW_COMPETITION -> {
-                date = Calendar.getInstance()
+                builder = CompetitionBuilder("", 3)
                 uuid = UUID.randomUUID()
             }
             REQUEST_CODE_EDIT_COMPETITION -> {
-                val oldCompetition = intent.getSerializableExtra("competition") as Competition
-                date = Calendar.getInstance().apply { time = oldCompetition.date }
-                uuid = oldCompetition.uuid
-                editName.setText(oldCompetition.name)
+                val comp = intent.getSerializableExtra("competition") as Competition
+                builder = CompetitionBuilder.from(comp)
+                baseComp = comp
             }
             else -> throw IllegalStateException("Invalid action ${intent.action}!!")
         }
@@ -44,9 +45,9 @@ class CompetitionEditorActivity : Activity() {
 
         findViewById<Button>(R.id.btn_pick_date).setOnClickListener {
             DatePickerDialog(this, { dp, y, m, d ->
-                date.set(y, m, d)
+                builder.calendar.set(y, m, d)
                 updateDate()
-            }, date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH)).show()
+            }, builder.calendar.get(Calendar.YEAR), builder.calendar.get(Calendar.MONTH), builder.calendar.get(Calendar.DAY_OF_MONTH)).show()
         }
 
         setResult(Activity.RESULT_CANCELED)
@@ -54,16 +55,14 @@ class CompetitionEditorActivity : Activity() {
         findViewById<Button>(R.id.btn_submit).setOnClickListener {
             val name = editName.text.toString()
             setResult(Activity.RESULT_OK, Intent().apply {
-                putExtra("name", name)
-                putExtra("date", date)
-                putExtra("uuid", uuid)
+                putExtra("name", builder)
             })
             finish()
         }
     }
 
     fun updateDate() {
-        dateDisplay.text = SimpleDateFormat.getDateInstance().format(date.time)
+        dateDisplay.text = SimpleDateFormat.getDateInstance().format(builder.calendar.time)
     }
 
 }
