@@ -4,13 +4,50 @@ import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
 
+enum class StartPosition : Serializable {
+    LEFT, CENTER, RIGHT
+}
+
+enum class EndPosition : Serializable {
+    NONE, PARK, CLIMB, CLIMB_LEVITATE
+}
+
 data class TeamPerformance(
         val team: Int,
-        val boxes: Int,
-        val climbed: Boolean  // TODO POPULATE WITH FIELDS
+        var autoStartPos: StartPosition = StartPosition.CENTER,
+        var autoCrossedLine: Boolean = false,
+        var autoCubesOwnSwitch: Int = 0,
+        var autoCubesScale: Int = 0,
+        var autoCubesOppSwitch: Int = 0,
+        var teleCubesFromPortal: Int = 0,
+        var teleCubesInExchange: Int = 0,
+        var endPosition: EndPosition = EndPosition.NONE,
+        var defends: Int = 0
 ) : Serializable {
+
+    val autoCubesTotal get(): Int = autoCubesOppSwitch + autoCubesOwnSwitch + autoCubesScale
+
     companion object {
         private const val serialVersionUID: Long = 92387465
+    }
+}
+
+data class AlliancePerformance(
+        val teams: List<TeamPerformance>,
+        var points: Int = 0,
+        var pwrBoost: Int = 0,
+        var pwrLevi: Int = 0,
+        var pwrForce: Int = 0,
+        var endVaultCubes: Int = 0,
+        var vaultCubes: Int = 0,
+        var penalties: Int = 0
+) {
+    companion object {
+        fun fromTeams(t1: Int, t2: Int, t3: Int) = AlliancePerformance(listOf(
+                TeamPerformance(t1),
+                TeamPerformance(t2),
+                TeamPerformance(t3)
+        ))
     }
 }
 
@@ -59,8 +96,8 @@ class PlannedMatch(number: Int, var red: Array<Int>, var blue: Array<Int>): Matc
 class CompletedMatch(
         number: Int,
         val time: Date,
-        var red: List<TeamPerformance>,
-        var blue: List<TeamPerformance>) : Match(number) {
+        var red: AlliancePerformance,
+        var blue: AlliancePerformance) : Match(number) {
     companion object {
         private const val serialVersionUID: Long = 234905687
     }
