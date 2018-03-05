@@ -19,16 +19,31 @@ class ScoutingDB(context: Context) {
     val dirCompetitions = File(context.filesDir, "competitions/")
     val dirTeamsData = File(context.filesDir, "teams.json")
 
-    private var teams: Lazy<SortedMap<Int, Team>> = lazy {
+    private val teams: Lazy<SortedMap<Int, Team>> = lazy {
+        Log.d(TAG, "Generating teams map")
+        val klaxon = Klaxon()
         if (dirTeamsData.exists()) {
-            val teams = Klaxon().parse<JsonArray<Team>>(dirTeamsData)
-            teams!!.map { it.number to it }.toMap().toSortedMap()
+            Log.d(TAG, "${dirTeamsData.absolutePath} exists, reading from it")
+            val teams = mutableListOf<Team>()
+            JsonReader(FileReader(dirTeamsData)).use {reader ->
+                reader.beginArray {
+                    while (reader.hasNext()) {
+                        teams.add(klaxon.parse<Team>(reader)!!)
+                    }
+                }
+            }
+            Log.d(TAG, "Collected $teams")
+            val out = teams.map { it.number to it }.toMap().toSortedMap()
+            out
         } else {
+            Log.w(TAG, "${dirTeamsData.absolutePath} does not exist, will use empty one")
             sortedMapOf()
         }
     }
 
     private var teamsChanged = false
+    private var lockTeamWrite = Object()
+    private var lockCompetitionWrite = Object()
 
     fun prepareDirs() {
         dirCompetitions.mkdirs()
@@ -57,11 +72,13 @@ class ScoutingDB(context: Context) {
     }
 
     fun save(comp: Competition) {
-        val file = File(dirCompetitions, comp.getFilename())
-        Log.d(TAG, "writing competition data to ${file.absolutePath}")
-        ObjectOutputStream(FileOutputStream(file, false)).use {
-            it.writeObject(comp.getHeader())
-            it.writeObject(comp)
+        synchronized(lockCompetitionWrite) {
+            val file = File(dirCompetitions, comp.getFilename())
+            Log.d(TAG, "writing competition data to ${file.absolutePath}")
+            ObjectOutputStream(FileOutputStream(file, false)).use {
+                it.writeObject(comp.getHeader())
+                it.writeObject(comp)
+            }
         }
     }
 
@@ -71,13 +88,18 @@ class ScoutingDB(context: Context) {
     }
 
     fun commitTeams() {
-        if (teamsChanged) {
-            val write = JsonArray(listTeams())
-            val json = Klaxon().toJsonString(write)
-            FileWriter(dirTeamsData).use {
-                it.write(json)
+        synchronized(lockTeamWrite) {
+            if (teamsChanged) {
+                Log.d(TAG, "teams was changed, writing to disk")
+                val write = JsonArray(listTeams())
+                val json = Klaxon().toJsonString(write)
+                FileWriter(dirTeamsData).use {
+                    it.write(json)
+                }
+                teamsChanged = false
+            } else {
+                Log.d(TAG, "teams was not changed, will not write data to disk")
             }
-            teamsChanged = false
         }
     }
 

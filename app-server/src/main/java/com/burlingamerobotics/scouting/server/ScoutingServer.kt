@@ -9,6 +9,7 @@ import com.burlingamerobotics.scouting.common.data.*
 import com.burlingamerobotics.scouting.common.protocol.Event
 import java.io.Serializable
 import java.util.concurrent.Future
+import java.util.concurrent.TimeUnit
 
 /**
  * Manages all the client threads
@@ -38,6 +39,12 @@ object ScoutingServer {
                 context.sendBroadcast(Intent(INTENT_CLIENT_CONNECTED))
             }
         }
+
+        Utils.ioExecutor.scheduleWithFixedDelay({
+            Log.d(TAG, "Saving data to disk")
+            db.save(competition)
+            db.commitTeams()
+        }, DURATION_SAVE_DATA, DURATION_SAVE_DATA, TimeUnit.MILLISECONDS)
 
     }
 

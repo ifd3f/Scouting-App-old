@@ -5,6 +5,7 @@ import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.protocol.Event
 import com.burlingamerobotics.scouting.common.protocol.Response
 import java.io.Closeable
+import java.io.IOException
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.TimeUnit
@@ -34,7 +35,9 @@ class ClientListenerThread() : Thread("ScoutlingThread"), Closeable {
                 }
             }
         } catch (ex: InterruptedException) {
-            Log.i(TAG, "Listener thread interrupted, stopping thread")
+            Log.i(TAG, "Listener thread interrupted, stopping thread", ex)
+        } catch (ex: IOException) {
+            Log.w(TAG, "Bluetooth socket closed!", ex)
         }
     }
 
