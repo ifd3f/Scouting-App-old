@@ -57,8 +57,8 @@ object ScoutingClient : Closeable {
         invalidateCache()
     }
 
-    fun getQualifiers(): MutableList<Match?> {
-        return cache.qualifiers!!
+    fun getQualifiers(): MutableList<Match> {
+        return cache.qualifiers
     }
 
     inline fun <reified T> request(rq: Request<T>): Future<T?> {
