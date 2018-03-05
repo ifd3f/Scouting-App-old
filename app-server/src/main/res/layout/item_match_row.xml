@@ -29,24 +29,27 @@
         <EditText
             android:id="@+id/edit_team_red1"
             style="@style/TeamNumberEdit"
+            android:nextFocusForward="@id/edit_team_red2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="12345" />
+            android:hint="@string/hint_team_number_1" />
 
         <EditText
             android:id="@+id/edit_team_red3"
             style="@style/TeamNumberEdit"
+            android:nextFocusForward="@id/edit_team_red3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="12345"
+            android:hint="@string/hint_team_number_2"
             tools:text="254" />
 
         <EditText
             android:id="@+id/edit_team_red2"
             style="@style/TeamNumberEdit"
+            android:nextFocusForward="@id/edit_team_blue1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="12345"
+            android:hint="@string/hint_team_number_3"
             tools:text="43232" />
     </LinearLayout>
 
@@ -63,23 +66,25 @@
         <EditText
             android:id="@+id/edit_team_blue1"
             style="@style/TeamNumberEdit"
+            android:nextFocusForward="@id/edit_team_blue2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="12345" />
+            android:hint="@string/hint_team_number_2" />
 
         <EditText
             android:id="@+id/edit_team_blue2"
+            android:nextFocusForward="@id/edit_team_blue3"
             style="@style/TeamNumberEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="12345" />
+            android:hint="@string/hint_team_number_3" />
 
         <EditText
             android:id="@+id/edit_team_blue3"
             style="@style/TeamNumberEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="12345"
+            android:hint="@string/hint_team_number_1"
             tools:text="254" />
     </LinearLayout>
 

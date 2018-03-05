@@ -15,7 +15,7 @@ import java.util.*
 
 class CompetitionEditorActivity : Activity() {
 
-    lateinit var dateDisplay: TextView
+    lateinit var btnDatePicker: TextView
     lateinit var builder: CompetitionBuilder
     var baseComp: Competition? = null
 
@@ -25,14 +25,12 @@ class CompetitionEditorActivity : Activity() {
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
         val editName = findViewById<EditText>(R.id.edit_name)
-        dateDisplay = findViewById<TextView>(R.id.text_show_date)
+        btnDatePicker = findViewById<Button>(R.id.btn_pick_date)
 
-        val uuid: UUID
 
         when (intent.getIntExtra("request", -3524768)) {
             REQUEST_CODE_NEW_COMPETITION -> {
-                builder = CompetitionBuilder("", 3)
-                uuid = UUID.randomUUID()
+                builder = CompetitionBuilder("", 3, UUID.randomUUID())
             }
             REQUEST_CODE_EDIT_COMPETITION -> {
                 val comp = intent.getSerializableExtra("competition") as Competition
@@ -43,7 +41,7 @@ class CompetitionEditorActivity : Activity() {
         }
         updateDate()
 
-        findViewById<Button>(R.id.btn_pick_date).setOnClickListener {
+        btnDatePicker.setOnClickListener {
             DatePickerDialog(this, { dp, y, m, d ->
                 builder.calendar.set(y, m, d)
                 updateDate()
@@ -62,7 +60,7 @@ class CompetitionEditorActivity : Activity() {
     }
 
     fun updateDate() {
-        dateDisplay.text = SimpleDateFormat.getDateInstance().format(builder.calendar.time)
+        btnDatePicker.text = SimpleDateFormat.getDateInstance().format(builder.calendar.time)
     }
 
 }

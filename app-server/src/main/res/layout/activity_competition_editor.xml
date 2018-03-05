@@ -1,53 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context="com.burlingamerobotics.scouting.server.activity.CompetitionEditorActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/TextAppearance.AppCompat.Headline"
-        android:text="@string/hdr_compname_name"/>
-    <EditText
-        android:id="@+id/edit_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="@string/hdr_compname_hint"/>
-
-    <View style="@style/Divider"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        style="@style/TextAppearance.AppCompat.Headline"
-        android:text="@string/hdr_date"/>
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:id="@+id/div_basic_attrs"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <Button
-            android:id="@+id/btn_pick_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/pick_date"/>
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent">
         <TextView
-            style="@style/Base.TextAppearance.AppCompat.Menu"
-            android:id="@+id/text_show_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:text="3/4/18"/>
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:text="@string/hdr_compname_name"/>
+        <EditText
+            android:id="@+id/edit_name"
+            android:nextFocusForward="@id/btn_pick_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/hdr_compname_hint"/>
+        <View style="@style/Divider"/>
+
+        <GridLayout
+            android:columnCount="2"
+            android:rowCount="2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/TextAppearance.AppCompat.Headline"
+                android:layout_column="0"
+                android:layout_row="0"
+                android:text="@string/hdr_date"/>
+            <Button
+                android:id="@+id/btn_pick_date"
+                android:layout_column="0"
+                android:layout_row="1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="3/4/18"/>
+            <TextView
+                android:text="# of Matches"
+                android:labelFor="@id/edit_rows"
+                style="@style/TextAppearance.AppCompat.Headline"
+                android:layout_column="1"
+                android:layout_row="0"/>
+            <EditText
+                android:layout_row="1"
+                android:layout_column="1"
+                android:id="@+id/edit_rows"
+                android:hint="Matches"
+                android:inputType="number"/>
+        </GridLayout>
+
     </LinearLayout>
 
-    <View style="@style/Divider"/>
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/btn_submit"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/div_basic_attrs"
+        app:layout_constraintVertical_bias="0.0">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/list_matches"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            </LinearLayout>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:text="Add Row" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
     <Button
         android:id="@+id/btn_submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         android:text="@string/btn_submit"/>
 
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

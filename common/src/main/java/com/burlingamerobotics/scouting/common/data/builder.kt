@@ -18,7 +18,7 @@ class CompetitionBuilder(
 
     companion object {
         fun from(comp: Competition): CompetitionBuilder {
-            return CompetitionBuilder(comp.name, comp.qualifiers.size).apply {
+            return CompetitionBuilder(comp.name, comp.qualifiers.size, comp.uuid).apply {
                 qualSchedule = MatchSchedule.from(comp.qualifiers)
             }
         }
