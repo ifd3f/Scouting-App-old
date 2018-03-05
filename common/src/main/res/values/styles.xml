@@ -27,6 +27,7 @@
     </style>
 
     <style name="AppTheme.TeamNumberEdit">
+        <item name="android:textSize">5.5pt</item>
         <item name="android:minEms">3</item>
         <item name="android:maxLength">5</item>
         <item name="android:textAlignment">center</item>

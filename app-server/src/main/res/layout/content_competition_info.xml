@@ -8,6 +8,13 @@
     tools:context="com.burlingamerobotics.scouting.server.activity.CompetitionInfoActivity"
     tools:showIn="@layout/activity_competition_info">
 
+    <LinearLayout
+        android:id="@+id/list_matches"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </LinearLayout>
+
     <TextView
         android:id="@+id/text_show_date"
         tools:text="3/6/18"
