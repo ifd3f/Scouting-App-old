@@ -117,7 +117,7 @@ class CompetitionEditorActivity : Activity() {
         if (countMatches > countList) {
             Log.d(TAG, "  Creating rows to meet number")
             for (i in countList until countMatches) {
-                val view = layoutInflater.inflate(R.layout.item_match_row, lsMatches, false)
+                val view = layoutInflater.inflate(R.layout.item_edit_match_row, lsMatches, false)
                 matches[i].applyTo(view, i + 1)
                 lsMatches.addView(view)
                 rows.add(view)

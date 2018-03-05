@@ -47,7 +47,7 @@ class MatchListFragment : Fragment() {
 
         lvMatches.setOnItemClickListener { parent, _, position, id ->
             Utils.ioExecutor.execute {
-                val match = ScoutingClient.blockingRequest(QualifierMatchRequest(position))!!
+                val match = ScoutingClient.blockingRequest(QualifierMatchRequest(position))
                 fragmentManager.beginTransaction()
                         .replace(R.id.client_main_fragment_container, MatchInfoFragment.newInstance(match), "match_info")
                         .addToBackStack(null)

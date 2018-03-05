@@ -3,4 +3,5 @@
     <string name="hint_team_number_1">254</string>
     <string name="hint_team_number_2">420</string>
     <string name="hint_team_number_3">1337</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>

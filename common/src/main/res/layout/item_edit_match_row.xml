@@ -16,13 +16,13 @@
         tools:text="32." />
 
     <LinearLayout
-        android:id="@+id/div_team_red"
+        android:id="@+id/div_alliance_red"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
         android:background="@color/team_red"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toStartOf="@+id/div_team_blue"
+        app:layout_constraintEnd_toStartOf="@+id/div_alliance_blue"
         app:layout_constraintLeft_toRightOf="@+id/label_match_number"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -60,7 +60,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/div_team_blue"
+        android:id="@+id/div_alliance_blue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/team_blue"
