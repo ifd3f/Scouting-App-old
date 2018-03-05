@@ -20,6 +20,23 @@ enum class GameResult : Serializable {
     RED_VICTORY, BLUE_VICTORY, DRAW
 }
 
+class MatchSchedule(number: Int) : Serializable {
+    val matches: Array<Pair<Array<Int>, Array<Int>>> = Array(number, {
+        Pair(
+                Array(6, {0}),
+                Array(6, {0})
+        )
+    })
+
+    fun generateMatches(): List<Match> {
+        return matches.mapIndexed { i, (red, blue) ->
+            Match(i + 1,
+                    AlliancePerformance.fromTeams(red[0], red[1], red[2]),
+                    AlliancePerformance.fromTeams(blue[0], blue[1], blue[2]))
+        }.toList()
+    }
+}
+
 data class TeamPerformance(
         var teamNumber: Int,
         var autoStartPos: StartPosition = StartPosition.CENTER,
@@ -102,13 +119,17 @@ class Competition(
         val uuid: UUID,
         val name: String,
         cal: Calendar,
-        val qualifiers: MutableList<Match?>,
+        qualifiers: Int,
         val finals: MatchTree
 ) : Serializable {
 
-    val date = cal.time
+    var qualifierSchedule = MatchSchedule(qualifiers)
 
-    fun getHeader(): CompetitionFileHeader = CompetitionFileHeader(uuid, name, date, qualifiers.size)
+    var qualifiers: MutableList<Match?>? = null
+
+    val date: Date = cal.time
+
+    fun getHeader(): CompetitionFileHeader = CompetitionFileHeader(uuid, name, date, qualifierSchedule.matches.size)
 
     fun getFilename(): String = "$uuid.dat"
 

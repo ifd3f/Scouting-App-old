@@ -10,11 +10,9 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.common.data.CompetitionFileHeader
+import com.burlingamerobotics.scouting.common.data.MatchSchedule
 import com.burlingamerobotics.scouting.common.data.MatchTree
-import com.burlingamerobotics.scouting.server.R
-import com.burlingamerobotics.scouting.server.REQUEST_CODE_CREATE_COMPETITION
-import com.burlingamerobotics.scouting.server.ScoutingDB
-import com.burlingamerobotics.scouting.server.ScoutingServer
+import com.burlingamerobotics.scouting.server.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -45,16 +43,29 @@ class CompetitionSelectionActivity : Activity() {
         btnAddCompetition.setOnClickListener {
             Log.d(TAG, "Starting competition creation activity")
             startActivityForResult(
-                    Intent(this, CompetitionEditorActivity::class.java),
-                    REQUEST_CODE_CREATE_COMPETITION
+                    Intent(this, CompetitionEditorActivity::class.java).apply {
+                        putExtra("request", REQUEST_CODE_NEW_COMPETITION)
+                    },
+                    REQUEST_CODE_NEW_COMPETITION
             )
+        }
+
+        lvCompetitions.setOnItemLongClickListener { _, _, position, _ ->
+            startActivityForResult(
+                    Intent(this, CompetitionEditorActivity::class.java).apply {
+                        putExtra("competition", dbScouting.getCompetition(listComps[position]))
+                        putExtra("request", REQUEST_CODE_EDIT_COMPETITION)
+                    },
+                    REQUEST_CODE_EDIT_COMPETITION
+            )
+            true
         }
 
         refresher.setOnRefreshListener {
             refreshCompetitions()
         }
 
-        lvCompetitions.setOnItemClickListener { parent, view, position, id ->
+        lvCompetitions.setOnItemClickListener { _, _, position, _ ->
             val comp = dbScouting.getCompetition(listComps[position].uuid)
             startActivity(Intent(this, CompetitionInfoActivity::class.java).apply {
                 putExtra("competition", comp)
@@ -77,7 +88,7 @@ class CompetitionSelectionActivity : Activity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
-            REQUEST_CODE_CREATE_COMPETITION -> {
+            REQUEST_CODE_NEW_COMPETITION, REQUEST_CODE_EDIT_COMPETITION -> {
                 if (resultCode == RESULT_CANCELED) {
                     Log.i(TAG, "User cancelled competition creation")
                     return
@@ -88,7 +99,7 @@ class CompetitionSelectionActivity : Activity() {
 
                 Log.i(TAG, "Received competition creation data: $name on ${SimpleDateFormat.getDateInstance().format(date.time)} ($uuid)")
 
-                val comp = Competition(uuid, name, date, mutableListOf(), MatchTree.generateTournament(3))
+                val comp = Competition(uuid, name, date, 0, MatchTree.generateTournament(3))
                 dbScouting.save(comp)
                 refreshCompetitions()
             }

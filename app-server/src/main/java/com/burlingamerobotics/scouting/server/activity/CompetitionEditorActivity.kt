@@ -8,14 +8,14 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import com.burlingamerobotics.scouting.common.data.Competition
-import com.burlingamerobotics.scouting.server.INTENT_EDIT_COMPETITION
-import com.burlingamerobotics.scouting.server.R
+import com.burlingamerobotics.scouting.server.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 class CompetitionEditorActivity : Activity() {
 
-    var date: Calendar = Calendar.getInstance()
+    lateinit var date: Calendar
+    lateinit var dateDisplay: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,23 +23,29 @@ class CompetitionEditorActivity : Activity() {
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
         val editName = findViewById<EditText>(R.id.edit_name)
-        val dateDisplay = findViewById<TextView>(R.id.text_show_date)
+        dateDisplay = findViewById<TextView>(R.id.text_show_date)
 
-        var uuid: UUID? = null
+        val uuid: UUID
 
-        when (intent.action) {
-            INTENT_EDIT_COMPETITION -> {
-                val oldCompetition = intent.extras["competition"] as Competition
+        when (intent.getIntExtra("request", -3524768)) {
+            REQUEST_CODE_NEW_COMPETITION -> {
+                date = Calendar.getInstance()
+                uuid = UUID.randomUUID()
+            }
+            REQUEST_CODE_EDIT_COMPETITION -> {
+                val oldCompetition = intent.getSerializableExtra("competition") as Competition
                 date = Calendar.getInstance().apply { time = oldCompetition.date }
                 uuid = oldCompetition.uuid
                 editName.setText(oldCompetition.name)
             }
+            else -> throw IllegalStateException("Invalid action ${intent.action}!!")
         }
+        updateDate()
 
         findViewById<Button>(R.id.btn_pick_date).setOnClickListener {
             DatePickerDialog(this, { dp, y, m, d ->
                 date.set(y, m, d)
-                dateDisplay.text = SimpleDateFormat.getDateInstance().format(date.time)
+                updateDate()
             }, date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH)).show()
         }
 
@@ -50,10 +56,14 @@ class CompetitionEditorActivity : Activity() {
             setResult(Activity.RESULT_OK, Intent().apply {
                 putExtra("name", name)
                 putExtra("date", date)
-                putExtra("uuid", uuid ?: UUID.randomUUID())
+                putExtra("uuid", uuid)
             })
             finish()
         }
+    }
+
+    fun updateDate() {
+        dateDisplay.text = SimpleDateFormat.getDateInstance().format(date.time)
     }
 
 }

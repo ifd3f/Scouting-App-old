@@ -92,7 +92,7 @@ class ClientResponseThread(private val btSocket: BluetoothSocket, private val db
             }
             is QualifierMatchRequest -> {
                 Log.d(TAG, "  The request is for .match info")
-                ScoutingServer.competition.qualifiers[request.number]
+                ScoutingServer.competition.qualifiers!![request.number]
             }
             is TeamInfoRequest -> {
                 Log.d(TAG, "  The request is for team info")

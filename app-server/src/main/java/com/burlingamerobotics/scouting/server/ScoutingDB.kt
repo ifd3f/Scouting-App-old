@@ -58,6 +58,10 @@ class ScoutingDB(context: Context) {
         }
     }
 
+    fun getCompetition(header: CompetitionFileHeader): Competition? {
+        return getCompetition(header.uuid)
+    }
+
     fun getCompetition(uuid: UUID): Competition? {
         val file = File(dirCompetitions, "$uuid.dat")
         if (!file.exists()) {
