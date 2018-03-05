@@ -5,9 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import com.burlingamerobotics.scouting.common.Utils
-import com.burlingamerobotics.scouting.common.data.*
+import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.common.protocol.Event
-import java.io.Serializable
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 

@@ -1,6 +1,5 @@
 package com.burlingamerobotics.scouting.common
 
-import java.text.SimpleDateFormat
 import java.util.*
 
 object Constants {

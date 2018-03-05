@@ -12,8 +12,16 @@ enum class EndPosition : Serializable {
     NONE, PARK, CLIMB, CLIMB_LEVITATE
 }
 
+enum class TeamColor(val victory: GameResult) : Serializable {
+    RED(GameResult.RED_VICTORY), BLUE(GameResult.BLUE_VICTORY)
+}
+
+enum class GameResult : Serializable {
+    RED_VICTORY, BLUE_VICTORY, DRAW
+}
+
 data class TeamPerformance(
-        val team: Int,
+        var teamNumber: Int,
         var autoStartPos: StartPosition = StartPosition.CENTER,
         var autoCrossedLine: Boolean = false,
         var autoCubesOwnSwitch: Int = 0,
@@ -42,6 +50,7 @@ data class AlliancePerformance(
         var vaultCubes: Int = 0,
         var penalties: Int = 0
 ) {
+
     companion object {
         fun fromTeams(t1: Int, t2: Int, t3: Int) = AlliancePerformance(listOf(
                 TeamPerformance(t1),
@@ -50,8 +59,6 @@ data class AlliancePerformance(
         ))
     }
 }
-
-sealed class Match(val number: Int) : Serializable
 
 data class MatchTree(val match: Match?, val left: MatchTree?, val right: MatchTree?) : Serializable {
     companion object {
@@ -69,35 +76,23 @@ data class MatchTree(val match: Match?, val left: MatchTree?, val right: MatchTr
 
 }
 
-class PlannedMatch(number: Int, var red: Array<Int>, var blue: Array<Int>): Match(number) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as PlannedMatch
-
-        if (!Arrays.equals(red, other.red)) return false
-        if (!Arrays.equals(blue, other.blue)) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = Arrays.hashCode(red)
-        result = 31 * result + Arrays.hashCode(blue)
-        return result
-    }
-    companion object {
-        private const val serialVersionUID: Long = 8935476
-    }
-
-}
-
-class CompletedMatch(
-        number: Int,
-        val time: Date,
+class Match(
+        val number: Int,
         var red: AlliancePerformance,
-        var blue: AlliancePerformance) : Match(number) {
+        var blue: AlliancePerformance,
+        /**
+         * When this match happened, or null if it hasn't happened.
+         */
+        var time: Date? = null) : Serializable {
+
+    val hasHappened get() = time != null
+    val winner get(): GameResult? = when {
+        !hasHappened -> null
+        red.points > blue.points -> GameResult.RED_VICTORY
+        red.points < blue.points -> GameResult.BLUE_VICTORY
+        else -> GameResult.DRAW
+    }
+
     companion object {
         private const val serialVersionUID: Long = 234905687
     }

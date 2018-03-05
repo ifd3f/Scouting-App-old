@@ -1,7 +1,6 @@
 package com.burlingamerobotics.scouting.client
 
 import android.util.Log
-import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.protocol.Event
 import com.burlingamerobotics.scouting.common.protocol.Response
 import java.io.Closeable

@@ -9,7 +9,6 @@ import android.widget.EditText
 import android.widget.TextView
 import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.server.INTENT_EDIT_COMPETITION
-import com.burlingamerobotics.scouting.server.INTENT_NEW_COMPETITION
 import com.burlingamerobotics.scouting.server.R
 import java.text.SimpleDateFormat
 import java.util.*
