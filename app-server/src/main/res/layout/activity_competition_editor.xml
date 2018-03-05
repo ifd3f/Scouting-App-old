@@ -58,6 +58,7 @@
                 android:id="@+id/edit_rows"
                 android:hint="Matches"
                 android:maxLength="3"
+                android:selectAllOnFocus="true"
                 android:inputType="number"/>
             <Button
                 android:id="@+id/btn_set_rows"

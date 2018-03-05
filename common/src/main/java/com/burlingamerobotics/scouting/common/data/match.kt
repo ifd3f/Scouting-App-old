@@ -33,7 +33,9 @@ data class AlliancePerformance(
         var endVaultCubes: Int = 0,
         var vaultCubes: Int = 0,
         var penalties: Int = 0
-) {
+) : Serializable {
+
+    val alliance get(): Alliance = Alliance(teams[0].teamNumber, teams[1].teamNumber, teams[2].teamNumber)
 
     companion object {
         fun fromTeams(t1: Int, t2: Int, t3: Int) = AlliancePerformance(listOf(
@@ -68,6 +70,8 @@ class Match(
          * When this match happened, or null if it hasn't happened.
          */
         var time: Date? = null) : Serializable {
+
+    val scheduledMatch get(): ScheduledMatch = ScheduledMatch(red.alliance, blue.alliance)
 
     val hasHappened get() = time != null
     val winner get(): GameResult? = when {

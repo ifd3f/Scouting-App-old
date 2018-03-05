@@ -15,7 +15,7 @@ class Competition(
 
     val date: Date = cal.time
 
-    fun getHeader(): CompetitionFileHeader = CompetitionFileHeader(uuid, name, date, qualifiers.size ?: 0)
+    fun getHeader(): CompetitionFileHeader = CompetitionFileHeader(uuid, name, date, qualifiers.size)
 
     fun getFilename(): String = "$uuid.dat"
 

@@ -5,6 +5,7 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -25,8 +26,10 @@ class CompetitionEditorActivity : Activity() {
     lateinit var editRowCount: EditText
     lateinit var editName: EditText
     lateinit var lsMatches: LinearLayout
+    lateinit var vBase: View
 
     var baseComp: Competition? = null
+    val rows: MutableList<View> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,14 +66,6 @@ class CompetitionEditorActivity : Activity() {
             }, builder.calendar.get(Calendar.YEAR), builder.calendar.get(Calendar.MONTH), builder.calendar.get(Calendar.DAY_OF_MONTH)).show()
         }
 
-        editRowCount.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                val countNew = editRowCount.text.toString().toInt()
-                Log.d(TAG, "User changed focus away from editRowCount")
-                updateRowsWithRowCount(countNew)
-            }
-        }
-
         findViewById<Button>(R.id.btn_set_rows).setOnClickListener {
             val countNew = editRowCount.text.toString().toInt()
             Log.d(TAG, "User selected set rows")
@@ -86,8 +81,9 @@ class CompetitionEditorActivity : Activity() {
         findViewById<Button>(R.id.btn_submit).setOnClickListener {
             Log.i(TAG, "Submitting data to parent")
             val name = editName.text.toString()
+            builder.name = name
             setResult(Activity.RESULT_OK, Intent().apply {
-                putExtra("name", builder)
+                putExtra("builder", builder)
             })
             finish()
         }
@@ -120,26 +116,25 @@ class CompetitionEditorActivity : Activity() {
         Log.d(TAG, "Updating rows from $countList to $countMatches")
         if (countMatches > countList) {
             Log.d(TAG, "  Creating rows to meet number")
-            (countList until countMatches).forEach {  i ->
+            for (i in countList until countMatches) {
                 val view = layoutInflater.inflate(R.layout.item_match_row, lsMatches, false)
-                val (red, blue) = matches[i]
-                view.findViewById<TextView>(R.id.label_match_number).text = (i + 1).toString()
-                view.findViewById<EditText>(R.id.edit_team_red1).setText(red[0].toString())
-                view.findViewById<EditText>(R.id.edit_team_red2).setText(red[1].toString())
-                view.findViewById<EditText>(R.id.edit_team_red3).setText(red[2].toString())
-                view.findViewById<EditText>(R.id.edit_team_blue1).setText(blue[0].toString())
-                view.findViewById<EditText>(R.id.edit_team_blue2).setText(blue[1].toString())
-                view.findViewById<EditText>(R.id.edit_team_blue3).setText(blue[2].toString())
+                matches[i].applyTo(view, i + 1)
                 lsMatches.addView(view)
+                rows.add(view)
             }
         } else if (countMatches < countList) {
-            val count = countMatches - countList
+            val count = countList - countMatches
             Log.d(TAG, "  Deleting $count rows to meet number")
-            lsMatches.removeViews(countList, count)
+            currentFocus?.clearFocus()
+            for (i in (countList - 1) downTo countMatches) {
+                Log.d(TAG, "  Removing at $i")
+                rows.removeAt(i)
+                lsMatches.removeViewAt(i)
+            }
         } else {
             Log.d(TAG, "  There is no need to change the number of rows")
         }
-        editRowCount.setText(countList.toString())
+        editRowCount.setText(countMatches.toString())
     }
 
 }

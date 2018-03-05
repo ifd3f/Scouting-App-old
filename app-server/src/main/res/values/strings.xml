@@ -17,7 +17,4 @@
     <string name="title_activity_competition_info">CompetitionInfoActivity</string>
 
     <string name="action_settings">Settings</string>
-    <string name="hint_team_number_1">12345</string>
-    <string name="hint_team_number_2">58231</string>
-    <string name="hint_team_number_3">98214</string>
 </resources>
