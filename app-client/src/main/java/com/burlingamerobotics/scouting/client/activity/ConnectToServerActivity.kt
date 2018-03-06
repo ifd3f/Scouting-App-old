@@ -16,7 +16,7 @@ import android.widget.ListView
 import android.widget.Toast
 import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.ScoutingClient
-import com.burlingamerobotics.scouting.common.Constants
+import com.burlingamerobotics.scouting.common.SCOUTING_UUID
 import com.burlingamerobotics.scouting.common.Utils
 import kotlinx.android.synthetic.main.activity_connect.*
 import java.io.IOException
@@ -53,7 +53,7 @@ class ConnectToServerActivity : AppCompatActivity() {
         btListView.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
             val dev = btDevices[position]
             try {
-                val sock = dev.createRfcommSocketToServiceRecord(Constants.SCOUTING_UUID)
+                val sock = dev.createRfcommSocketToServiceRecord(SCOUTING_UUID)
                 Utils.ioExecutor.execute {
                     Log.i("ClientConnect", "Attempting to connect to $dev")
                     try {

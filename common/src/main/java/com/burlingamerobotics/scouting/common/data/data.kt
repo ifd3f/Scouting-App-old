@@ -14,10 +14,15 @@ class Competition(
 ) : Serializable {
 
     val date: Date = cal.time
+    var tbaCode: String? = null
 
     fun getHeader(): CompetitionFileHeader = CompetitionFileHeader(uuid, name, date, qualifiers.size)
 
     fun getFilename(): String = "$uuid.dat"
+
+    override fun toString(): String {
+        return "Competition($uuid: $name)"
+    }
 
     companion object {
         private const val serialVersionUID: Long = 1793484567

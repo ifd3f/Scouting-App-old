@@ -39,6 +39,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     compile 'com.android.support:design:26.1.0'
     compile 'com.beust:klaxon:2.1.6'
+    compile 'com.github.jkcclemens:khttp:-SNAPSHOT'
 }
 repositories {
     mavenCentral()

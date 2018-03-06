@@ -48,6 +48,8 @@ data class AlliancePerformance(
                 TeamPerformance(t2),
                 TeamPerformance(t3)
         ))
+
+        fun fromTeams(seq: List<Int>) = fromTeams(seq[0], seq[1], seq[2])
     }
 }
 
@@ -117,7 +119,7 @@ class Match(
     }
 
     override fun toString(): String {
-        return "Match(${red.alliance} vs ${blue.alliance})"
+        return "Match(red=${red.alliance}, blue=${blue.alliance})"
     }
 
     companion object {

@@ -88,6 +88,8 @@ data class Alliance(var a: Int, var b: Int, var c: Int) : Serializable {
         else -> throw IllegalArgumentException()
     }
 
+    override fun toString(): String = "Alliance($a, $b, $c)"
+
 }
 
 data class ScheduledMatch(val red: Alliance, val blue: Alliance) : Serializable {

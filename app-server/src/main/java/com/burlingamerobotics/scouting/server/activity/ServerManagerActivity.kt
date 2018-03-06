@@ -13,7 +13,7 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Switch
 import android.widget.TextView
-import com.burlingamerobotics.scouting.common.Constants
+import com.burlingamerobotics.scouting.common.SCOUTING_UUID
 import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.server.INTENT_CLIENT_CONNECTED
 import com.burlingamerobotics.scouting.server.R
@@ -78,7 +78,7 @@ class ServerManagerActivity : AppCompatActivity() {
 
             Log.i("MasterMgmt", "Starting bluetooth server")
 
-            val serverSocket = btAdapter.listenUsingRfcommWithServiceRecord("Scouting Server", Constants.SCOUTING_UUID)
+            val serverSocket = btAdapter.listenUsingRfcommWithServiceRecord("Scouting Server", SCOUTING_UUID)
             ScoutingServer.start(this, ScoutingServer.db, serverSocket, competition)
 
         } else {

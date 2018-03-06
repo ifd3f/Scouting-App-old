@@ -1,5 +1,7 @@
 package com.burlingamerobotics.scouting.common;
 
+import com.burlingamerobotics.scouting.common.data.Competition;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -10,8 +12,12 @@ import static org.junit.Assert.*;
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
 public class ExampleUnitTest {
+
     @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
+    public void testTBA() {
+        Competition dat = BlueAllianceAPI.INSTANCE.fetchCompetition("2018ohmv");
+        System.out.println(dat);
+        System.out.println(dat.getQualifiers());
     }
+
 }
