@@ -31,7 +31,7 @@ class CompetitionBuilder(
 }
 
 class MatchSchedule : Serializable {
-    val matches: ArrayList<ScheduledMatch> = arrayListOf() /*MutableList(number, {
+    val matches: MutableList<ScheduledMatch> = arrayListOf() /*MutableList(number, {
         Pair(
                 IntArray(3, {0}),
                 IntArray(3, {0})
@@ -75,6 +75,7 @@ class MatchSchedule : Serializable {
 data class Alliance(var a: Int, var b: Int, var c: Int) : Serializable {
 
     constructor() : this(0, 0, 0)
+    constructor(teams: List<Int>) : this(teams[0], teams[1], teams[2])
 
     val strings get() = Triple(
             if (a < 1) "" else a.toString(),

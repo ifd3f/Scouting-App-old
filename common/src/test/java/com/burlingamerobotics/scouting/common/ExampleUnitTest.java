@@ -1,6 +1,7 @@
 package com.burlingamerobotics.scouting.common;
 
 import com.burlingamerobotics.scouting.common.data.Competition;
+import com.burlingamerobotics.scouting.common.data.CompetitionBuilder;
 
 import org.junit.Test;
 
@@ -15,9 +16,9 @@ public class ExampleUnitTest {
 
     @Test
     public void testTBA() {
-        Competition dat = BlueAllianceAPI.INSTANCE.fetchCompetition("2018ohmv");
+        CompetitionBuilder dat = BlueAllianceAPI.INSTANCE.fetchCompetition("2018ohmv");
         System.out.println(dat);
-        System.out.println(dat.getQualifiers());
+        System.out.println(dat.getQualSchedule().getMatches());
     }
 
 }
