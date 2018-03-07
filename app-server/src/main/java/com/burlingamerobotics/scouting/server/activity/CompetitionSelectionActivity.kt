@@ -13,6 +13,7 @@ import com.burlingamerobotics.scouting.common.data.CompetitionBuilder
 import com.burlingamerobotics.scouting.common.data.CompetitionFileHeader
 import com.burlingamerobotics.scouting.common.data.MatchTree
 import com.burlingamerobotics.scouting.server.*
+import com.burlingamerobotics.scouting.server.dialog.NewCompetitionDialog
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -42,13 +43,7 @@ class CompetitionSelectionActivity : Activity() {
 
         btnAddCompetition.setOnClickListener {
             Log.d(TAG, "Starting competition creation activity")
-            startActivityForResult(
-                    Intent(this, CompetitionEditorActivity::class.java).apply {
-                        putExtra("request", REQUEST_CODE_NEW_COMPETITION)
-                    },
-                    REQUEST_CODE_NEW_COMPETITION
-            )
-            overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_right)
+            NewCompetitionDialog(this).show()
         }
 
         lvCompetitions.setOnItemLongClickListener { _, _, position, _ ->
@@ -59,7 +54,6 @@ class CompetitionSelectionActivity : Activity() {
                     },
                     REQUEST_CODE_EDIT_COMPETITION
             )
-            overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_right)
             true
         }
 
@@ -68,7 +62,6 @@ class CompetitionSelectionActivity : Activity() {
             startActivity(Intent(this, CompetitionInfoActivity::class.java).apply {
                 putExtra("competition", comp)
             })
-            overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_to_right)
         }
 
         refresher.setOnRefreshListener {

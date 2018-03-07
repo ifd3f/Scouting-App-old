@@ -43,10 +43,18 @@ class CompetitionEditorActivity : Activity() {
                 builder.qualSchedule.addEmpty()
             }
             REQUEST_CODE_EDIT_COMPETITION -> {
-                val comp = intent.getSerializableExtra("competition") as Competition
+                val comp = intent.getSerializableExtra("competition")
+                builder = when (comp) {
+                    is Competition -> {
+                        baseComp = comp
+                        CompetitionBuilder.from(comp)
+                    }
+                    is CompetitionBuilder -> {
+                        comp
+                    }
+                    else -> throw IllegalArgumentException("Received something other than Competition or CompetitionBuilder!")
+                }
                 Log.i(TAG, "Activity was created to edit existing competition")
-                builder = CompetitionBuilder.from(comp)
-                baseComp = comp
             }
             else -> throw IllegalStateException("Invalid action ${intent.action}!!")
         }
@@ -56,6 +64,8 @@ class CompetitionEditorActivity : Activity() {
         btnDatePicker = findViewById<Button>(R.id.btn_pick_date)
         lsMatches = findViewById(R.id.list_matches)
         editRowCount = findViewById(R.id.edit_rows)
+
+        editName.setText(builder.name)
 
         btnDatePicker.setOnClickListener {
             Log.i(TAG, "Spawning DatePicker")

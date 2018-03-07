@@ -1,6 +1,9 @@
 package com.burlingamerobotics.scouting.common
 
-import com.burlingamerobotics.scouting.common.data.*
+import android.util.Log
+import com.burlingamerobotics.scouting.common.data.Alliance
+import com.burlingamerobotics.scouting.common.data.CompetitionBuilder
+import com.burlingamerobotics.scouting.common.data.ScheduledMatch
 import khttp.get
 import khttp.responses.Response
 import org.json.JSONArray
@@ -12,9 +15,13 @@ import java.util.regex.Pattern
 object BlueAllianceAPI {
 
     val DATE_REGEX = Pattern.compile("(\\d{4})-(\\d{2})-(\\d{2})")
+    val TAG = "BlueAllianceAPI"
 
     fun fetch(location: String): Response {
-        val response = get(URL_TBA_API + location, mapOf("X-TBA-Auth-Key" to API_KEY_TBA))
+        val url = URL_TBA_API + location
+        Log.d(TAG, "Sending request to $url")
+        val response = get(url, mapOf("X-TBA-Auth-Key" to API_KEY_TBA))
+        Log.d(TAG, "Received response from TBA")
         response.encoding = Charsets.UTF_8
         return response
     }
