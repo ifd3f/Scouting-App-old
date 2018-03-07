@@ -72,7 +72,10 @@ class MatchSchedule : Serializable {
     }
 }
 
-data class Alliance(var a: Int, var b: Int, var c: Int) : Serializable {
+data class Alliance(var a: Int, var b: Int, var c: Int) : Serializable, Iterable<Int> {
+    override fun iterator(): Iterator<Int> {
+        return listOf(a, b, c).iterator()
+    }
 
     constructor() : this(0, 0, 0)
     constructor(teams: List<Int>) : this(teams[0], teams[1], teams[2])

@@ -4,4 +4,8 @@
     <string name="hint_team_number_2">420</string>
     <string name="hint_team_number_3">1337</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="matchres_red">Red Victory</string>
+    <string name="matchres_blue">Blue Victory</string>
+    <string name="matchres_draw">Draw</string>
+    <string name="matchres_scheduled">Scheduled</string>
 </resources>
