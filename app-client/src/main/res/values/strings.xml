@@ -3,7 +3,7 @@
     <string name="app_name">5026 Scouting Client</string>
 
     <string name="title_activity_client_connect">PScout Client</string>
-    <string name="title_activity_client_browser">ClientBrowser</string>
+    <string name="title_activity_client_browser">Client Browser</string>
 
     <string name="title_chat">Chat</string>
     <string name="title_matches">Matches</string>

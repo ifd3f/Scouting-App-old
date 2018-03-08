@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">#b71c1c</color>
+    <color name="colorPrimaryDark">#880e4f</color>
+    <color name="colorAccent">#304ffe</color>
     <color name="team_red">#EE0000</color>
     <color name="team_blue">#0033DD</color>
     <color name="team_neutral">#AAAAAA</color>

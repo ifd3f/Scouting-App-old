@@ -49,7 +49,7 @@ class CompetitionInfoActivity : AppCompatActivity() {
         val txtDate: TextView = findViewById(R.id.text_show_date)
 
         txtDate.text = SimpleDateFormat.getInstance().format(competition.date.time)
-        toolbar.title = competition.name
+        supportActionBar?.title = competition.name
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
