@@ -17,7 +17,7 @@ import com.burlingamerobotics.scouting.common.SCOUTING_UUID
 import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.server.INTENT_CLIENT_CONNECTED
 import com.burlingamerobotics.scouting.server.R
-import com.burlingamerobotics.scouting.server.ScoutingServer
+import com.burlingamerobotics.scouting.server.io.ScoutingServer
 
 class ServerManagerActivity : AppCompatActivity() {
 

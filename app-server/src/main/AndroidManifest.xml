@@ -52,6 +52,7 @@
                 android:value="com.burlingamerobotics.scouting.server.activity.CompetitionSelectionActivity" />
         </activity>
 
+        <service android:name=".io.ScoutingServerService" />
     </application>
 
 </manifest>

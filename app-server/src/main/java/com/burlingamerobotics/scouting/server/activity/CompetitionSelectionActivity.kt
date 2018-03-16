@@ -8,14 +8,12 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.common.data.CompetitionBuilder
 import com.burlingamerobotics.scouting.common.data.CompetitionFileHeader
-import com.burlingamerobotics.scouting.common.data.MatchTree
 import com.burlingamerobotics.scouting.server.*
 import com.burlingamerobotics.scouting.server.dialog.NewCompetitionDialog
-import java.text.SimpleDateFormat
-import java.util.*
+import com.burlingamerobotics.scouting.server.io.ScoutingDB
+import com.burlingamerobotics.scouting.server.io.ScoutingServer
 
 class CompetitionSelectionActivity : Activity() {
 
