@@ -30,7 +30,9 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.burlingamerobotics.scouting.client.activity.ConnectToServerActivity" />
+
         </activity>
 
+        <service android:name=".io.ClientService" />
     </application>
 </manifest>

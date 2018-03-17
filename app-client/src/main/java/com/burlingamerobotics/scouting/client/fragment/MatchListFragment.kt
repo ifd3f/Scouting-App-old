@@ -13,7 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.burlingamerobotics.scouting.client.R
-import com.burlingamerobotics.scouting.client.ScoutingClient
+import com.burlingamerobotics.scouting.client.io.ScoutingClient
 import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.common.protocol.QualifierMatchRequest
@@ -36,7 +36,7 @@ class MatchListFragment : Fragment() {
         lvMatches.adapter = MatchRecyclerViewAdapter(comp.qualifiers) { i ->
             Utils.ioExecutor.execute {
                 Log.i(TAG, "User selected match at position $i")
-                val match = ScoutingClient.blockingRequest(QualifierMatchRequest(i))
+                val match = ScoutingClient.rawBlockingRequest(QualifierMatchRequest(i))
                 fragmentManager.beginTransaction()
                         .replace(R.id.client_main_fragment_container, MatchInfoFragment.newInstance(match), "match_info")
                         .addToBackStack(null)

@@ -13,7 +13,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.burlingamerobotics.scouting.client.R
-import com.burlingamerobotics.scouting.client.ScoutingClient
+import com.burlingamerobotics.scouting.client.io.ScoutingClient
 import com.burlingamerobotics.scouting.client.dialog.TeamEditDialog
 import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.Team
@@ -82,7 +82,7 @@ class TeamListFragment : Fragment() {
     fun refresh() {
         Log.d(TAG, "Requesting team data")
         Utils.ioExecutor.submit {
-            refresh(ScoutingClient.blockingRequest(TeamListRequest))
+            refresh(ScoutingClient.rawBlockingRequest(TeamListRequest))
         }
     }
 

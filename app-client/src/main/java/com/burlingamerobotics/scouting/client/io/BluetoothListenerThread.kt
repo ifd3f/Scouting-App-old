@@ -1,15 +1,16 @@
-package com.burlingamerobotics.scouting.client
+package com.burlingamerobotics.scouting.client.io
 
 import android.util.Log
 import com.burlingamerobotics.scouting.common.protocol.Event
 import com.burlingamerobotics.scouting.common.protocol.Response
 import java.io.Closeable
 import java.io.IOException
+import java.io.ObjectInputStream
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.TimeUnit
 
-class ClientListenerThread() : Thread("ScoutlingThread"), Closeable {
+class BluetoothListenerThread(val commStrat: BluetoothServerCommStrategy) : Thread("ScoutlingThread"), Closeable {
     val TAG = name
 
     private val responseQueue: BlockingQueue<Response<*>> = ArrayBlockingQueue<Response<*>>(20)
@@ -17,7 +18,7 @@ class ClientListenerThread() : Thread("ScoutlingThread"), Closeable {
     override fun run() {
         try {
             while (true) {
-                val obj = ScoutingClient.ois.readObject()
+                val obj = commStrat.ois.readObject()
                 Log.d(TAG, "Received object $obj")
                 when (obj) {
                     is Response<*> -> {

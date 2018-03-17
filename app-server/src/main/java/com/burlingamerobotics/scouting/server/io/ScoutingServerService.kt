@@ -5,10 +5,7 @@ import android.bluetooth.BluetoothServerSocket
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import com.burlingamerobotics.scouting.common.DURATION_SAVE_DATA
-import com.burlingamerobotics.scouting.common.INTENT_BIND_LOCAL_CLIENT_TO_SERVER
-import com.burlingamerobotics.scouting.common.INTENT_CLIENT_CONNECTED
-import com.burlingamerobotics.scouting.common.Utils
+import com.burlingamerobotics.scouting.common.*
 import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.common.protocol.*
 import java.util.*
@@ -35,6 +32,7 @@ class ScoutingServerService : Service(), ClientInputListener {
                 Log.i(TAG, "Local client wants to bind to server")
                 val newClient = LocalScoutingClient()
                 clients.add(newClient)
+                sendBroadcast(Intent(INTENT_CLIENT_CONNECTED))
                 return newClient.messenger.binder
             }
             else -> {
@@ -56,7 +54,7 @@ class ScoutingServerService : Service(), ClientInputListener {
                 Log.i(TAG, "Bluetooth device at ${client.device.address} connected")
                 clients.add(client)
                 client.start()
-                this.sendBroadcast(Intent(INTENT_CLIENT_CONNECTED))
+                sendBroadcast(Intent(INTENT_CLIENT_CONNECTED))
             }
         }
 
@@ -100,6 +98,7 @@ class ScoutingServerService : Service(), ClientInputListener {
     override fun onClientDisconnected(client: ScoutingClient) {
         Log.i(TAG, "$client disconnected, removing from list")
         clients.remove(client)
+        sendBroadcast(Intent(INTENT_CLIENT_DISCONNECTED))
     }
 
     fun processPost(client: ScoutingClient, post: Post) {
