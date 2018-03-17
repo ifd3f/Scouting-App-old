@@ -2,11 +2,6 @@ package com.burlingamerobotics.scouting.common
 
 import java.util.*
 
-const val MSG_BEGIN_CLIENT = 24598413
-const val MSG_REQUEST = 8193489
-const val MSG_RESPONSE = 23578012
-const val MSG_POST = 23583857
-
 const val API_KEY_TBA = "eeszr95mLfyCJkDqDrXAxsW93MgRYrmn8lLqrUJ76GfSYIWNxA8N5mCUILlX3dFN"
 
 const val PROTOCOL_VERSION = "1.0.07"

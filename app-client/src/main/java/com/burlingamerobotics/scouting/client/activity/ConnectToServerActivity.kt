@@ -1,12 +1,10 @@
 package com.burlingamerobotics.scouting.client.activity
 
-import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.os.Message
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -15,6 +13,9 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
 import com.burlingamerobotics.scouting.client.R
+import com.burlingamerobotics.scouting.client.io.ClientService
+import com.burlingamerobotics.scouting.client.io.ClientServiceWrapper
+import com.burlingamerobotics.scouting.common.INTENT_START_SCOUTING_CLIENT_BLUETOOTH
 import com.burlingamerobotics.scouting.common.SCOUTING_UUID
 import com.burlingamerobotics.scouting.common.Utils
 import java.io.IOException
@@ -24,18 +25,16 @@ class ConnectToServerActivity : AppCompatActivity() {
     lateinit var btAdapter: BluetoothAdapter
     lateinit var btListView: ListView
     lateinit var btDevices: List<BluetoothDevice>
+    lateinit var serviceWrapper: ClientServiceWrapper
 
-    @SuppressLint("HandlerLeak")
-    private val toastHandler = object : Handler() {
-        override fun handleMessage(msg: Message?) {
-            val bundle = msg!!.data
-            val toastText = bundle.getString("text")
-            if (toastText != null) {
-                Toast.makeText(this@ConnectToServerActivity, toastText, Toast.LENGTH_SHORT).show()
-                return
-            }
+    private val toastHandler = Handler(Handler.Callback { msg ->
+        val bundle = msg!!.data
+        val toastText = bundle.getString("text")
+        if (toastText != null) {
+            Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show()
         }
-    }
+        true
+    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +55,11 @@ class ConnectToServerActivity : AppCompatActivity() {
                     Log.i("ClientConnect", "Attempting to connect to $dev")
                     try {
                         sock.connect()
-                        ScoutingClient.start(sock)
+                        startService(Intent(this, ClientService::class.java).apply {
+                            action = INTENT_START_SCOUTING_CLIENT_BLUETOOTH
+                            putExtra("device", dev)
+                        })
+                        serviceWrapper = ClientServiceWrapper(this)
                         Log.i("ClientConnect", "  Connection success!")
                         startActivity(Intent(this, BrowserActivity::class.java))
                     } catch (ex: IOException) {

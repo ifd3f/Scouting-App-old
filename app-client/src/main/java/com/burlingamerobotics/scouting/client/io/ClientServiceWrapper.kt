@@ -8,12 +8,13 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Message
 import android.os.Messenger
-import com.burlingamerobotics.scouting.common.data.Team
 import com.burlingamerobotics.scouting.common.protocol.Post
+import com.burlingamerobotics.scouting.common.protocol.Request
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeUnit
 
-class ClientServiceWrapper(context: Context) : ServiceConnection, Handler.Callback {
+class ClientServiceWrapper(val context: Context) : ServiceConnection, Handler.Callback, AutoCloseable {
+
     lateinit var serviceTx: Messenger
     val serviceRx = Messenger(Handler(this))
     val messageQueue = ArrayBlockingQueue<Message>(4)
@@ -22,11 +23,13 @@ class ClientServiceWrapper(context: Context) : ServiceConnection, Handler.Callba
         context.bindService(Intent(context, ClientServiceWrapper::class.java), this, 0)
     }
 
-    fun getTeams(): List<Team> {
-        serviceRx.send(Message.obtain().also {
-            it.what = REQUEST_TEAMS
+    fun <T> blockingRequest(request: Request<T>): T {
+        serviceTx.send(Message.obtain().apply {
+            replyTo = serviceRx
+            what = MSG_REQUEST
+            obj = request
         })
-        return messageQueue.poll(250L, TimeUnit.MILLISECONDS).obj as List<Team>
+        return messageQueue.poll(250L, TimeUnit.MILLISECONDS).obj as T
     }
 
     override fun handleMessage(msg: Message): Boolean {
@@ -47,6 +50,10 @@ class ClientServiceWrapper(context: Context) : ServiceConnection, Handler.Callba
             what = MSG_POST
             obj = post
         })
+    }
+
+    override fun close() {
+        context.unbindService(this)
     }
 
 }

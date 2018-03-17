@@ -17,6 +17,7 @@ import com.burlingamerobotics.scouting.client.io.ClientServiceWrapper
 import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.Team
 import com.burlingamerobotics.scouting.common.protocol.PostTeamInfo
+import com.burlingamerobotics.scouting.common.protocol.TeamListRequest
 
 
 class TeamListFragment : Fragment() {
@@ -37,10 +38,14 @@ class TeamListFragment : Fragment() {
         true
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        serviceWrapper = ClientServiceWrapper(context)
+    }
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = inflater!!.inflate(R.layout.fragment_team_list, container, false)
 
-        serviceWrapper = ClientServiceWrapper(context)
         refresher = view.findViewById(R.id.refresh_list_teams)
         lvTeamList = view.findViewById(R.id.list_teams)
 
@@ -69,11 +74,16 @@ class TeamListFragment : Fragment() {
         return view
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        serviceWrapper.close()
+    }
+
     fun refresh() {
         refresher.isRefreshing = true
         Utils.ioExecutor.submit {
             Log.d(TAG, "Requesting team data")
-            teamList = serviceWrapper.getTeams()
+            teamList = serviceWrapper.blockingRequest(TeamListRequest)
             refreshHandler.sendEmptyMessage(0)
         }
     }

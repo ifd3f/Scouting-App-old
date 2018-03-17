@@ -10,12 +10,12 @@ import android.os.IBinder
 import android.os.Message
 import android.os.Messenger
 import android.util.Log
-import com.burlingamerobotics.scouting.client.io.ScoutingClient.TAG
 import com.burlingamerobotics.scouting.common.INTENT_BIND_LOCAL_CLIENT_TO_SERVER
 import com.burlingamerobotics.scouting.common.URI_SCOUTING_SERVER_SERVICE
-import java.util.concurrent.ArrayBlockingQueue
 
 class LocalServerCommStrategy(val context: Context) : ServerCommStrategy(), ServiceConnection, Handler.Callback {
+
+    val TAG = "LocalServerComm"
 
     lateinit var serviceTx: Messenger
     val serviceRx: Messenger = Messenger(Handler(this))
@@ -40,8 +40,9 @@ class LocalServerCommStrategy(val context: Context) : ServerCommStrategy(), Serv
     }
 
     override fun sendObject(obj: Any) {
-        serviceTx.send(Message.obtain().also {
-            it.obj = obj
+        serviceTx.send(Message.obtain().apply {
+            replyTo = serviceRx
+            this@apply.obj = obj
         })
     }
 
