@@ -13,7 +13,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.burlingamerobotics.scouting.client.R
-import com.burlingamerobotics.scouting.client.io.ScoutingClient
 import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.common.protocol.QualifierMatchRequest

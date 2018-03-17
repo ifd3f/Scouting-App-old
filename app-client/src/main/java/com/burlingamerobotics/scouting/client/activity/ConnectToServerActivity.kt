@@ -15,7 +15,6 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
 import com.burlingamerobotics.scouting.client.R
-import com.burlingamerobotics.scouting.client.io.ScoutingClient
 import com.burlingamerobotics.scouting.common.SCOUTING_UUID
 import com.burlingamerobotics.scouting.common.Utils
 import java.io.IOException

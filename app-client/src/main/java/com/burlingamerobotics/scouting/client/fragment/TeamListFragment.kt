@@ -2,7 +2,6 @@ package com.burlingamerobotics.scouting.client.fragment
 
 import android.os.Bundle
 import android.os.Handler
-import android.os.Message
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
@@ -13,13 +12,11 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.burlingamerobotics.scouting.client.R
-import com.burlingamerobotics.scouting.client.io.ScoutingClient
 import com.burlingamerobotics.scouting.client.dialog.TeamEditDialog
+import com.burlingamerobotics.scouting.client.io.ClientServiceWrapper
 import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.Team
-import com.burlingamerobotics.scouting.common.protocol.EventTeamChange
 import com.burlingamerobotics.scouting.common.protocol.PostTeamInfo
-import com.burlingamerobotics.scouting.common.protocol.TeamListRequest
 
 
 class TeamListFragment : Fragment() {
@@ -29,16 +26,13 @@ class TeamListFragment : Fragment() {
     lateinit var lvTeamList: ListView
     lateinit var teamList: List<Team>
     lateinit var refresher: SwipeRefreshLayout
+    lateinit var serviceWrapper: ClientServiceWrapper
 
     var sorting = Team::number
 
     private val refreshHandler = Handler {
-        val list = it.obj
-        Log.d(TAG, "refreshHandler received $list")
-        list as List<Team>
-        teamList = list.sortedBy(sorting)
-        Log.i(TAG, "Received request to refresh team list, with ${teamList.size} teams")
-        lvTeamList.adapter = ArrayAdapter(activity, android.R.layout.simple_list_item_1, teamList)
+        Log.i(TAG, "Received request to refresh team list")
+        lvTeamList.adapter = ArrayAdapter(activity, android.R.layout.simple_list_item_1, teamList.sortedBy(sorting))
         refresher.isRefreshing = false
         true
     }
@@ -46,6 +40,7 @@ class TeamListFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = inflater!!.inflate(R.layout.fragment_team_list, container, false)
 
+        serviceWrapper = ClientServiceWrapper(context)
         refresher = view.findViewById(R.id.refresh_list_teams)
         lvTeamList = view.findViewById(R.id.list_teams)
 
@@ -54,7 +49,7 @@ class TeamListFragment : Fragment() {
             TeamEditDialog(activity) {
                 if (it != null) {
                     Log.i(TAG, "Received $it from dialog, posting")
-                    ScoutingClient.blockingPost(PostTeamInfo(it))
+                    serviceWrapper.post(PostTeamInfo(it))
                 } else {
                     Log.i(TAG, "Dialog to edit was canceled")
                 }
@@ -62,17 +57,12 @@ class TeamListFragment : Fragment() {
         }
 
         refresher.setOnRefreshListener {
+            Log.i(TAG, "User wants to refresh")
             refresh()
         }
 
-        ScoutingClient.eventListener.registerListener {
-            when (it) {
-                is EventTeamChange -> refresh(teamList + it.team)
-            }
-        }
-
         lvTeamList.setOnItemClickListener { parent, _, position, id ->
-            Log.i(TAG, "selected $position which corresponds to ${teamList[position]}")
+            Log.i(TAG, "User selected $position which corresponds to ${teamList[position]}")
         }
 
         refresh()
@@ -80,17 +70,12 @@ class TeamListFragment : Fragment() {
     }
 
     fun refresh() {
-        Log.d(TAG, "Requesting team data")
+        refresher.isRefreshing = true
         Utils.ioExecutor.submit {
-            refresh(ScoutingClient.rawBlockingRequest(TeamListRequest))
+            Log.d(TAG, "Requesting team data")
+            teamList = serviceWrapper.getTeams()
+            refreshHandler.sendEmptyMessage(0)
         }
-    }
-
-    fun refresh(list: List<Team>) {
-        Log.d(TAG, "Dispatching refresh message")
-        refreshHandler.sendMessage(Message().apply {
-            obj = list
-        })
     }
 
 }
