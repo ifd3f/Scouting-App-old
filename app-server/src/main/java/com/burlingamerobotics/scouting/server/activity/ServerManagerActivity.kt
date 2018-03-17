@@ -17,7 +17,7 @@ import com.burlingamerobotics.scouting.common.INTENT_CLIENT_CONNECTED
 import com.burlingamerobotics.scouting.common.SCOUTING_UUID
 import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.server.R
-import com.burlingamerobotics.scouting.server.io.ScoutingClient
+import com.burlingamerobotics.scouting.server.io.ScoutingClientInterface
 import com.burlingamerobotics.scouting.server.io.ScoutingServerService
 
 class ServerManagerActivity : AppCompatActivity() {
@@ -68,7 +68,7 @@ class ServerManagerActivity : AppCompatActivity() {
 
     private fun refreshList() {
         Log.d("MasterMgmt", "Refreshing connected clients list")
-        val clients: List<ScoutingClient> = TODO("add way to get list of clients")
+        val clients: List<ScoutingClientInterface> = TODO("add way to get list of clients")
         clients.forEach {
             Log.d("MasterMgmt", "Found $it")
         }

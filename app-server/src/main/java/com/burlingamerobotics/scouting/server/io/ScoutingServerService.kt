@@ -17,7 +17,7 @@ class ScoutingServerService : Service(), ClientInputListener {
 
     val TAG = "ScoutingServerService"
 
-    private val clients = mutableListOf<ScoutingClient>();
+    private val clients = mutableListOf<ScoutingClientInterface>();
     private var btConnectListener: Future<*>? = null
     private var dataSaveTask: Future<*>? = null
 
@@ -30,10 +30,10 @@ class ScoutingServerService : Service(), ClientInputListener {
         when (intent.action) {
             INTENT_BIND_LOCAL_CLIENT_TO_SERVER -> {
                 Log.i(TAG, "Local client wants to bind to server")
-                val newClient = LocalScoutingClient()
+                val newClient = LocalClientInterface()
                 clients.add(newClient)
                 sendBroadcast(Intent(INTENT_CLIENT_CONNECTED))
-                return newClient.messenger.binder
+                return newClient.clientRxTx.binder
             }
             else -> {
                 Log.e(TAG, "Illegal intent action ${intent.action}")
@@ -50,7 +50,7 @@ class ScoutingServerService : Service(), ClientInputListener {
 
         btConnectListener = Utils.ioExecutor.submit {
             while (true) {
-                val client = BluetoothScoutingClient(serverSocket.accept())
+                val client = BluetoothClientInterface(serverSocket.accept())
                 Log.i(TAG, "Bluetooth device at ${client.device.address} connected")
                 clients.add(client)
                 client.start()
@@ -76,7 +76,7 @@ class ScoutingServerService : Service(), ClientInputListener {
         clients.clear()
     }
 
-    override fun onClientSentObject(client: ScoutingClient, obj: Any) {
+    override fun onReceivedFromClient(client: ScoutingClientInterface, obj: Any) {
         Log.d(TAG, "Received $obj from ${client.displayName}")
         when (obj) {
             is Request<*> -> {
@@ -95,13 +95,13 @@ class ScoutingServerService : Service(), ClientInputListener {
         }
     }
 
-    override fun onClientDisconnected(client: ScoutingClient) {
+    override fun onClientDisconnected(client: ScoutingClientInterface) {
         Log.i(TAG, "$client disconnected, removing from list")
         clients.remove(client)
         sendBroadcast(Intent(INTENT_CLIENT_DISCONNECTED))
     }
 
-    fun processPost(client: ScoutingClient, post: Post) {
+    fun processPost(client: ScoutingClientInterface, post: Post) {
         when (post) {
             is PostTeamInfo -> {
                 Log.d(TAG, "  The post is a team change")

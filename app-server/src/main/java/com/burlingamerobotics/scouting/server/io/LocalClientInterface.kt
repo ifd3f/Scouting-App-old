@@ -7,10 +7,10 @@ import android.util.Log
 import java.io.Serializable
 
 
-class LocalScoutingClient : Handler(), ScoutingClient {
-    val TAG = "LocalScoutingClient"
+class LocalClientInterface : Handler(), ScoutingClientInterface {
+    val TAG = "LocalClientInterface"
 
-    val messenger = Messenger(this)
+    val clientRxTx = Messenger(this)
     var listener: ClientInputListener? = null
 
     override fun attachClientInputListener(listener: ClientInputListener) {
@@ -26,12 +26,12 @@ class LocalScoutingClient : Handler(), ScoutingClient {
     override fun handleMessage(msg: Message) {
         val obj = msg.obj
         Log.d(TAG, "Received $obj")
-        listener?.onClientSentObject(this, obj) ?: Log.w(TAG, "  No listener attached!")
+        listener?.onReceivedFromClient(this, obj) ?: Log.w(TAG, "  No listener attached to receive it")
     }
 
     override fun sendObject(obj: Serializable) {
         Log.d(TAG, "Sending $obj")
-        messenger.send(Message.obtain().also {
+        clientRxTx.send(Message.obtain().also {
             it.obj = obj
         })
     }

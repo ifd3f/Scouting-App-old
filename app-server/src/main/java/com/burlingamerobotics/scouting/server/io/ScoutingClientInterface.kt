@@ -3,7 +3,7 @@ package com.burlingamerobotics.scouting.server.io
 import java.io.Closeable
 import java.io.Serializable
 
-interface ScoutingClient : Closeable {
+interface ScoutingClientInterface : Closeable {
 
     val displayName: String
 
@@ -17,8 +17,8 @@ interface ScoutingClient : Closeable {
 
 interface ClientInputListener {
 
-    fun onClientSentObject(client: ScoutingClient, obj: Any)
+    fun onReceivedFromClient(client: ScoutingClientInterface, obj: Any)
 
-    fun onClientDisconnected(client: ScoutingClient)
+    fun onClientDisconnected(client: ScoutingClientInterface)
 
 }

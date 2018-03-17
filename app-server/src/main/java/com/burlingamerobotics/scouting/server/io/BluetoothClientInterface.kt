@@ -10,8 +10,7 @@ import java.io.Serializable
 /**
  * The server's view of the client.
  */
-class BluetoothScoutingClient(private val btSocket: BluetoothSocket)
-    : Thread(), ScoutingClient {
+class BluetoothClientInterface(private val btSocket: BluetoothSocket) : Thread(), ScoutingClientInterface {
 
     val TAG: String
     val device = btSocket.remoteDevice
@@ -24,7 +23,8 @@ class BluetoothScoutingClient(private val btSocket: BluetoothSocket)
     var inputListener: ClientInputListener? = null
 
     init {
-        name = "ClientInterfaceThread[${device.address}]"
+        isDaemon = true
+        name = "BluetoothInterface[${device.address}]"
         TAG = name
     }
 
@@ -50,7 +50,7 @@ class BluetoothScoutingClient(private val btSocket: BluetoothSocket)
             while (true) {
                 val obj = ois.readObject()
                 Log.d(TAG, "Received $obj")
-                inputListener?.onClientSentObject(this, obj) ?: Log.w(TAG, "No listener attached!")
+                inputListener?.onReceivedFromClient(this, obj) ?: Log.w(TAG, "No listener attached!")
             }
         } catch (ex: InterruptedException) {
             Log.i(TAG, "Interrupted, gracefully stopping thread")
