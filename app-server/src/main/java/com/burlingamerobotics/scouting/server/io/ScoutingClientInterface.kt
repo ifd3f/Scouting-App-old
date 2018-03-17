@@ -2,16 +2,21 @@ package com.burlingamerobotics.scouting.server.io
 
 import java.io.Closeable
 import java.io.Serializable
+import java.util.*
 
-interface ScoutingClientInterface : Closeable {
+abstract class ScoutingClientInterface : Closeable {
 
-    val displayName: String
+    val uuid = UUID.randomUUID()
 
-    fun begin()
+    abstract val displayName: String
 
-    fun sendObject(obj: Serializable)
+    abstract fun begin()
 
-    fun attachClientInputListener(listener: ClientInputListener)
+    abstract fun sendObject(obj: Serializable)
+
+    abstract fun attachClientInputListener(listener: ClientInputListener)
+
+    fun getSimplified() = ClientInfo(uuid, displayName)
 
 }
 
@@ -22,3 +27,5 @@ interface ClientInputListener {
     fun onClientDisconnected(client: ScoutingClientInterface)
 
 }
+
+data class ClientInfo(val uuid: UUID, val displayName: String) : Serializable

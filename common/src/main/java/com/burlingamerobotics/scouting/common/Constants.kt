@@ -25,6 +25,7 @@ const val INTENT_START_SCOUTING_CLIENT_LOCAL = "com.burlingamerobotics.scouting.
 const val INTENT_START_SCOUTING_CLIENT_BLUETOOTH = "com.burlingamerobotics.scouting.START_BLUETOOTH_CLIENT"
 
 const val INTENT_BIND_LOCAL_CLIENT_TO_SERVER = "com.burlingamerobotics.scouting.BIND_LOCAL_CLIENT_TO_SERVER"
+const val INTENT_BIND_SERVER_WRAPPER = "com.burlingamerobotics.scouting.BIND_SERVER_WRAPPER"
 
 const val INTENT_CLIENT_CONNECTED = "com.burlingamerobotics.scouting.SERVER_CLIENT_CONNECTED"
 const val INTENT_CLIENT_DISCONNECTED = "com.burlingamerobotics.scouting.SERVER_CLIENT_DISCONNECTED"

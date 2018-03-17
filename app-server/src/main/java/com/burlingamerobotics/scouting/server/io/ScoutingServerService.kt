@@ -3,7 +3,10 @@ package com.burlingamerobotics.scouting.server.io
 import android.app.Service
 import android.bluetooth.BluetoothServerSocket
 import android.content.Intent
+import android.os.Handler
 import android.os.IBinder
+import android.os.Message
+import android.os.Messenger
 import android.util.Log
 import com.burlingamerobotics.scouting.common.*
 import com.burlingamerobotics.scouting.common.data.Competition
@@ -13,7 +16,18 @@ import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
 
-class ScoutingServerService : Service(), ClientInputListener {
+class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
+
+    /**
+     * Handle requests from [ScoutingServerServiceWrapper].
+     */
+    override fun handleMessage(msg: Message): Boolean {
+        when (msg.what) {
+
+        }
+        msg.replyTo
+        return true
+    }
 
     val TAG = "ScoutingServerService"
 
@@ -29,11 +43,15 @@ class ScoutingServerService : Service(), ClientInputListener {
         Log.d(TAG, "Received intent $intent")
         when (intent.action) {
             INTENT_BIND_LOCAL_CLIENT_TO_SERVER -> {
-                Log.i(TAG, "Local client wants to bind to server")
+                Log.i(TAG, "Local client wants to bind")
                 val newClient = LocalClientInterface()
                 clients.add(newClient)
                 sendBroadcast(Intent(INTENT_CLIENT_CONNECTED))
                 return newClient.clientRxTx.binder
+            }
+            INTENT_BIND_SERVER_WRAPPER -> {
+                Log.i(TAG, "Server manager wrapper wants to bind")
+                return Messenger(Handler(this)).binder
             }
             else -> {
                 Log.e(TAG, "Illegal intent action ${intent.action}")
