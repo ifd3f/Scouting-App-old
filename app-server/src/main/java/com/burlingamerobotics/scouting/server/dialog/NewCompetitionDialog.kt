@@ -14,8 +14,6 @@ import com.burlingamerobotics.scouting.common.BlueAllianceAPI
 import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.CompetitionBuilder
 import com.burlingamerobotics.scouting.server.R
-import com.burlingamerobotics.scouting.server.REQUEST_CODE_EDIT_COMPETITION
-import com.burlingamerobotics.scouting.server.REQUEST_CODE_NEW_COMPETITION
 import com.burlingamerobotics.scouting.server.activity.CompetitionEditorActivity
 import com.burlingamerobotics.scouting.server.activity.CompetitionSelectionActivity
 import java.util.concurrent.Future

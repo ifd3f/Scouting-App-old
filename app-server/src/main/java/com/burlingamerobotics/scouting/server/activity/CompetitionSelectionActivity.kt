@@ -8,12 +8,13 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.ListView
+import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT_COMPETITION
+import com.burlingamerobotics.scouting.common.REQUEST_CODE_NEW_COMPETITION
 import com.burlingamerobotics.scouting.common.data.CompetitionBuilder
 import com.burlingamerobotics.scouting.common.data.CompetitionFileHeader
-import com.burlingamerobotics.scouting.server.*
+import com.burlingamerobotics.scouting.server.R
 import com.burlingamerobotics.scouting.server.dialog.NewCompetitionDialog
 import com.burlingamerobotics.scouting.server.io.ScoutingDB
-import com.burlingamerobotics.scouting.server.io.ScoutingServer
 
 class CompetitionSelectionActivity : Activity() {
 
@@ -33,7 +34,6 @@ class CompetitionSelectionActivity : Activity() {
 
         dbScouting = ScoutingDB(this)
         dbScouting.prepareDirs()
-        ScoutingServer.db = dbScouting
 
         lvCompetitions = findViewById(R.id.list_competitions)
         btnAddCompetition = findViewById(R.id.btn_add_competition)

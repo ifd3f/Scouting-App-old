@@ -13,11 +13,12 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Switch
 import android.widget.TextView
+import com.burlingamerobotics.scouting.common.INTENT_CLIENT_CONNECTED
 import com.burlingamerobotics.scouting.common.SCOUTING_UUID
 import com.burlingamerobotics.scouting.common.data.Competition
-import com.burlingamerobotics.scouting.server.INTENT_CLIENT_CONNECTED
 import com.burlingamerobotics.scouting.server.R
-import com.burlingamerobotics.scouting.server.io.ScoutingServer
+import com.burlingamerobotics.scouting.server.io.ScoutingClient
+import com.burlingamerobotics.scouting.server.io.ScoutingServerService
 
 class ServerManagerActivity : AppCompatActivity() {
 
@@ -54,6 +55,7 @@ class ServerManagerActivity : AppCompatActivity() {
         registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 if (intent!!.action == INTENT_CLIENT_CONNECTED) {
+                    val client = intent.getSerializableExtra("client")
                     refreshList()
                 }
             }
@@ -66,24 +68,23 @@ class ServerManagerActivity : AppCompatActivity() {
 
     private fun refreshList() {
         Log.d("MasterMgmt", "Refreshing connected clients list")
-        val clients = ScoutingServer.clients
+        val clients: List<ScoutingClient> = TODO("add way to get list of clients")
         clients.forEach {
-            Log.d("MasterMgmt", "Found ${it.device.address}")
+            Log.d("MasterMgmt", "Found $it")
         }
-        lvClients.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, clients.map { it.device.name })
+        lvClients.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, clients.map { it.displayName })
     }
 
     private fun setServerState(state: Boolean) {
         if (state) {
-
-            Log.i("MasterMgmt", "Starting bluetooth server")
-
+            Log.i("MasterMgmt", "Starting scouting server")
             val serverSocket = btAdapter.listenUsingRfcommWithServiceRecord("Scouting Server", SCOUTING_UUID)
-            ScoutingServer.start(this, ScoutingServer.db, serverSocket, competition)
-
+            startService(Intent(this, ScoutingServerService::class.java).apply {
+                putExtra("competition", competition.uuid)
+            })
         } else {
-            Log.i("MasterMgmt", "Stopping bluetooth server")
-            ScoutingServer.stop()
+            Log.i("MasterMgmt", "Stopping scouting server")
+            stopService(Intent(this, ScoutingServerService::class.java))
         }
     }
 

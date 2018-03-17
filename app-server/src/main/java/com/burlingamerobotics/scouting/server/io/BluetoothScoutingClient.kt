@@ -2,8 +2,6 @@ package com.burlingamerobotics.scouting.server.io
 
 import android.bluetooth.BluetoothSocket
 import android.util.Log
-import com.burlingamerobotics.scouting.common.protocol.*
-import java.io.Closeable
 import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
@@ -12,7 +10,7 @@ import java.io.Serializable
 /**
  * The server's view of the client.
  */
-class ClientResponseThread(private val btSocket: BluetoothSocket, private val db: ScoutingDB)
+class BluetoothScoutingClient(private val btSocket: BluetoothSocket)
     : Thread(), ScoutingClient {
 
     val TAG: String
@@ -61,7 +59,7 @@ class ClientResponseThread(private val btSocket: BluetoothSocket, private val db
         } finally {
             btSocket.close()
         }
-        ScoutingServer.onClientDisconnected(this)
+        inputListener?.onClientDisconnected(this)
     }
 
     override fun close() {

@@ -5,13 +5,10 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
-import android.widget.LinearLayout
 import android.widget.TextView
 import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.common.view.MatchRecyclerViewAdapter
 import com.burlingamerobotics.scouting.server.R
-import kotlinx.android.synthetic.main.activity_competition_editor.view.*
 import kotlinx.android.synthetic.main.activity_competition_info.*
 import java.text.SimpleDateFormat
 

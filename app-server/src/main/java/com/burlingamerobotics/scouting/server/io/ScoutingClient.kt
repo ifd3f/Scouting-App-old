@@ -1,6 +1,5 @@
 package com.burlingamerobotics.scouting.server.io
 
-import com.burlingamerobotics.scouting.common.protocol.Event
 import java.io.Closeable
 import java.io.Serializable
 
@@ -17,5 +16,9 @@ interface ScoutingClient : Closeable {
 }
 
 interface ClientInputListener {
+
     fun onClientSentObject(client: ScoutingClient, obj: Any)
+
+    fun onClientDisconnected(client: ScoutingClient)
+
 }
