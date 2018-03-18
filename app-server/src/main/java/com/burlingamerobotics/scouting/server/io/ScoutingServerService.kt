@@ -1,6 +1,7 @@
 package com.burlingamerobotics.scouting.server.io
 
 import android.app.Service
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothServerSocket
 import android.content.Intent
 import android.os.Handler
@@ -35,6 +36,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
     private var btConnectListener: Future<*>? = null
     private var dataSaveTask: Future<*>? = null
 
+    lateinit var btAdapter: BluetoothAdapter
     lateinit var competition: Competition
     lateinit var serverSocket: BluetoothServerSocket
     lateinit var db: ScoutingDB
@@ -61,11 +63,16 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
         }
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        Log.i(TAG, "Starting server")
+    override fun onCreate() {
+        super.onCreate()
+        Log.i(TAG, "Starting")
+        btAdapter = BluetoothAdapter.getDefaultAdapter()
+    }
 
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         db = ScoutingDB(this)
         competition = db.getCompetition(intent.getSerializableExtra("competition") as UUID)!!
+        serverSocket = btAdapter.listenUsingRfcommWithServiceRecord("Scouting Server", SCOUTING_UUID)
 
         btConnectListener = Utils.ioExecutor.submit {
             while (true) {

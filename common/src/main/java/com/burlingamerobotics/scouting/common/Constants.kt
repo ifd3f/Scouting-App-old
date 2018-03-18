@@ -12,7 +12,7 @@ val SCOUTING_UUID = UUID.nameUUIDFromBytes("ironpanthers-scouting-v${PROTOCOL_VE
 const val URL_TBA_API = "https://www.thebluealliance.com/api/v3/"
 val COMPONENT_SCOUTING_SERVER_SERVICE = ComponentName(
         "com.burlingamerobotics.scouting.server",
-        "io.ScoutingServerService")
+        "com.burlingamerobotics.scouting.server.io.ScoutingServerService")
 
 const val INTENT_CLIENT_RESPONSE_TO_MESSAGE = "com.burlingamerobotics.scouting.RESPONSE_TO_MESSAGE"
 const val INTENT_CLIENT_EVENT_RECEIVED = "com.burlingamerobotics.scouting.EVENT_RCV"

@@ -100,12 +100,14 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
     private fun setServerState(state: Boolean) {
         if (state) {
             Log.i("MasterMgmt", "Starting scouting server")
-            val serverSocket = btAdapter.listenUsingRfcommWithServiceRecord("Scouting Server", SCOUTING_UUID)
+            //val serverSocket = btAdapter.listenUsingRfcommWithServiceRecord("Scouting Server", SCOUTING_UUID)
             startService(Intent(this, ScoutingServerService::class.java).apply {
                 putExtra("competition", competition.uuid)
             })
+            Log.d(TAG, "Server started successfully")
             val intent = Intent(this, ScoutingServerService::class.java)
             intent.action = INTENT_BIND_SERVER_WRAPPER
+            Log.d(TAG, "Binding to server with $intent")
             bindService(intent, this, Service.BIND_IMPORTANT)
         } else {
             Log.i("MasterMgmt", "Stopping scouting server")
