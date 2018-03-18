@@ -19,6 +19,7 @@ class BluetoothServerCommStrategy(val device: BluetoothDevice) : ServerCommStrat
 
     override fun onStart() {
         socket = device.createRfcommSocketToServiceRecord(SCOUTING_UUID)
+        socket.connect()
         oos = ObjectOutputStream(socket.outputStream)
         ois = ObjectInputStream(socket.inputStream)
         listenerThread = thread(isDaemon = true) {

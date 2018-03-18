@@ -21,7 +21,10 @@ import java.util.concurrent.TimeUnit
  */
 class ClientService : Service(), CommStrategyListener, Handler.Callback {
 
+    val TAG = "ClientService"
     val responseQueue: ArrayBlockingQueue<Response<*>> = ArrayBlockingQueue(16)
+
+    lateinit var serverCommStrategy: ServerCommStrategy
 
     /**
      * Handle messages for bound contexts.
@@ -31,7 +34,14 @@ class ClientService : Service(), CommStrategyListener, Handler.Callback {
         when (msg.what) {
             MSG_BEGIN_CLIENT -> {
                 Log.d(TAG, "  Received a command to start!")
-                serverCommStrategy.onStart()
+                try {
+                    serverCommStrategy.onStart()
+                } catch (e: Exception) {
+                    Log.e(TAG, "  Failed to connect!", e)
+                    msg.replyTo.send(Message.obtain().apply {
+                        obj = e
+                    })
+                }
             }
             MSG_REQUEST -> {
                 val rq = msg.obj as Request<*>
@@ -58,10 +68,6 @@ class ClientService : Service(), CommStrategyListener, Handler.Callback {
         }
         return true
     }
-
-    val TAG = "ClientService"
-
-    lateinit var serverCommStrategy: ServerCommStrategy
 
     override fun onBind(intent: Intent): IBinder {
         return Messenger(Handler(this)).binder

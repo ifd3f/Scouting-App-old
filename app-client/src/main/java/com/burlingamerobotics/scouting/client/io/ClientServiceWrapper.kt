@@ -24,8 +24,7 @@ class ClientServiceWrapper(val context: Context) : ServiceConnection, Handler.Ca
     }
 
     fun <T> blockingRequest(request: Request<T>): T {
-        serviceTx.send(Message.obtain().apply {
-            replyTo = serviceRx
+        serviceTx.send(getMessage().apply {
             what = MSG_REQUEST
             obj = request
         })
@@ -55,5 +54,17 @@ class ClientServiceWrapper(val context: Context) : ServiceConnection, Handler.Ca
     override fun close() {
         context.unbindService(this)
     }
+
+    fun connect() {
+        serviceTx.send(getMessage().apply {
+            what = MSG_BEGIN_CLIENT
+        })
+        val ex = messageQueue.poll(250L, TimeUnit.MILLISECONDS).obj as Throwable?
+        if (ex != null) {
+            throw ex
+        }
+    }
+
+    private fun getMessage(): Message = Message.obtain().apply { replyTo = serviceRx }
 
 }
