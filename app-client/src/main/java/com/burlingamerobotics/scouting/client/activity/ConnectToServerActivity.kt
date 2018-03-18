@@ -56,17 +56,18 @@ class ConnectToServerActivity : AppCompatActivity() {
                     Log.d(TAG, "Starting client service")
                     startService(intent)
                     Log.d(TAG, "Successfully started client service! Binding wrapper now")
-                    sw.bind()
-                    try {
-                        Log.i(TAG, "Attempting to connect to $serv")
-                        sw.connect()
-                        Log.i(TAG, "Connection success! Starting BrowserActivity")
-                        startActivity(Intent(this, BrowserActivity::class.java))
-                        serviceWrapper = sw
-                    } catch (ex: IOException) {
-                        Log.e(TAG, "Failed to connect to $serv!", ex)
-                        fireToast("Failed to connect!")
-                        stopService(Intent(this, ClientService::class.java))
+                    sw.afterBind {
+                        try {
+                            Log.i(TAG, "Attempting to connect to $serv")
+                            sw.connect()
+                            Log.i(TAG, "Connection success! Starting BrowserActivity")
+                            startActivity(Intent(this, BrowserActivity::class.java))
+                            serviceWrapper = sw
+                        } catch (ex: IOException) {
+                            Log.e(TAG, "Failed to connect to $serv!", ex)
+                            fireToast("Failed to connect!")
+                            stopService(Intent(this, ClientService::class.java))
+                        }
                     }
                 }
 
@@ -86,12 +87,21 @@ class ConnectToServerActivity : AppCompatActivity() {
             refreshServers()
         }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        serviceWrapper?.bind()
         refreshServers()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        serviceWrapper?.close()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        serviceWrapper?.close()
     }
 
     fun refreshServers() {

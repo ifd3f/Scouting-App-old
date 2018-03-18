@@ -27,18 +27,19 @@ class ClientService : Service(), CommStrategyListener, Handler.Callback {
     lateinit var serverCommStrategy: ServerCommStrategy
 
     /**
-     * Handle messages for bound contexts.
+     * Handle messages from [ClientServiceWrapper]s.
      */
     override fun handleMessage(msg: Message): Boolean {
-        Log.i(TAG, "Received $msg")
+        Log.i(TAG, "Received message: $msg")
         when (msg.what) {
             MSG_BEGIN_CLIENT -> {
-                Log.d(TAG, "  Received a command to start!")
+                Log.d(TAG, "Message is a command to start!")
                 try {
                     serverCommStrategy.onStart()
+                    Log.i(TAG, "Successfully connected to server!")
                     msg.replyTo.send(Message.obtain())
                 } catch (e: Exception) {
-                    Log.e(TAG, "  Failed to connect!", e)
+                    Log.e(TAG, "Failed to connect!", e)
                     msg.replyTo.send(Message.obtain().apply {
                         obj = e
                     })
@@ -46,9 +47,9 @@ class ClientService : Service(), CommStrategyListener, Handler.Callback {
             }
             MSG_REQUEST -> {
                 val rq = msg.obj as Request<*>
-                Log.d(TAG, "  Message is a request: $rq")
+                Log.d(TAG, "Message is a request: $rq")
                 Utils.ioExecutor.submit {
-                    Log.d(TAG, "  Sending request to strategy")
+                    Log.d(TAG, "Sending request to strategy")
                     serverCommStrategy.sendObject(rq)
                     msg.replyTo.send(Message.obtain().apply {
                         val received = responseQueue.poll(10000L, TimeUnit.MILLISECONDS)
@@ -60,7 +61,7 @@ class ClientService : Service(), CommStrategyListener, Handler.Callback {
             }
             MSG_POST -> {
                 val post = msg.obj as Post
-                Log.d(TAG, "  Message is a post: $post")
+                Log.d(TAG, "Message is a post: $post")
                 serverCommStrategy.sendObject(post)
             }
             else -> {
@@ -70,7 +71,8 @@ class ClientService : Service(), CommStrategyListener, Handler.Callback {
         return true
     }
 
-    override fun onBind(intent: Intent): IBinder {
+    override fun onBind(intent: Intent?): IBinder {
+        Log.i(TAG, "ClientServiceWrapper wants to bind")
         return Messenger(Handler(this)).binder
     }
 

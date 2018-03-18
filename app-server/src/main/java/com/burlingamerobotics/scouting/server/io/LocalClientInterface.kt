@@ -4,13 +4,16 @@ import android.os.Handler
 import android.os.Message
 import android.os.Messenger
 import android.util.Log
+import com.burlingamerobotics.scouting.common.MSG_GIVE_RX
+import com.burlingamerobotics.scouting.common.MSG_SEND_OBJ
 import java.io.Serializable
 
 
 class LocalClientInterface : Handler.Callback, ScoutingClientInterface() {
     val TAG = "LocalClientInterface"
 
-    val clientRx = Messenger(Handler(this))
+    lateinit var tx: Messenger
+    val rx = Messenger(Handler(this))
     var listener: ClientInputListener? = null
 
     override fun attachClientInputListener(listener: ClientInputListener) {
@@ -20,19 +23,31 @@ class LocalClientInterface : Handler.Callback, ScoutingClientInterface() {
     override val displayName: String = "Local Client"
 
     override fun begin() {
-        Log.i(TAG, "starting...")
+        Log.i(TAG, "Starting")
     }
 
     override fun handleMessage(msg: Message): Boolean {
-        val obj = msg.obj
-        Log.d(TAG, "Received $obj")
-        listener?.onReceivedFromClient(this, obj) ?: Log.w(TAG, "  No listener attached to receive it")
+        Log.d(TAG, "Received from ClientService: $msg")
+        when (msg.what) {
+            MSG_GIVE_RX -> {
+                Log.d(TAG,"Received a RX messenger")
+                tx = msg.replyTo
+            }
+            MSG_SEND_OBJ -> {
+                val obj = msg.obj
+                Log.d(TAG, "Unpacked from ClientService: $obj")
+                listener?.onReceivedFromClient(this, obj) ?: Log.w(TAG, "No listener attached to receive it!")
+            }
+            else -> {
+                Log.w(TAG, "Could not process ${msg.what}!")
+            }
+        }
         return true
     }
 
     override fun sendObject(obj: Serializable) {
-        Log.d(TAG, "Sending $obj")
-        clientRx.send(Message.obtain().also {
+        Log.d(TAG, "Sending to ClientService: $obj")
+        tx.send(Message.obtain().also {
             it.obj = obj
         })
     }

@@ -70,12 +70,17 @@ class TeamListFragment : Fragment() {
             Log.i(TAG, "User selected $position which corresponds to ${teamList[position]}")
         }
 
-        refresh()
         return view
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onResume() {
+        super.onResume()
+        serviceWrapper.bind()
+        refresh()
+    }
+
+    override fun onPause() {
+        super.onPause()
         serviceWrapper.close()
     }
 

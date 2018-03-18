@@ -1,6 +1,5 @@
 package com.burlingamerobotics.scouting.client.fragment
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -64,18 +63,19 @@ class MatchListFragment : Fragment() {
         lvMatches.layoutManager = LinearLayoutManager(context)
         refresher.setOnRefreshListener { refreshMatches() }
 
-        refreshMatches()
-
         return view
     }
 
     override fun onResume() {
         super.onResume()
-        refreshMatches()
+        serviceWrapper.afterBind {
+            Log.d(TAG, "Binding finished")
+            refreshMatches()
+        }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onPause() {
+        super.onPause()
         serviceWrapper.close()
     }
 
@@ -84,7 +84,8 @@ class MatchListFragment : Fragment() {
         refresher.isRefreshing = true
         Utils.ioExecutor.execute {
             val obj = serviceWrapper.blockingRequest(CompetitionRequest)
-            refreshHandler.sendMessage(Message().also {
+            Log.d(TAG, "Received $obj")
+            refreshHandler.sendMessage(Message.obtain().also {
                 it.obj = obj
             })
         }

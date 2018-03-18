@@ -5,21 +5,22 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.net.Uri
 import android.os.Handler
 import android.os.IBinder
 import android.os.Message
 import android.os.Messenger
 import android.util.Log
-import com.burlingamerobotics.scouting.common.INTENT_BIND_LOCAL_CLIENT_TO_SERVER
 import com.burlingamerobotics.scouting.common.COMPONENT_SCOUTING_SERVER_SERVICE
+import com.burlingamerobotics.scouting.common.INTENT_BIND_LOCAL_CLIENT_TO_SERVER
+import com.burlingamerobotics.scouting.common.MSG_GIVE_RX
+import com.burlingamerobotics.scouting.common.MSG_SEND_OBJ
 
 class LocalServerCommStrategy(val context: Context) : ServerCommStrategy(), ServiceConnection, Handler.Callback {
 
     val TAG = "LocalServerComm"
 
-    lateinit var serviceTx: Messenger
-    val serviceRx: Messenger = Messenger(Handler(this))
+    lateinit var tx: Messenger
+    val rx: Messenger = Messenger(Handler(this))
 
     override fun onStart(): Boolean {
         val intent = Intent()
@@ -34,23 +35,33 @@ class LocalServerCommStrategy(val context: Context) : ServerCommStrategy(), Serv
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder) {
         Log.i(TAG, "Successfully bound to server!")
-        serviceTx = Messenger(service)
+        tx = Messenger(service)
+        Log.d(TAG, "Sending our RX messenger")
+        tx.send(Message.obtain().apply {
+            what = MSG_GIVE_RX
+            replyTo = rx
+        })
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
 
     }
 
+    /**
+     * Handle messages coming from server.
+     */
     override fun handleMessage(msg: Message): Boolean {
-        Log.d(TAG, "Received from service: $msg")
+        Log.d(TAG, "Received from ServerService: $msg")
         listener?.onReceivedObject(msg.obj) ?: Log.w(TAG, "There was no listener to receive it")
         return true
     }
 
     override fun sendObject(obj: Any) {
-        serviceTx.send(Message.obtain().apply {
-            replyTo = serviceRx
-            this@apply.obj = obj
+        Log.d(TAG, "Sending to ServerService: $obj")
+        tx.send(Message.obtain().also {
+            it.what = MSG_SEND_OBJ
+            it.replyTo = rx
+            it.obj = obj
         })
     }
 

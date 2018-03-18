@@ -4,7 +4,7 @@ import java.io.Closeable
 import java.io.Serializable
 import java.util.*
 
-abstract class ScoutingClientInterface : Closeable {
+abstract class ScoutingClientInterface : AutoCloseable {
 
     val uuid = UUID.randomUUID()
 

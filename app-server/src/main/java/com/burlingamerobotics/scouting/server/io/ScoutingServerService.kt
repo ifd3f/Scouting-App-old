@@ -49,8 +49,8 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
                 val newClient = LocalClientInterface()
                 newClient.attachClientInputListener(this)
                 clients.add(newClient)
-                sendBroadcast(Intent(INTENT_CLIENT_CONNECTED))
-                return newClient.clientRx.binder
+                sendBroadcast(Intent(INTENT_CLIENT_CONNECTED).apply { putExtra("client", newClient.getSimplified()) })
+                return newClient.rx.binder
             }
             INTENT_BIND_SERVER_WRAPPER -> {
                 Log.i(TAG, "Server manager wrapper wants to bind")
@@ -125,7 +125,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
     override fun onClientDisconnected(client: ScoutingClientInterface) {
         Log.i(TAG, "$client disconnected, removing from list")
         clients.remove(client)
-        sendBroadcast(Intent(INTENT_CLIENT_DISCONNECTED))
+        sendBroadcast(Intent(INTENT_CLIENT_DISCONNECTED).apply { putExtra("client", client.getSimplified()) })
     }
 
     fun processPost(client: ScoutingClientInterface, post: Post) {

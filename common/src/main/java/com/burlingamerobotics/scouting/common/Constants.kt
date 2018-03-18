@@ -3,6 +3,9 @@ package com.burlingamerobotics.scouting.common
 import android.content.ComponentName
 import java.util.*
 
+const val MSG_GIVE_RX = 12421
+const val MSG_SEND_OBJ = 2389
+
 const val API_KEY_TBA = "eeszr95mLfyCJkDqDrXAxsW93MgRYrmn8lLqrUJ76GfSYIWNxA8N5mCUILlX3dFN"
 
 const val PROTOCOL_VERSION = "1.0.07"
