@@ -40,14 +40,15 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
     lateinit var db: ScoutingDB
 
     override fun onBind(intent: Intent): IBinder {
-        Log.d(TAG, "Received intent $intent")
+        Log.d(TAG, "Received intent to bind: $intent")
         when (intent.action) {
             INTENT_BIND_LOCAL_CLIENT_TO_SERVER -> {
                 Log.i(TAG, "Local client wants to bind")
                 val newClient = LocalClientInterface()
+                newClient.attachClientInputListener(this)
                 clients.add(newClient)
                 sendBroadcast(Intent(INTENT_CLIENT_CONNECTED))
-                return newClient.clientRxTx.binder
+                return newClient.clientRx.binder
             }
             INTENT_BIND_SERVER_WRAPPER -> {
                 Log.i(TAG, "Server manager wrapper wants to bind")
@@ -69,9 +70,10 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
         btConnectListener = Utils.ioExecutor.submit {
             while (true) {
                 val client = BluetoothClientInterface(serverSocket.accept())
+                client.attachClientInputListener(this)
                 Log.i(TAG, "Bluetooth device at ${client.device.address} connected")
                 clients.add(client)
-                client.start()
+                client.begin()
                 sendBroadcast(Intent(INTENT_CLIENT_CONNECTED))
             }
         }

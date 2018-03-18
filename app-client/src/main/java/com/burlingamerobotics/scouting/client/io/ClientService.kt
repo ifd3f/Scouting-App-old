@@ -30,12 +30,13 @@ class ClientService : Service(), CommStrategyListener, Handler.Callback {
      * Handle messages for bound contexts.
      */
     override fun handleMessage(msg: Message): Boolean {
-        Log.i(TAG, "Received $msg from ${msg.replyTo}")
+        Log.i(TAG, "Received $msg")
         when (msg.what) {
             MSG_BEGIN_CLIENT -> {
                 Log.d(TAG, "  Received a command to start!")
                 try {
                     serverCommStrategy.onStart()
+                    msg.replyTo.send(Message.obtain())
                 } catch (e: Exception) {
                     Log.e(TAG, "  Failed to connect!", e)
                     msg.replyTo.send(Message.obtain().apply {
@@ -73,16 +74,26 @@ class ClientService : Service(), CommStrategyListener, Handler.Callback {
         return Messenger(Handler(this)).binder
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        Log.i(TAG, "Starting")
+    }
+
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         when (intent.action) {
             INTENT_START_SCOUTING_CLIENT_BLUETOOTH -> {
+                Log.i(TAG, "Setting up as bluetooth client")
                 val device = intent.getParcelableExtra<BluetoothDevice>("device")
                 serverCommStrategy = BluetoothServerCommStrategy(device)
                 serverCommStrategy.attachListener(this)
             }
             INTENT_START_SCOUTING_CLIENT_LOCAL -> {
+                Log.i(TAG, "Setting up as local client")
                 serverCommStrategy = LocalServerCommStrategy(this)
                 serverCommStrategy.attachListener(this)
+            }
+            else -> {
+                throw IllegalArgumentException("Cannot use action ${intent.action}!")
             }
         }
         return super.onStartCommand(intent, flags, startId)

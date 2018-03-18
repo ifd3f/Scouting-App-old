@@ -6,13 +6,13 @@ import android.content.*
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
-import android.os.Message
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Switch
 import android.widget.TextView
+import com.burlingamerobotics.scouting.common.INTENT_BIND_SERVER_WRAPPER
 import com.burlingamerobotics.scouting.common.INTENT_CLIENT_CONNECTED
 import com.burlingamerobotics.scouting.common.INTENT_CLIENT_DISCONNECTED
 import com.burlingamerobotics.scouting.common.SCOUTING_UUID
@@ -89,6 +89,7 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder) {
+        Log.i(TAG, "Service bound successfully!")
         serviceWrapper = ScoutingServerServiceWrapper(service)
     }
 
@@ -103,7 +104,9 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
             startService(Intent(this, ScoutingServerService::class.java).apply {
                 putExtra("competition", competition.uuid)
             })
-            bindService(Intent(this, ScoutingServerService::class.java), this, Service.BIND_IMPORTANT)
+            val intent = Intent(this, ScoutingServerService::class.java)
+            intent.action = INTENT_BIND_SERVER_WRAPPER
+            bindService(intent, this, Service.BIND_IMPORTANT)
         } else {
             Log.i("MasterMgmt", "Stopping scouting server")
             stopService(Intent(this, ScoutingServerService::class.java))

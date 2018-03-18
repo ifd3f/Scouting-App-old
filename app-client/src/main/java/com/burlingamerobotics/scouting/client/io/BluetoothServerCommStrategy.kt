@@ -17,7 +17,7 @@ class BluetoothServerCommStrategy(val device: BluetoothDevice) : ServerCommStrat
     lateinit var ois: ObjectInputStream
     lateinit var listenerThread: Thread
 
-    override fun onStart() {
+    override fun onStart(): Boolean {
         socket = device.createRfcommSocketToServiceRecord(SCOUTING_UUID)
         socket.connect()
         oos = ObjectOutputStream(socket.outputStream)
@@ -30,6 +30,7 @@ class BluetoothServerCommStrategy(val device: BluetoothDevice) : ServerCommStrat
             }
         }
         listenerThread.start()
+        return true
     }
 
     override fun sendObject(obj: Any) {

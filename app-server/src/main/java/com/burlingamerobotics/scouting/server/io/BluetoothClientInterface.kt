@@ -10,10 +10,12 @@ import java.io.Serializable
 /**
  * The server's view of the client.
  */
-class BluetoothClientInterface(private val btSocket: BluetoothSocket) : Thread(), ScoutingClientInterface {
+class BluetoothClientInterface(private val btSocket: BluetoothSocket) : ScoutingClientInterface(), Runnable {
 
-    val TAG: String
     val device = btSocket.remoteDevice
+    val TAG: String = "BluetoothInterface[${device.address}]"
+
+    private var thread: Thread? = null
 
     lateinit var ois: ObjectInputStream
     lateinit var oos: ObjectOutputStream
@@ -22,18 +24,15 @@ class BluetoothClientInterface(private val btSocket: BluetoothSocket) : Thread()
 
     var inputListener: ClientInputListener? = null
 
-    init {
-        isDaemon = true
-        name = "BluetoothInterface[${device.address}]"
-        TAG = name
-    }
-
     override fun attachClientInputListener(listener: ClientInputListener) {
         inputListener = listener
     }
 
     override fun begin() {
-        start()
+        val thread = Thread(this)
+        thread.isDaemon = true
+        thread.start()
+        this.thread = thread
     }
 
     override fun sendObject(obj: Serializable) {
@@ -63,7 +62,7 @@ class BluetoothClientInterface(private val btSocket: BluetoothSocket) : Thread()
     }
 
     override fun close() {
-        interrupt()
+        thread?.interrupt()
     }
 
 }

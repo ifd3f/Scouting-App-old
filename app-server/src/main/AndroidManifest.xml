@@ -52,7 +52,13 @@
                 android:value="com.burlingamerobotics.scouting.server.activity.CompetitionSelectionActivity" />
         </activity>
 
-        <service android:name=".io.ScoutingServerService" />
+        <service android:name="io.ScoutingServerService"
+            android:process=":remote"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.burlingamerobotics.scouting.BIND_LOCAL_CLIENT_TO_SERVER"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

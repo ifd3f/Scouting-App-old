@@ -15,7 +15,7 @@ abstract class ServerCommStrategy : Closeable {
         this.listener = listener
     }
 
-    abstract fun onStart()
+    abstract fun onStart(): Boolean
 
     abstract fun sendObject(obj: Any)
 }
@@ -28,13 +28,13 @@ interface CommStrategyListener {
 
 interface ServerData {
     val displayName: String
-    fun getServiceIntent(context: Context): Intent?
+    fun getStartServiceIntent(context: Context): Intent?
 }
 
 class BluetoothServerData(val device: BluetoothDevice) : ServerData {
     override val displayName: String = device.name
 
-    override fun getServiceIntent(context: Context): Intent? {
+    override fun getStartServiceIntent(context: Context): Intent? {
         val intent = Intent(context, ClientService::class.java)
         intent.action = INTENT_START_SCOUTING_CLIENT_BLUETOOTH
         intent.putExtra("device", device)
@@ -47,7 +47,7 @@ class BluetoothServerData(val device: BluetoothDevice) : ServerData {
 object LocalServerData : ServerData {
     override val displayName: String = "Local Server"
 
-    override fun getServiceIntent(context: Context): Intent? {
+    override fun getStartServiceIntent(context: Context): Intent? {
         val intent = Intent(context, ClientService::class.java)
         intent.action = INTENT_START_SCOUTING_CLIENT_LOCAL
         return intent

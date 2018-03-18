@@ -19,11 +19,13 @@ import java.io.IOException
 
 class ConnectToServerActivity : AppCompatActivity() {
 
+    val TAG = "ConnectToServer"
+
     lateinit var swipeRefresh: SwipeRefreshLayout
     lateinit var btAdapter: BluetoothAdapter
     lateinit var lvServers: ListView
     lateinit var lsServers: List<ServerData>
-    lateinit var serviceWrapper: ClientServiceWrapper
+    var serviceWrapper: ClientServiceWrapper? = null
 
     private val toastHandler = Handler(Handler.Callback { msg ->
         val bundle = msg!!.data
@@ -47,18 +49,22 @@ class ConnectToServerActivity : AppCompatActivity() {
 
         lvServers.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
             val serv = lsServers[position]
+            val sw = ClientServiceWrapper(this)
             try {
-                val intent = serv.getServiceIntent(this)!!
+                val intent = serv.getStartServiceIntent(this)!!
                 Utils.ioExecutor.execute {
-                    Log.i("ClientConnect", "Attempting to connect to $serv")
+                    Log.d(TAG, "Starting client service")
                     startService(intent)
-                    serviceWrapper = ClientServiceWrapper(this)
+                    Log.d(TAG, "Successfully started client service! Binding wrapper now")
+                    sw.bind()
                     try {
-                        serviceWrapper.connect()
-                        Log.i("ClientConnect", "Connection success! Starting BrowserActivity")
+                        Log.i(TAG, "Attempting to connect to $serv")
+                        sw.connect()
+                        Log.i(TAG, "Connection success! Starting BrowserActivity")
                         startActivity(Intent(this, BrowserActivity::class.java))
+                        serviceWrapper = sw
                     } catch (ex: IOException) {
-                        Log.e("ClientConnect", "Failed to connect to $serv!", ex)
+                        Log.e(TAG, "Failed to connect to $serv!", ex)
                         fireToast("Failed to connect!")
                         stopService(Intent(this, ClientService::class.java))
                     }
@@ -68,7 +74,7 @@ class ConnectToServerActivity : AppCompatActivity() {
                 fireToast("Failed to connect!")
                 when (ex) {
                     is IOException -> {
-                        Log.e("ClientConnect", "Failed to connect to $serv: Bluetooth unavailable", ex)
+                        Log.e(TAG, "Failed to connect to $serv: Bluetooth unavailable", ex)
                     }
                     else -> throw ex
                 }
@@ -76,7 +82,7 @@ class ConnectToServerActivity : AppCompatActivity() {
         }
 
         swipeRefresh.setOnRefreshListener {
-            Log.i("ClientConnect", "Refreshing BT devices")
+            Log.i(TAG, "Refreshing BT devices")
             refreshServers()
         }
 
@@ -85,13 +91,13 @@ class ConnectToServerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        serviceWrapper.close()
+        serviceWrapper?.close()
     }
 
     fun refreshServers() {
         lsServers = listServers()
         lsServers.forEach {
-            Log.d("ClientConnect", "Found $it")
+            Log.d(TAG, "Found $it")
         }
         lvServers.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, lsServers.map {
             it.displayName

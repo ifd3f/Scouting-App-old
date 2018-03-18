@@ -1,5 +1,6 @@
 package com.burlingamerobotics.scouting.common
 
+import android.content.ComponentName
 import java.util.*
 
 const val API_KEY_TBA = "eeszr95mLfyCJkDqDrXAxsW93MgRYrmn8lLqrUJ76GfSYIWNxA8N5mCUILlX3dFN"
@@ -9,7 +10,9 @@ const val PROTOCOL_VERSION = "1.0.07"
 val SCOUTING_UUID = UUID.nameUUIDFromBytes("ironpanthers-scouting-v${PROTOCOL_VERSION}".toByteArray())
 
 const val URL_TBA_API = "https://www.thebluealliance.com/api/v3/"
-const val URI_SCOUTING_SERVER_SERVICE = "com.burlingamerobotics.scouting.server.io.ScoutingServerService"
+val COMPONENT_SCOUTING_SERVER_SERVICE = ComponentName(
+        "com.burlingamerobotics.scouting.server",
+        "io.ScoutingServerService")
 
 const val INTENT_CLIENT_RESPONSE_TO_MESSAGE = "com.burlingamerobotics.scouting.RESPONSE_TO_MESSAGE"
 const val INTENT_CLIENT_EVENT_RECEIVED = "com.burlingamerobotics.scouting.EVENT_RCV"
