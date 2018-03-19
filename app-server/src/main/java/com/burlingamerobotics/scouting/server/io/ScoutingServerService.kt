@@ -69,7 +69,8 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
         btAdapter = BluetoothAdapter.getDefaultAdapter()
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent!!
         db = ScoutingDB(this)
         competition = db.getCompetition(intent.getSerializableExtra("competition") as UUID)!!
         serverSocket = btAdapter.listenUsingRfcommWithServiceRecord("Scouting Server", SCOUTING_UUID)

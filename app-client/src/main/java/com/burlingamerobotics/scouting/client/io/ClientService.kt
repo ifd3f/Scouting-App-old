@@ -48,12 +48,14 @@ class ClientService : Service(), CommStrategyListener, Handler.Callback {
             MSG_REQUEST -> {
                 val rq = msg.obj as Request<*>
                 Log.d(TAG, "Message is a request: $rq")
+                val reply = msg.replyTo!!
+                Log.d(TAG, "Will send response to $reply")
                 Utils.ioExecutor.submit {
                     Log.d(TAG, "Sending request to strategy")
                     serverCommStrategy.sendObject(rq)
-                    msg.replyTo.send(Message.obtain().apply {
-                        val received = responseQueue.poll(10000L, TimeUnit.MILLISECONDS)
-                        Log.d(TAG, "  Received $received, sending to replyTo")
+                    val received = responseQueue.poll(10000L, TimeUnit.MILLISECONDS)
+                    Log.d(TAG, "Received from Server: $received")
+                    reply.send(Message.obtain().apply {
                         what = MSG_RESPONSE
                         obj = received
                     })
@@ -81,7 +83,8 @@ class ClientService : Service(), CommStrategyListener, Handler.Callback {
         Log.i(TAG, "Starting")
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent!!
         when (intent.action) {
             INTENT_START_SCOUTING_CLIENT_BLUETOOTH -> {
                 Log.i(TAG, "Setting up as bluetooth client")

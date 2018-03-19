@@ -5,22 +5,17 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.os.Handler
-import android.os.IBinder
-import android.os.Message
-import android.os.Messenger
+import android.os.*
 import android.util.Log
-import com.burlingamerobotics.scouting.common.COMPONENT_SCOUTING_SERVER_SERVICE
-import com.burlingamerobotics.scouting.common.INTENT_BIND_LOCAL_CLIENT_TO_SERVER
-import com.burlingamerobotics.scouting.common.MSG_GIVE_RX
-import com.burlingamerobotics.scouting.common.MSG_SEND_OBJ
+import com.burlingamerobotics.scouting.common.*
+import java.io.Serializable
 
 class LocalServerCommStrategy(val context: Context) : ServerCommStrategy(), ServiceConnection, Handler.Callback {
 
-    val TAG = "LocalServerComm"
+    private val TAG = "LocalServerComm"
 
-    lateinit var tx: Messenger
-    val rx: Messenger = Messenger(Handler(this))
+    private lateinit var tx: Messenger
+    private val rx: Messenger = Messenger(Handler(this))
 
     override fun onStart(): Boolean {
         val intent = Intent()
@@ -52,16 +47,18 @@ class LocalServerCommStrategy(val context: Context) : ServerCommStrategy(), Serv
      */
     override fun handleMessage(msg: Message): Boolean {
         Log.d(TAG, "Received from ServerService: $msg")
-        listener?.onReceivedObject(msg.obj) ?: Log.w(TAG, "There was no listener to receive it")
+        val obj = msg.data.getSerializable("object")!!
+        Log.d(TAG, "Unpacked object $obj")
+        listener?.onReceivedObject(obj) ?: Log.w(TAG, "There was no listener to receive it")
         return true
     }
 
     override fun sendObject(obj: Any) {
-        val msg = Message.obtain().also {
-            it.what = MSG_SEND_OBJ
-            it.replyTo = rx
-            it.obj = obj
-        }
+        Log.d(TAG, "Preparing message with serialized $obj")
+        val msg = Message.obtain()
+        msg.what = MSG_SEND_OBJ
+        msg.replyTo = rx
+        msg.data.putSerializable("object", obj as Serializable)
         Log.d(TAG, "Sending to ServerService: $msg")
         tx.send(msg)
     }

@@ -12,6 +12,7 @@ import android.os.Messenger
 import android.util.Log
 import com.burlingamerobotics.scouting.common.protocol.Post
 import com.burlingamerobotics.scouting.common.protocol.Request
+import com.burlingamerobotics.scouting.common.protocol.Response
 import java.util.*
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -19,11 +20,11 @@ import java.util.concurrent.TimeUnit
 class ClientServiceWrapper(val context: Context) : ServiceConnection, Handler.Callback, AutoCloseable {
 
     val uuid: UUID = UUID.randomUUID()
-    val TAG = "ClientWrap-${java.lang.Long.toHexString(uuid.mostSignificantBits)}"
+    private val TAG = "ClientWrap-${java.lang.Long.toHexString(uuid.mostSignificantBits)}"
 
-    lateinit var serviceTx: Messenger
-    val serviceRx = Messenger(Handler(this))
-    private val responseQueue = ArrayBlockingQueue<Message>(4)
+    private lateinit var tx: Messenger
+    private val rx = Messenger(Handler(this))
+    private val msgQueue = ArrayBlockingQueue<Message>(4)
     private var onBound: Runnable? = null
 
     fun bind(onBound: () -> Unit) {
@@ -38,25 +39,26 @@ class ClientServiceWrapper(val context: Context) : ServiceConnection, Handler.Ca
 
     fun <T> blockingRequest(request: Request<T>): T {
         Log.d(TAG, "Sending request to ClientService: $request")
-        serviceTx.send(Message.obtain().apply {
-            replyTo = serviceRx
+        tx.send(Message.obtain().apply {
+            replyTo = rx
             what = MSG_REQUEST
             obj = request
         })
-        val res = responseQueue.poll(250L, TimeUnit.MILLISECONDS).obj
-        Log.d(TAG, "Got $res")
-
-        return res as T
+        Log.d(TAG, "Expecting reply on RX: $rx")
+        val res = msgQueue.poll(10000L, TimeUnit.MILLISECONDS).obj as Response<T>
+        Log.d(TAG, "Received from server: $res")
+        return res.payload
     }
 
     override fun handleMessage(msg: Message): Boolean {
-        responseQueue.add(msg)
+        Log.d(TAG, "Received from ClientService: $msg")
+        msgQueue.add(msg)
         return true
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder) {
         Log.d(TAG, "Successfully bound to ClientService!")
-        serviceTx = Messenger(service)
+        tx = Messenger(service)
         onBound?.run()
     }
 
@@ -66,7 +68,7 @@ class ClientServiceWrapper(val context: Context) : ServiceConnection, Handler.Ca
 
     fun post(post: Post) {
         Log.d(TAG, "Sending post to ClientService: $post")
-        serviceTx.send(Message.obtain().apply {
+        tx.send(Message.obtain().apply {
             what = MSG_POST
             obj = post
         })
@@ -79,11 +81,11 @@ class ClientServiceWrapper(val context: Context) : ServiceConnection, Handler.Ca
 
     fun connect() {
         Log.d(TAG, "Requesting ClientService to connect")
-        serviceTx.send(Message.obtain().apply {
+        tx.send(Message.obtain().apply {
             what = MSG_BEGIN_CLIENT
-            replyTo = serviceRx
+            replyTo = rx
         })
-        val ex = responseQueue.poll(1000L, TimeUnit.MILLISECONDS)?.obj as Throwable?
+        val ex = msgQueue.poll(1000L, TimeUnit.MILLISECONDS)?.obj as Throwable?
         if (ex != null) {
             throw ex
         }

@@ -6,6 +6,7 @@ import android.os.Messenger
 import android.util.Log
 import com.burlingamerobotics.scouting.common.MSG_GIVE_RX
 import com.burlingamerobotics.scouting.common.MSG_SEND_OBJ
+import com.burlingamerobotics.scouting.common.deserialized
 import java.io.Serializable
 
 
@@ -34,8 +35,8 @@ class LocalClientInterface : Handler.Callback, ScoutingClientInterface() {
                 tx = msg.replyTo
             }
             MSG_SEND_OBJ -> {
-                val obj = msg.obj
-                Log.d(TAG, "Unpacked from ClientService: $obj")
+                val obj = msg.data.getSerializable("object")
+                Log.d(TAG, "Unpacked object from ClientService: $obj")
                 listener?.onReceivedFromClient(this, obj) ?: Log.w(TAG, "No listener attached to receive it!")
             }
             else -> {
@@ -48,7 +49,7 @@ class LocalClientInterface : Handler.Callback, ScoutingClientInterface() {
     override fun sendObject(obj: Serializable) {
         Log.d(TAG, "Sending to ClientService: $obj")
         tx.send(Message.obtain().also {
-            it.obj = obj
+            it.data.putSerializable("object", obj)
         })
     }
 
