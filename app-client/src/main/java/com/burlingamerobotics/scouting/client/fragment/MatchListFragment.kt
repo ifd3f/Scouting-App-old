@@ -68,7 +68,7 @@ class MatchListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        serviceWrapper.afterBind {
+        serviceWrapper.bind {
             Log.d(TAG, "Binding finished")
             refreshMatches()
         }

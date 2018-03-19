@@ -56,7 +56,7 @@ class ConnectToServerActivity : AppCompatActivity() {
                     Log.d(TAG, "Starting client service")
                     startService(intent)
                     Log.d(TAG, "Successfully started client service! Binding wrapper now")
-                    sw.afterBind {
+                    sw.bind {
                         try {
                             Log.i(TAG, "Attempting to connect to $serv")
                             sw.connect()

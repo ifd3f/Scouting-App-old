@@ -10,7 +10,6 @@ import android.os.IBinder
 import android.os.Message
 import android.os.Messenger
 import android.util.Log
-import com.burlingamerobotics.scouting.common.MSG_GIVE_RX
 import com.burlingamerobotics.scouting.common.protocol.Post
 import com.burlingamerobotics.scouting.common.protocol.Request
 import java.util.*
@@ -27,7 +26,7 @@ class ClientServiceWrapper(val context: Context) : ServiceConnection, Handler.Ca
     private val responseQueue = ArrayBlockingQueue<Message>(4)
     private var onBound: Runnable? = null
 
-    fun afterBind(onBound: () -> Unit) {
+    fun bind(onBound: () -> Unit) {
         bind(Runnable(onBound))
     }
 

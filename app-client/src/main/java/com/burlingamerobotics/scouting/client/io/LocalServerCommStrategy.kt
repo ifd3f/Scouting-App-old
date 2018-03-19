@@ -57,12 +57,13 @@ class LocalServerCommStrategy(val context: Context) : ServerCommStrategy(), Serv
     }
 
     override fun sendObject(obj: Any) {
-        Log.d(TAG, "Sending to ServerService: $obj")
-        tx.send(Message.obtain().also {
+        val msg = Message.obtain().also {
             it.what = MSG_SEND_OBJ
             it.replyTo = rx
             it.obj = obj
-        })
+        }
+        Log.d(TAG, "Sending to ServerService: $msg")
+        tx.send(msg)
     }
 
     override fun close() {

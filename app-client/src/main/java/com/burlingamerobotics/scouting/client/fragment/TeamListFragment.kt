@@ -75,8 +75,9 @@ class TeamListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        serviceWrapper.bind()
-        refresh()
+        serviceWrapper.bind {
+            refresh()
+        }
     }
 
     override fun onPause() {

@@ -30,7 +30,7 @@ class ClientService : Service(), CommStrategyListener, Handler.Callback {
      * Handle messages from [ClientServiceWrapper]s.
      */
     override fun handleMessage(msg: Message): Boolean {
-        Log.i(TAG, "Received message: $msg")
+        Log.i(TAG, "Received message from CSW: $msg")
         when (msg.what) {
             MSG_BEGIN_CLIENT -> {
                 Log.d(TAG, "Message is a command to start!")
