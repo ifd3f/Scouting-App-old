@@ -1,10 +1,14 @@
 package com.burlingamerobotics.scouting.client.activity
 
+import android.app.Service
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.content.ComponentName
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.Handler
+import android.os.IBinder
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -14,18 +18,16 @@ import android.widget.ListView
 import android.widget.Toast
 import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.io.*
-import com.burlingamerobotics.scouting.common.Utils
 import java.io.IOException
 
-class ConnectToServerActivity : AppCompatActivity() {
+class ConnectToServerActivity : AppCompatActivity(), ServiceConnection {
+    private val TAG = "ConnectToServer"
 
-    val TAG = "ConnectToServer"
-
-    lateinit var swipeRefresh: SwipeRefreshLayout
-    lateinit var btAdapter: BluetoothAdapter
-    lateinit var lvServers: ListView
-    lateinit var lsServers: List<ServerData>
-    var serviceWrapper: ClientServiceWrapper? = null
+    private lateinit var swipeRefresh: SwipeRefreshLayout
+    private lateinit var btAdapter: BluetoothAdapter
+    private lateinit var lvServers: ListView
+    private lateinit var lsServers: List<ServerData>
+    private var service: ScoutingClientServiceBinder? = null
 
     private val toastHandler = Handler(Handler.Callback { msg ->
         val bundle = msg!!.data
@@ -49,36 +51,16 @@ class ConnectToServerActivity : AppCompatActivity() {
 
         lvServers.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
             val serv = lsServers[position]
-            val sw = ClientServiceWrapper(this)
+            Log.i(TAG, "User selected $serv at $position")
             try {
-                val intent = serv.getStartServiceIntent(this)!!
-                Utils.ioExecutor.execute {
-                    Log.d(TAG, "Starting client service")
-                    startService(intent)
-                    Log.d(TAG, "Successfully started client service! Binding wrapper now")
-                    sw.bind {
-                        try {
-                            Log.i(TAG, "Attempting to connect to $serv")
-                            sw.connect()
-                            Log.i(TAG, "Connection success! Starting BrowserActivity")
-                            startActivity(Intent(this, BrowserActivity::class.java))
-                            serviceWrapper = sw
-                        } catch (ex: IOException) {
-                            Log.e(TAG, "Failed to connect to $serv!", ex)
-                            fireToast("Failed to connect!")
-                            stopService(Intent(this, ClientService::class.java))
-                        }
-                    }
-                }
-
-            } catch (ex: Exception) {
+                Log.i(TAG, "Attempting to connect to server")
+                service!!.connectTo(serv)
+                Log.i(TAG, "Connection success! Starting BrowserActivity")
+                startActivity(Intent(this, BrowserActivity::class.java))
+            } catch (ex: IOException) {
+                Log.e(TAG, "Failed to connect to server!", ex)
                 fireToast("Failed to connect!")
-                when (ex) {
-                    is IOException -> {
-                        Log.e(TAG, "Failed to connect to $serv: Bluetooth unavailable", ex)
-                    }
-                    else -> throw ex
-                }
+                stopService(Intent(this, ScoutingClientService::class.java))
             }
         }
 
@@ -87,21 +69,27 @@ class ConnectToServerActivity : AppCompatActivity() {
             refreshServers()
         }
 
+        Log.i(TAG, "Starting and binding to ScoutingClientService")
+        bindService(Intent(this, ScoutingClientService::class.java), this, Service.BIND_AUTO_CREATE)
+    }
+
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        Log.d(TAG, "Bound to ScoutingClientService!")
+        this.service = service!! as ScoutingClientServiceBinder
+    }
+
+    override fun onServiceDisconnected(name: ComponentName?) {
+        Log.d(TAG, "Unbound from ScoutingClientService!")
     }
 
     override fun onResume() {
         super.onResume()
-        serviceWrapper?.bind()
         refreshServers()
     }
 
-    override fun onPause() {
-        super.onPause()
-        serviceWrapper?.close()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
+        unbindService(this)
     }
 
     fun refreshServers() {

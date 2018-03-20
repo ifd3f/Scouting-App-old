@@ -34,6 +34,6 @@
 
         </activity>
 
-        <service android:name=".io.ClientService" />
+        <service android:name=".io.ScoutingClientService" />
     </application>
 </manifest>

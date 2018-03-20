@@ -5,9 +5,15 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.os.*
+import android.os.Handler
+import android.os.IBinder
+import android.os.Message
+import android.os.Messenger
 import android.util.Log
-import com.burlingamerobotics.scouting.common.*
+import com.burlingamerobotics.scouting.common.COMPONENT_SCOUTING_SERVER_SERVICE
+import com.burlingamerobotics.scouting.common.INTENT_BIND_LOCAL_CLIENT_TO_SERVER
+import com.burlingamerobotics.scouting.common.MSG_GIVE_RX
+import com.burlingamerobotics.scouting.common.MSG_SEND_OBJ
 import java.io.Serializable
 
 class LocalServerCommStrategy(val context: Context) : ServerCommStrategy(), ServiceConnection, Handler.Callback {

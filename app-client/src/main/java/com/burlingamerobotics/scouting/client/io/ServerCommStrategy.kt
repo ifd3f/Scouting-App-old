@@ -2,9 +2,6 @@ package com.burlingamerobotics.scouting.client.io
 
 import android.bluetooth.BluetoothDevice
 import android.content.Context
-import android.content.Intent
-import com.burlingamerobotics.scouting.common.INTENT_START_SCOUTING_CLIENT_BLUETOOTH
-import com.burlingamerobotics.scouting.common.INTENT_START_SCOUTING_CLIENT_LOCAL
 import java.io.Closeable
 
 abstract class ServerCommStrategy : Closeable {
@@ -28,18 +25,13 @@ interface CommStrategyListener {
 
 interface ServerData {
     val displayName: String
-    fun getStartServiceIntent(context: Context): Intent?
+    fun getCommunicationStrategy(context: Context): ServerCommStrategy
 }
 
 class BluetoothServerData(val device: BluetoothDevice) : ServerData {
     override val displayName: String = device.name
 
-    override fun getStartServiceIntent(context: Context): Intent? {
-        val intent = Intent(context, ClientService::class.java)
-        intent.action = INTENT_START_SCOUTING_CLIENT_BLUETOOTH
-        intent.putExtra("device", device)
-        return intent
-    }
+    override fun getCommunicationStrategy(context: Context): ServerCommStrategy = BluetoothServerCommStrategy(device)
 
     override fun toString(): String = "BluetoothServerData(${device.address})"
 }
@@ -47,10 +39,5 @@ class BluetoothServerData(val device: BluetoothDevice) : ServerData {
 object LocalServerData : ServerData {
     override val displayName: String = "Local Server"
 
-    override fun getStartServiceIntent(context: Context): Intent? {
-        val intent = Intent(context, ClientService::class.java)
-        intent.action = INTENT_START_SCOUTING_CLIENT_LOCAL
-        return intent
-    }
-
+    override fun getCommunicationStrategy(context: Context): ServerCommStrategy = LocalServerCommStrategy(context)
 }

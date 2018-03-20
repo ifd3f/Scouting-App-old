@@ -13,7 +13,7 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.dialog.TeamEditDialog
-import com.burlingamerobotics.scouting.client.io.ClientServiceWrapper
+import com.burlingamerobotics.scouting.client.io.ScoutingClientServiceBinder
 import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.Team
 import com.burlingamerobotics.scouting.common.protocol.PostTeamInfo
@@ -21,13 +21,12 @@ import com.burlingamerobotics.scouting.common.protocol.TeamListRequest
 
 
 class TeamListFragment : Fragment() {
+    private val TAG = "TeamListFragment"
 
-    val TAG = "TeamListFragment"
-
-    lateinit var lvTeamList: ListView
-    lateinit var teamList: List<Team>
-    lateinit var refresher: SwipeRefreshLayout
-    lateinit var serviceWrapper: ClientServiceWrapper
+    private lateinit var lvTeamList: ListView
+    private lateinit var teamList: List<Team>
+    private lateinit var refresher: SwipeRefreshLayout
+    private lateinit var service: ScoutingClientServiceBinder
 
     var sorting = Team::number
 
@@ -40,7 +39,6 @@ class TeamListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        serviceWrapper = ClientServiceWrapper(context)
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -54,7 +52,7 @@ class TeamListFragment : Fragment() {
             TeamEditDialog(activity) {
                 if (it != null) {
                     Log.i(TAG, "Received $it from dialog, posting")
-                    serviceWrapper.post(PostTeamInfo(it))
+                    service.post(PostTeamInfo(it))
                 } else {
                     Log.i(TAG, "Dialog to edit was canceled")
                 }
@@ -73,24 +71,20 @@ class TeamListFragment : Fragment() {
         return view
     }
 
-    override fun onResume() {
-        super.onResume()
-        serviceWrapper.bind {
-            refresh()
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        serviceWrapper.close()
-    }
-
     fun refresh() {
         refresher.isRefreshing = true
         Utils.ioExecutor.submit {
             Log.d(TAG, "Requesting team data")
-            teamList = serviceWrapper.blockingRequest(TeamListRequest)
+            teamList = service.blockingRequest(TeamListRequest)
             refreshHandler.sendEmptyMessage(0)
+        }
+    }
+
+    companion object {
+        fun create(binder: ScoutingClientServiceBinder): TeamListFragment {
+            return TeamListFragment().apply {
+                service = binder
+            }
         }
     }
 

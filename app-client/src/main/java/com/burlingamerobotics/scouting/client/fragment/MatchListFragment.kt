@@ -12,7 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.burlingamerobotics.scouting.client.R
-import com.burlingamerobotics.scouting.client.io.ClientServiceWrapper
+import com.burlingamerobotics.scouting.client.io.ScoutingClientServiceBinder
 import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.common.protocol.CompetitionRequest
@@ -24,21 +24,11 @@ import com.burlingamerobotics.scouting.common.view.MatchRecyclerViewAdapter
  */
 class MatchListFragment : Fragment() {
 
-    val TAG = "MatchListFragment"
-    fun getViewAdapter(comp: Competition) = MatchRecyclerViewAdapter(comp.qualifiers) { i ->
-        Utils.ioExecutor.execute {
-            Log.i(TAG, "User selected match at position $i")
-            val match = serviceWrapper.blockingRequest(QualifierMatchRequest(i))
-            fragmentManager.beginTransaction()
-                    .replace(R.id.client_main_fragment_container, MatchInfoFragment.newInstance(match), "match_info")
-                    .addToBackStack(null)
-                    .commit()
-        }
-    }
+    private val TAG = "MatchListFragment"
 
-    lateinit var lvMatches: RecyclerView
-    lateinit var refresher: SwipeRefreshLayout
-    lateinit var serviceWrapper: ClientServiceWrapper
+    private lateinit var lvMatches: RecyclerView
+    private lateinit var refresher: SwipeRefreshLayout
+    private lateinit var service: ScoutingClientServiceBinder
     //lateinit var matches: Array<Match>
 
     private val refreshHandler = Handler({ msg ->
@@ -48,11 +38,6 @@ class MatchListFragment : Fragment() {
         refresher.isRefreshing = false
         true
     })
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        serviceWrapper = ClientServiceWrapper(context)
-    }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.fragment_match_list, container, false)
@@ -66,28 +51,34 @@ class MatchListFragment : Fragment() {
         return view
     }
 
-    override fun onResume() {
-        super.onResume()
-        serviceWrapper.bind {
-            Log.d(TAG, "Binding finished")
-            refreshMatches()
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        serviceWrapper.close()
-    }
-
     fun refreshMatches() {
         Log.d(TAG, "Refreshing")
         refresher.isRefreshing = true
         Utils.ioExecutor.execute {
-            val obj = serviceWrapper.blockingRequest(CompetitionRequest)
+            val obj = service.blockingRequest(CompetitionRequest)
             Log.d(TAG, "Received $obj")
             refreshHandler.sendMessage(Message.obtain().also {
                 it.obj = obj
             })
+        }
+    }
+
+    fun getViewAdapter(comp: Competition) = MatchRecyclerViewAdapter(comp.qualifiers) { i ->
+        Utils.ioExecutor.execute {
+            Log.i(TAG, "User selected match at position $i")
+            val match = service.blockingRequest(QualifierMatchRequest(i))
+            fragmentManager.beginTransaction()
+                    .replace(R.id.client_main_fragment_container, MatchInfoFragment.newInstance(match), "match_info")
+                    .addToBackStack(null)
+                    .commit()
+        }
+    }
+
+    companion object {
+        fun create(binder: ScoutingClientServiceBinder): MatchListFragment {
+            return MatchListFragment().apply {
+                service = binder
+            }
         }
     }
 
