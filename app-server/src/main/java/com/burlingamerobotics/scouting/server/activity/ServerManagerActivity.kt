@@ -1,31 +1,39 @@
 package com.burlingamerobotics.scouting.server.activity
 
+import android.app.Service
 import android.bluetooth.BluetoothAdapter
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.os.Bundle
 import android.os.Handler
+import android.os.IBinder
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Switch
 import android.widget.TextView
+import com.burlingamerobotics.scouting.common.INTENT_BIND_SERVER_WRAPPER
+import com.burlingamerobotics.scouting.common.INTENT_CLIENT_CONNECTED
+import com.burlingamerobotics.scouting.common.INTENT_CLIENT_DISCONNECTED
 import com.burlingamerobotics.scouting.common.SCOUTING_UUID
 import com.burlingamerobotics.scouting.common.data.Competition
-import com.burlingamerobotics.scouting.server.INTENT_CLIENT_CONNECTED
 import com.burlingamerobotics.scouting.server.R
-import com.burlingamerobotics.scouting.server.ScoutingServer
+import com.burlingamerobotics.scouting.server.io.ClientInfo
+import com.burlingamerobotics.scouting.server.io.ScoutingServerService
+import com.burlingamerobotics.scouting.server.io.ScoutingServerServiceWrapper
 
-class ServerManagerActivity : AppCompatActivity() {
+class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
+
+    val TAG = "ServerManagerActivity"
+    val clients: MutableList<ClientInfo> = arrayListOf()
 
     lateinit var btAdapter: BluetoothAdapter
     lateinit var lvClients: ListView
     lateinit var switchStartServer: Switch
     lateinit var competition: Competition
     lateinit var txtCompetitionName: TextView
+
+    var serviceWrapper: ScoutingServerServiceWrapper? = null
 
     val msgRefreshListHandler = Handler({ msg ->
         refreshList()
@@ -52,9 +60,20 @@ class ServerManagerActivity : AppCompatActivity() {
 
         val itf = IntentFilter(INTENT_CLIENT_CONNECTED)
         registerReceiver(object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                if (intent!!.action == INTENT_CLIENT_CONNECTED) {
-                    refreshList()
+            override fun onReceive(context: Context?, intent: Intent) {
+                when (intent.action) {
+                    INTENT_CLIENT_CONNECTED -> {
+                        val client = intent.getSerializableExtra("client") as ClientInfo
+                        Log.i(TAG, "Client connected: $client")
+                        clients.add(client)
+                        msgRefreshListHandler.sendEmptyMessage(0)
+                    }
+                    INTENT_CLIENT_DISCONNECTED -> {
+                        val client = intent.getSerializableExtra("client") as ClientInfo
+                        Log.i(TAG, "Client disconnected: $client")
+                        clients.remove(client)
+                        msgRefreshListHandler.sendEmptyMessage(0)
+                    }
                 }
             }
         }, itf)
@@ -66,24 +85,34 @@ class ServerManagerActivity : AppCompatActivity() {
 
     private fun refreshList() {
         Log.d("MasterMgmt", "Refreshing connected clients list")
-        val clients = ScoutingServer.clients
-        clients.forEach {
-            Log.d("MasterMgmt", "Found ${it.device.address}")
-        }
-        lvClients.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, clients.map { it.device.name })
+        lvClients.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, clients.map { it.displayName })
+    }
+
+    override fun onServiceConnected(name: ComponentName?, service: IBinder) {
+        Log.i(TAG, "Service bound successfully!")
+        serviceWrapper = ScoutingServerServiceWrapper(service)
+    }
+
+    override fun onServiceDisconnected(name: ComponentName?) {
+        clients.clear()
     }
 
     private fun setServerState(state: Boolean) {
         if (state) {
-
-            Log.i("MasterMgmt", "Starting bluetooth server")
-
-            val serverSocket = btAdapter.listenUsingRfcommWithServiceRecord("Scouting Server", SCOUTING_UUID)
-            ScoutingServer.start(this, ScoutingServer.db, serverSocket, competition)
-
+            Log.i("MasterMgmt", "Starting scouting server")
+            //val serverSocket = btAdapter.listenUsingRfcommWithServiceRecord("Scouting Server", SCOUTING_UUID)
+            startService(Intent(this, ScoutingServerService::class.java).apply {
+                putExtra("competition", competition.uuid)
+            })
+            Log.d(TAG, "Server started successfully")
+            val intent = Intent(this, ScoutingServerService::class.java)
+            intent.action = INTENT_BIND_SERVER_WRAPPER
+            Log.d(TAG, "Binding to server with $intent")
+            bindService(intent, this, Service.BIND_IMPORTANT)
         } else {
-            Log.i("MasterMgmt", "Stopping bluetooth server")
-            ScoutingServer.stop()
+            Log.i("MasterMgmt", "Stopping scouting server")
+            stopService(Intent(this, ScoutingServerService::class.java))
+            clients.clear()
         }
     }
 

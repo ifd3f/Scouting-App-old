@@ -1,6 +1,5 @@
 package com.burlingamerobotics.scouting.client.fragment
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -13,9 +12,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.burlingamerobotics.scouting.client.R
-import com.burlingamerobotics.scouting.client.ScoutingClient
+import com.burlingamerobotics.scouting.client.io.ScoutingClientServiceBinder
 import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.Competition
+import com.burlingamerobotics.scouting.common.protocol.CompetitionRequest
 import com.burlingamerobotics.scouting.common.protocol.QualifierMatchRequest
 import com.burlingamerobotics.scouting.common.view.MatchRecyclerViewAdapter
 
@@ -24,32 +24,29 @@ import com.burlingamerobotics.scouting.common.view.MatchRecyclerViewAdapter
  */
 class MatchListFragment : Fragment() {
 
-    val TAG = "MatchListFragment"
+    private val TAG = "MatchListFragment"
 
-    lateinit var lvMatches: RecyclerView
-    lateinit var refresher: SwipeRefreshLayout
+    private lateinit var lvMatches: RecyclerView
+    private lateinit var refresher: SwipeRefreshLayout
+    lateinit var service: ScoutingClientServiceBinder
     //lateinit var matches: Array<Match>
 
     private val refreshHandler = Handler({ msg ->
         val comp = msg.obj as Competition
         Log.d(TAG, "Received refresh signal with $comp")
-        lvMatches.adapter = MatchRecyclerViewAdapter(comp.qualifiers) { i ->
-            Utils.ioExecutor.execute {
-                Log.i(TAG, "User selected match at position $i")
-                val match = ScoutingClient.blockingRequest(QualifierMatchRequest(i))
-                fragmentManager.beginTransaction()
-                        .replace(R.id.client_main_fragment_container, MatchInfoFragment.newInstance(match), "match_info")
-                        .addToBackStack(null)
-                        .commit()
-            }
-        }
+        lvMatches.adapter = getViewAdapter(comp)
         refresher.isRefreshing = false
         true
     })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "Starting")
+    }
 
+    override fun onResume() {
+        super.onResume()
+        refresh()
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -59,35 +56,39 @@ class MatchListFragment : Fragment() {
         refresher = view.findViewById<SwipeRefreshLayout>(R.id.refresh_list_matches)
 
         lvMatches.layoutManager = LinearLayoutManager(context)
-        refresher.setOnRefreshListener { refreshMatches() }
-
-        refreshMatches()
+        refresher.setOnRefreshListener { refresh() }
 
         return view
     }
 
-    override fun onResume() {
-        super.onResume()
-        refreshMatches()
-    }
-
-
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-    }
-
-    fun refreshMatches() {
+    fun refresh() {
         Log.d(TAG, "Refreshing")
         refresher.isRefreshing = true
-        ScoutingClient.invalidateCache()
         Utils.ioExecutor.execute {
-            refreshHandler.sendMessage(Message().apply {
-                obj = ScoutingClient.cache
+            val obj = service.blockingRequest(CompetitionRequest)
+            Log.d(TAG, "Received $obj")
+            refreshHandler.sendMessage(Message.obtain().also {
+                it.obj = obj
             })
+        }
+    }
+
+    fun getViewAdapter(comp: Competition) = MatchRecyclerViewAdapter(comp.qualifiers) { i ->
+        Utils.ioExecutor.execute {
+            Log.i(TAG, "User selected match at position $i")
+            val match = service.blockingRequest(QualifierMatchRequest(i))
+            fragmentManager.beginTransaction()
+                    .replace(R.id.client_main_fragment_container, MatchInfoFragment.newInstance(match), "match_info")
+                    .addToBackStack(null)
+                    .commit()
+        }
+    }
+
+    companion object {
+        fun create(binder: ScoutingClientServiceBinder): MatchListFragment {
+            return MatchListFragment().apply {
+                service = binder
+            }
         }
     }
 

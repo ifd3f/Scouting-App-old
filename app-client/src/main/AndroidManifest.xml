@@ -2,6 +2,7 @@
     package="com.burlingamerobotics.scouting.client">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="com.burlingamerobotics.scouting.SCOUTING_SERVER_INTERACTION" />
 
     <application
         android:allowBackup="true"
@@ -30,7 +31,9 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.burlingamerobotics.scouting.client.activity.ConnectToServerActivity" />
+
         </activity>
 
+        <service android:name=".io.ScoutingClientService" />
     </application>
 </manifest>

@@ -10,9 +10,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT_COMPETITION
+import com.burlingamerobotics.scouting.common.REQUEST_CODE_NEW_COMPETITION
 import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.common.data.CompetitionBuilder
-import com.burlingamerobotics.scouting.server.*
+import com.burlingamerobotics.scouting.server.R
 import java.text.SimpleDateFormat
 import java.util.*
 

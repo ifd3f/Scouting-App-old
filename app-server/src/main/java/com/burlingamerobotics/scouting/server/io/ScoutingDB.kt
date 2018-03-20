@@ -1,4 +1,4 @@
-package com.burlingamerobotics.scouting.server
+package com.burlingamerobotics.scouting.server.io
 
 import android.content.Context
 import android.util.Log

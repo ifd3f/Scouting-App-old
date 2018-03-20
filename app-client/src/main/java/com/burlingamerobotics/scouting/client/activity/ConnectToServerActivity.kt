@@ -1,12 +1,14 @@
 package com.burlingamerobotics.scouting.client.activity
 
-import android.annotation.SuppressLint
+import android.app.Service
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
+import android.content.ComponentName
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.Handler
-import android.os.Message
+import android.os.IBinder
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -15,29 +17,26 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
 import com.burlingamerobotics.scouting.client.R
-import com.burlingamerobotics.scouting.client.ScoutingClient
-import com.burlingamerobotics.scouting.common.SCOUTING_UUID
-import com.burlingamerobotics.scouting.common.Utils
-import kotlinx.android.synthetic.main.activity_connect.*
+import com.burlingamerobotics.scouting.client.io.*
 import java.io.IOException
 
-class ConnectToServerActivity : AppCompatActivity() {
+class ConnectToServerActivity : AppCompatActivity(), ServiceConnection {
+    private val TAG = "ConnectToServer"
 
-    lateinit var btAdapter: BluetoothAdapter
-    lateinit var btListView: ListView
-    lateinit var btDevices: List<BluetoothDevice>
+    private lateinit var swipeRefresh: SwipeRefreshLayout
+    private lateinit var btAdapter: BluetoothAdapter
+    private lateinit var lvServers: ListView
+    private lateinit var lsServers: List<ServerData>
+    private var service: ScoutingClientServiceBinder? = null
 
-    @SuppressLint("HandlerLeak")
-    private val toastHandler = object : Handler() {
-        override fun handleMessage(msg: Message?) {
-            val bundle = msg!!.data
-            val toastText = bundle.getString("text")
-            if (toastText != null) {
-                Toast.makeText(this@ConnectToServerActivity, toastText, Toast.LENGTH_SHORT).show()
-                return
-            }
+    private val toastHandler = Handler(Handler.Callback { msg ->
+        val bundle = msg!!.data
+        val toastText = bundle.getString("text")
+        if (toastText != null) {
+            Toast.makeText(this, toastText, Toast.LENGTH_SHORT).show()
         }
-    }
+        true
+    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,57 +45,63 @@ class ConnectToServerActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
 
         btAdapter = BluetoothAdapter.getDefaultAdapter()
-        btListView = findViewById(R.id.bt_list)
+        lvServers = findViewById(R.id.bt_list)
 
-        val swipeRefresh = findViewById<SwipeRefreshLayout>(R.id.client_connect_swiperefresh)
+        swipeRefresh = findViewById<SwipeRefreshLayout>(R.id.client_connect_swiperefresh)
 
-        btListView.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-            val dev = btDevices[position]
+        lvServers.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
+            val serv = lsServers[position]
+            Log.i(TAG, "User selected $serv at $position")
             try {
-                val sock = dev.createRfcommSocketToServiceRecord(SCOUTING_UUID)
-                Utils.ioExecutor.execute {
-                    Log.i("ClientConnect", "Attempting to connect to $dev")
-                    try {
-                        sock.connect()
-                        ScoutingClient.start(sock)
-                        Log.i("ClientConnect", "  Connection success!")
-                        startActivity(Intent(this, BrowserActivity::class.java))
-                    } catch (ex: IOException) {
-                        Log.e("ClientConnect", "Failed to connect to $dev!", ex)
-                        fireToast("Failed to connect!")
-                    }
-                }
-
-            } catch (ex: Exception) {
+                Log.i(TAG, "Attempting to connect to server")
+                service!!.connectTo(serv)
+                Log.i(TAG, "Connection success! Starting BrowserActivity")
+                startActivity(Intent(this, BrowserActivity::class.java))
+            } catch (ex: IOException) {
+                Log.e(TAG, "Failed to connect to server!", ex)
                 fireToast("Failed to connect!")
-                when (ex) {
-                    is IOException -> {
-                        Log.e("ClientConnect", "Failed to connect to $dev: Bluetooth unavailable", ex)
-                    }
-                    else -> throw ex
-                }
+                stopService(Intent(this, ScoutingClientService::class.java))
             }
         }
 
         swipeRefresh.setOnRefreshListener {
-            Log.i("ClientConnect", "Refreshing BT devices")
-            refreshBondedDevices()
-            swipeRefresh.isRefreshing = false
+            Log.i(TAG, "Refreshing BT devices")
+            refreshServers()
         }
-
-        refreshBondedDevices()
-
-        //supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    fun refreshBondedDevices() {
-        btDevices = btAdapter.bondedDevices.toList().filter { it.bondState == BluetoothDevice.BOND_BONDED }
-        btDevices.forEach {
-            Log.d("ClientConnect", "Found ${it.name} at ${it.address}")
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        Log.d(TAG, "Bound to ScoutingClientService!")
+        this.service = service!! as ScoutingClientServiceBinder
+    }
+
+    override fun onServiceDisconnected(name: ComponentName?) {
+        Log.d(TAG, "Unbound from ScoutingClientService!")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.i(TAG, "Starting and binding to ScoutingClientService")
+        startService(Intent(this, ScoutingClientService::class.java))
+        bindService(Intent(this, ScoutingClientService::class.java), this, Service.BIND_AUTO_CREATE)
+        refreshServers()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.i(TAG, "Activity stopping, unbinding from ScoutingClientService")
+        unbindService(this)
+    }
+
+    fun refreshServers() {
+        lsServers = listServers()
+        lsServers.forEach {
+            Log.d(TAG, "Found $it")
         }
-        btListView.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, btDevices.map {
-            "${it.name} at ${it.address}"
+        lvServers.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, lsServers.map {
+            it.displayName
         })
+        swipeRefresh.isRefreshing = false
     }
 
     fun fireToast(text: String) {
@@ -105,6 +110,13 @@ class ConnectToServerActivity : AppCompatActivity() {
         bundle.putString("text", text)
         msg.data = bundle
         toastHandler.sendMessage(msg)
+    }
+
+    fun listServers(): List<ServerData> {
+        val bluetooth = btAdapter.bondedDevices.toList()
+                .filter { it.bondState == BluetoothDevice.BOND_BONDED }
+                .map { BluetoothServerData(it) }
+        return listOf(LocalServerData) + bluetooth
     }
 
 }
