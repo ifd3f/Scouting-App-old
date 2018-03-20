@@ -1,5 +1,6 @@
 package com.burlingamerobotics.scouting.server.io
 
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.util.Log
 import java.io.IOException
@@ -12,23 +13,24 @@ import java.io.Serializable
  */
 class BluetoothClientInterface(private val btSocket: BluetoothSocket) : ScoutingClientInterface(), Runnable {
 
-    val device = btSocket.remoteDevice
-    val TAG: String = "BluetoothInterface[${device.address}]"
+    val device: BluetoothDevice = btSocket.remoteDevice
+    private val TAG: String = "BluetoothInterface[${device.address}]"
 
     private var thread: Thread? = null
 
-    lateinit var ois: ObjectInputStream
-    lateinit var oos: ObjectOutputStream
+    private lateinit var ois: ObjectInputStream
+    private lateinit var oos: ObjectOutputStream
+
+    private var inputListener: ClientInputListener? = null
 
     override val displayName get(): String = device.name
-
-    var inputListener: ClientInputListener? = null
 
     override fun attachClientInputListener(listener: ClientInputListener) {
         inputListener = listener
     }
 
     override fun begin() {
+        Log.d(TAG, "Starting listening thread")
         val thread = Thread(this)
         thread.isDaemon = true
         thread.start()
@@ -36,11 +38,12 @@ class BluetoothClientInterface(private val btSocket: BluetoothSocket) : Scouting
     }
 
     override fun sendObject(obj: Serializable) {
+        Log.d(TAG, "Sending to client: $obj")
         oos.writeObject(obj)
     }
 
     override fun run() {
-        Log.i(TAG, "Starting ObjectStreams")
+        Log.d(TAG, "Starting object streams")
         ois = ObjectInputStream(btSocket.inputStream)
         oos = ObjectOutputStream(btSocket.outputStream)
 
@@ -48,21 +51,25 @@ class BluetoothClientInterface(private val btSocket: BluetoothSocket) : Scouting
         try {
             while (true) {
                 val obj = ois.readObject()
-                Log.d(TAG, "Received $obj")
+                Log.d(TAG, "Received from client: $obj")
                 inputListener?.onReceivedFromClient(this, obj) ?: Log.w(TAG, "No listener attached!")
             }
         } catch (ex: InterruptedException) {
             Log.i(TAG, "Interrupted, gracefully stopping thread")
         } catch (ex: IOException) {
-            Log.w(TAG, "Client disconnected", ex)
+            Log.i(TAG, "Client disconnected", ex)
         } finally {
+            Log.i(TAG, "Closing socket in finally")
             btSocket.close()
         }
         inputListener?.onClientDisconnected(this)
     }
 
     override fun close() {
-        thread?.interrupt()
+        Log.d(TAG, "Closing socket")
+        btSocket.close()
+        Log.d(TAG, "Stopping listening thread")
+        thread?.interrupt() ?: Log.w(TAG, "There was no listening thread to stop!")
     }
 
 }

@@ -16,7 +16,7 @@ abstract class ScoutingClientInterface : AutoCloseable {
 
     abstract fun attachClientInputListener(listener: ClientInputListener)
 
-    fun getSimplified() = ClientInfo(uuid, displayName)
+    fun getInfo() = ClientInfo(uuid, displayName)
 
 }
 

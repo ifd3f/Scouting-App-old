@@ -22,14 +22,13 @@ class BluetoothServerCommStrategy(val device: BluetoothDevice) : ServerCommStrat
         socket.connect()
         oos = ObjectOutputStream(socket.outputStream)
         ois = ObjectInputStream(socket.inputStream)
-        listenerThread = thread(isDaemon = true) {
+        listenerThread = thread(start = true, isDaemon = true) {
             while (true) {
                 val obj = ois.readObject()
                 Log.d(TAG, "Received $obj from bluetooth")
                 listener?.onReceivedObject(obj) ?: Log.w(TAG, "There was no listener to receive it")
             }
         }
-        listenerThread.start()
         return true
     }
 

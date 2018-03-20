@@ -32,7 +32,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
 
     val TAG = "ScoutingServerService"
 
-    private val clients = mutableListOf<ScoutingClientInterface>();
+    private val clients = mutableListOf<ScoutingClientInterface>()
     private var btConnectListener: Future<*>? = null
     private var dataSaveTask: Future<*>? = null
 
@@ -49,7 +49,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
                 val newClient = LocalClientInterface()
                 newClient.attachClientInputListener(this)
                 clients.add(newClient)
-                sendBroadcast(Intent(INTENT_CLIENT_CONNECTED).apply { putExtra("client", newClient.getSimplified()) })
+                sendBroadcast(Intent(INTENT_CLIENT_CONNECTED).apply { putExtra("client", newClient.getInfo()) })
                 return newClient.rx.binder
             }
             INTENT_BIND_SERVER_WRAPPER -> {
@@ -82,7 +82,9 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
                 Log.i(TAG, "Bluetooth device at ${client.device.address} connected")
                 clients.add(client)
                 client.begin()
-                sendBroadcast(Intent(INTENT_CLIENT_CONNECTED))
+                sendBroadcast(Intent(INTENT_CLIENT_CONNECTED).apply {
+                    putExtra("client", client.getInfo())
+                })
             }
         }
 
@@ -126,7 +128,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
     override fun onClientDisconnected(client: ScoutingClientInterface) {
         Log.i(TAG, "$client disconnected, removing from list")
         clients.remove(client)
-        sendBroadcast(Intent(INTENT_CLIENT_DISCONNECTED).apply { putExtra("client", client.getSimplified()) })
+        sendBroadcast(Intent(INTENT_CLIENT_DISCONNECTED).apply { putExtra("client", client.getInfo()) })
     }
 
     fun processPost(client: ScoutingClientInterface, post: Post) {
