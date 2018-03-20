@@ -8,4 +8,40 @@
     <string name="matchres_blue">Blue Victory</string>
     <string name="matchres_draw">Draw</string>
     <string name="matchres_scheduled">Scheduled</string>
+
+    <string-array name="form_auto_start">
+        <item>Exchange</item>
+        <item>Middle</item>
+        <item>Portal</item>
+    </string-array>
+
+    <string-array name="form_cube_dest">
+        <item>Own Switch</item>
+        <item>Scale</item>
+        <item>Opposing Switch</item>
+    </string-array>
+
+    <string-array name="form_endgame_state">
+        <item>Parked</item>
+        <item>Climbed</item>
+        <item>Levitated</item>
+    </string-array>
+
+    <string-array name="form_endgame_assist">
+        <item>Didn't Climb/Levitated</item>
+        <item>Only Itself</item>
+        <item>Was Assisted</item>
+        <item>Assisted 1 Other</item>
+        <item>Assisted 2 Other</item>
+    </string-array>
+
+    <string-array name="form_rating">
+        <item>N/A</item>
+        <item>Very Reliable</item>
+        <item>Usually Reliable</item>
+        <item>Satisfactory</item>
+        <item>Unreliable</item>
+        <item>Terrible</item>
+    </string-array>
+
 </resources>

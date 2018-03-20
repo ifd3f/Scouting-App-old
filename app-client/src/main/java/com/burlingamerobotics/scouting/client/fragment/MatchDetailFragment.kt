@@ -12,7 +12,7 @@ import android.widget.TextView
 import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.common.data.Match
 
-class MatchInfoFragment : Fragment() {
+class MatchDetailFragment : Fragment() {
 
     lateinit var data: Match
 
@@ -26,10 +26,7 @@ class MatchInfoFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.fragment_match_info, container, false)
-        val recycler = view.findViewById<RecyclerView>(R.id.list_match_attr)
-        recycler.adapter = MatchInfoAdapter(data)
-        recycler.layoutManager = LinearLayoutManager(context)
+        val view = inflater!!.inflate(R.layout.fragment_match_detail, container, false)
 
         return view
     }
@@ -45,8 +42,8 @@ class MatchInfoFragment : Fragment() {
     companion object {
         private val ARG_MATCH = "match"
 
-        fun newInstance(match: Match): MatchInfoFragment {
-            val fragment = MatchInfoFragment()
+        fun newInstance(match: Match): MatchDetailFragment {
+            val fragment = MatchDetailFragment()
             val args = Bundle()
             args.putSerializable(ARG_MATCH, match)
             fragment.arguments = args

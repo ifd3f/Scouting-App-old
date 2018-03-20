@@ -36,8 +36,51 @@
 
     <style name="Divider">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_height">1px</item>
         <item name="android:background">?android:attr/listDivider</item>
+    </style>
+
+    <style name="AppTheme.LabelTeamLarge" parent="TextAppearance.AppCompat.Display1">
+        <item name="android:textColor">@color/text_white</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:background">@color/team_blue</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="AppTheme.LabelTeamRedLarge" parent="AppTheme.LabelTeamLarge">
+        <item name="android:background">@color/team_red</item>
+    </style>
+
+    <style name="AppTheme.LabelTeamBlueLarge" parent="AppTheme.LabelTeamLarge">
+        <item name="android:background">@color/team_blue</item>
+    </style>
+
+    <style name="AppTheme.LabelMatchScoreLarge" parent="TextAppearance.AppCompat.Display2">
+        <item name="android:textColor">@color/text_white</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:layout_width">45pt</item>
+    </style>
+
+    <style name="AppTheme.LabelMatchResultLarge">
+        <item name="android:textColor">@color/text_white</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:padding">5dp</item>
+    </style>
+
+    <style name="AppTheme.FormItemLabel">
+        <item name="android:layout_width">150dp</item>
+        <item name="android:layout_gravity">left|center</item>
+    </style>
+
+    <style name="AppTheme.FormItemSpinner">
+        <item name="android:layout_gravity">right|fill_horizontal</item>
+    </style>
+
+    <style name="AppTheme.FormItemShortField">
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_gravity">right|bottom</item>
+        <item name="android:textAlignment">textEnd</item>
     </style>
 
 </resources>

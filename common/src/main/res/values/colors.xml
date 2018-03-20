@@ -6,4 +6,5 @@
     <color name="team_red">#EE0000</color>
     <color name="team_blue">#0033DD</color>
     <color name="team_neutral">#AAAAAA</color>
+    <color name="text_white">#FFFFFF</color>
 </resources>
