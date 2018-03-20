@@ -68,9 +68,6 @@ class ConnectToServerActivity : AppCompatActivity(), ServiceConnection {
             Log.i(TAG, "Refreshing BT devices")
             refreshServers()
         }
-
-        Log.i(TAG, "Starting and binding to ScoutingClientService")
-        bindService(Intent(this, ScoutingClientService::class.java), this, Service.BIND_AUTO_CREATE)
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -84,11 +81,15 @@ class ConnectToServerActivity : AppCompatActivity(), ServiceConnection {
 
     override fun onResume() {
         super.onResume()
+        Log.i(TAG, "Starting and binding to ScoutingClientService")
+        startService(Intent(this, ScoutingClientService::class.java))
+        bindService(Intent(this, ScoutingClientService::class.java), this, Service.BIND_AUTO_CREATE)
         refreshServers()
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onPause() {
+        super.onPause()
+        Log.i(TAG, "Activity stopping, unbinding from ScoutingClientService")
         unbindService(this)
     }
 

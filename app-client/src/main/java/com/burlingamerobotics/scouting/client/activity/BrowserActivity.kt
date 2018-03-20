@@ -1,5 +1,6 @@
 package com.burlingamerobotics.scouting.client.activity
 
+import android.app.Service
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
@@ -19,36 +20,30 @@ class BrowserActivity : AppCompatActivity(), ServiceConnection {
 
     private val TAG = "BrowserActivity"
     private lateinit var service: ScoutingClientServiceBinder
+    private lateinit var matchListFragment: MatchListFragment
+    private lateinit var teamListFragment: TeamListFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_browser)
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
-        //setSupportActionBar(toolbar)
 
-        //val fragmentFrame = findViewById<FrameLayout>(R.id.client_main_fragment_container)
+        matchListFragment = MatchListFragment()
+        teamListFragment = TeamListFragment()
 
-        Log.d(TAG, "Binding to service")
-        bindService(Intent(this, ScoutingClientService::class.java), this, 0)
-    }
-
-    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-        Log.i(TAG, "Successfully bound to service")
-        this.service = service as ScoutingClientServiceBinder
-
-        Log.d(TAG, "Creating navigation")
+        Log.d(TAG, "Setting navigation selected listener")
         navigation.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_matches -> {
                     supportFragmentManager.beginTransaction()
-                            .replace(R.id.client_main_fragment_container, MatchListFragment.create(service), "match_list")
+                            .replace(R.id.client_main_fragment_container, matchListFragment, "match_list")
                             .commit()
                     supportActionBar!!.setTitle(R.string.title_matches)
                     return@OnNavigationItemSelectedListener true
                 }
                 R.id.navigation_teams -> {
                     supportFragmentManager.beginTransaction()
-                            .replace(R.id.client_main_fragment_container, TeamListFragment.create(service), "team_list")
+                            .replace(R.id.client_main_fragment_container, teamListFragment, "team_list")
                             .commit()
                     supportActionBar!!.setTitle(R.string.title_teams)
                     return@OnNavigationItemSelectedListener true
@@ -60,6 +55,30 @@ class BrowserActivity : AppCompatActivity(), ServiceConnection {
             }
             false
         })
+        //setSupportActionBar(toolbar)
+
+        //val fragmentFrame = findViewById<FrameLayout>(R.id.client_main_fragment_container)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        Log.d(TAG, "Binding to service")
+        bindService(Intent(this, ScoutingClientService::class.java), this, Service.BIND_ABOVE_CLIENT)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "Unbinding from service")
+        unbindService(this)
+    }
+
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        Log.i(TAG, "Successfully bound to service")
+        this.service = service as ScoutingClientServiceBinder
+
+        matchListFragment.service = service
+        teamListFragment.service = service
 
         navigation.selectedItemId = R.id.navigation_matches
 

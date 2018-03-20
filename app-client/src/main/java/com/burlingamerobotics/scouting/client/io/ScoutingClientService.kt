@@ -49,13 +49,23 @@ class ScoutingClientService : Service(), CommStrategyListener {
     }
 
     override fun onBind(intent: Intent?): IBinder {
-        Log.i(TAG, "ClientServiceWrapper wants to bind")
+        Log.d(TAG, "Someone wants to bind to me")
         return ScoutingClientServiceBinder(this)
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        Log.d(TAG, "Someone wants to unbind from me")
+        return super.onUnbind(intent)
     }
 
     override fun onCreate() {
         super.onCreate()
         Log.i(TAG, "Starting")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i(TAG, "Stopping")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

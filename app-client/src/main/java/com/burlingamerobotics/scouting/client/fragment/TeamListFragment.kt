@@ -26,7 +26,7 @@ class TeamListFragment : Fragment() {
     private lateinit var lvTeamList: ListView
     private lateinit var teamList: List<Team>
     private lateinit var refresher: SwipeRefreshLayout
-    private lateinit var service: ScoutingClientServiceBinder
+    lateinit var service: ScoutingClientServiceBinder
 
     var sorting = Team::number
 
@@ -37,8 +37,9 @@ class TeamListFragment : Fragment() {
         true
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onResume() {
+        super.onResume()
+        refresh()
     }
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {

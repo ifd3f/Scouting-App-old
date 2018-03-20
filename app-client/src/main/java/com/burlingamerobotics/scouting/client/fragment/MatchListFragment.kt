@@ -28,7 +28,7 @@ class MatchListFragment : Fragment() {
 
     private lateinit var lvMatches: RecyclerView
     private lateinit var refresher: SwipeRefreshLayout
-    private lateinit var service: ScoutingClientServiceBinder
+    lateinit var service: ScoutingClientServiceBinder
     //lateinit var matches: Array<Match>
 
     private val refreshHandler = Handler({ msg ->
@@ -39,6 +39,16 @@ class MatchListFragment : Fragment() {
         true
     })
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.d(TAG, "Starting")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refresh()
+    }
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.fragment_match_list, container, false)
 
@@ -46,12 +56,12 @@ class MatchListFragment : Fragment() {
         refresher = view.findViewById<SwipeRefreshLayout>(R.id.refresh_list_matches)
 
         lvMatches.layoutManager = LinearLayoutManager(context)
-        refresher.setOnRefreshListener { refreshMatches() }
+        refresher.setOnRefreshListener { refresh() }
 
         return view
     }
 
-    fun refreshMatches() {
+    fun refresh() {
         Log.d(TAG, "Refreshing")
         refresher.isRefreshing = true
         Utils.ioExecutor.execute {
