@@ -1,8 +1,7 @@
-package com.burlingamerobotics.scouting.client.fragment
+package com.burlingamerobotics.scouting.client.activity
 
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.*
@@ -10,35 +9,36 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.common.data.*
-import kotlinx.android.synthetic.main.fragment_edit_team_performance.*
+import kotlinx.android.synthetic.main.activity_edit_team_performance.*
 
 
 /**
- * A fragment for editing [TeamPerformance]
+ * An activity for editing [TeamPerformance]
  */
-class EditTeamPerformanceFragment : Fragment() {
+class EditTeamPerformanceActivity : AppCompatActivity() {
 
     private val TAG = "EditTeamPerformance"
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setSupportActionBar(toolbar)
+
         Log.d(TAG, "Creating fields")
 
-        val view = inflater!!.inflate(R.layout.fragment_edit_team_performance, container, false)
-        val teamNumber: Int = arguments.getInt("team")
-        val perf = (arguments.getSerializable("existing") as TeamPerformance?) ?: TeamPerformance(teamNumber)
-
-        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        val teamNumber: Int = intent.extras.getInt("team")
+        val perf = (intent.extras.getSerializable("existing") as TeamPerformance?) ?: TeamPerformance(teamNumber)
 
         spinner_auto_start_pos.adapter = ArrayAdapter(
-                context, android.R.layout.simple_spinner_dropdown_item,
-                enumValues<StartPosition>().map { context.resources.getString(it.resId) })
+                this, android.R.layout.simple_spinner_dropdown_item,
+                enumValues<StartPosition>().map { resources.getString(it.resId) })
         spinner_auto_cube_pos.adapter = ArrayAdapter(
-                context, android.R.layout.simple_spinner_dropdown_item,
-                enumValues<CubePosition>().map { context.resources.getString(it.resId) })
+                this, android.R.layout.simple_spinner_dropdown_item,
+                enumValues<CubePosition>().map { resources.getString(it.resId) })
 
         val ratingAdapter = ArrayAdapter(
-                context, android.R.layout.simple_spinner_dropdown_item,
-                enumValues<Rating>().map { context.resources.getString(it.resId) }
+                this, android.R.layout.simple_spinner_dropdown_item,
+                enumValues<Rating>().map { resources.getString(it.resId) }
         )
         spinner_rating_exchange.adapter = ratingAdapter
         spinner_rating_intake.adapter = ratingAdapter
@@ -65,13 +65,12 @@ class EditTeamPerformanceFragment : Fragment() {
         perf.teleCubesOwnSwitch.writeTo(edit_tele_cubes_switch_hit, edit_tele_cubes_switch_miss)
         perf.teleCubesScale.writeTo(edit_tele_cubes_scale_hit, edit_tele_cubes_scale_miss)
         perf.teleCubesOppSwitch.writeTo(edit_tele_cubes_opp_hit, edit_tele_cubes_opp_miss)
-
-        return view
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater!!.inflate(R.menu.edit_team_performance, menu)
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.edit_team_performance, menu)
+        return true
     }
 
     fun build(): TeamPerformance {
@@ -104,23 +103,6 @@ class EditTeamPerformanceFragment : Fragment() {
         fun CubeStats.readFrom(hit: EditText, miss: EditText) {
             this.hit = hit.text.toString().toInt()
             this.miss = miss.text.toString().toInt()
-        }
-
-        fun create(perf: TeamPerformance): EditTeamPerformanceFragment {
-            val frag = EditTeamPerformanceFragment()
-            frag.arguments = Bundle().apply {
-                putInt("team", perf.teamNumber)
-                putSerializable("existing", perf)
-            }
-            return frag
-        }
-
-        fun create(teamNumber: Int): EditTeamPerformanceFragment {
-            val frag = EditTeamPerformanceFragment()
-            frag.arguments = Bundle().apply {
-                putInt("team", teamNumber)
-            }
-            return frag
         }
     }
 

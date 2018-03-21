@@ -33,6 +33,7 @@
                 android:value="com.burlingamerobotics.scouting.client.activity.ConnectToServerActivity" />
 
         </activity>
+        <activity android:name=".activity.EditTeamPerformanceActivity" />
 
         <service android:name=".io.ScoutingClientService" />
     </application>
