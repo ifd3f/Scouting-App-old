@@ -3,10 +3,9 @@ package com.burlingamerobotics.scouting.client.fragment
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import com.burlingamerobotics.scouting.client.R
@@ -19,7 +18,7 @@ import kotlinx.android.synthetic.main.fragment_edit_team_performance.*
  */
 class EditTeamPerformanceFragment : Fragment() {
 
-    val TAG = "EditTeamPerformance"
+    private val TAG = "EditTeamPerformance"
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         Log.d(TAG, "Creating fields")
@@ -27,6 +26,8 @@ class EditTeamPerformanceFragment : Fragment() {
         val view = inflater!!.inflate(R.layout.fragment_edit_team_performance, container, false)
         val teamNumber: Int = arguments.getInt("team")
         val perf = (arguments.getSerializable("existing") as TeamPerformance?) ?: TeamPerformance(teamNumber)
+
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
 
         spinner_auto_start_pos.adapter = ArrayAdapter(
                 context, android.R.layout.simple_spinner_dropdown_item,
@@ -66,6 +67,11 @@ class EditTeamPerformanceFragment : Fragment() {
         perf.teleCubesOppSwitch.writeTo(edit_tele_cubes_opp_hit, edit_tele_cubes_opp_miss)
 
         return view
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater!!.inflate(R.menu.edit_team_performance, menu)
     }
 
     fun build(): TeamPerformance {

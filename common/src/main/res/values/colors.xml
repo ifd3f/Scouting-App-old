@@ -7,4 +7,5 @@
     <color name="team_blue">#0033DD</color>
     <color name="team_neutral">#AAAAAA</color>
     <color name="text_white">#FFFFFF</color>
+    <color name="btn_tint">#FFFFFF</color>
 </resources>
