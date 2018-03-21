@@ -1,6 +1,5 @@
 package com.burlingamerobotics.scouting.common.data
 
-import android.content.res.Resources
 import android.view.View
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -9,20 +8,32 @@ import java.io.Serializable
 import java.util.*
 
 
+data class CubeStats(val position: CubePosition, var hit: Int = 0, var miss: Int = 0) : Serializable {
+    val accuracy: Double get() = if (miss == 0) {
+        if (hit == 0) {
+            0.0
+        } else {
+            1.0
+        }
+    } else {
+        (hit / (hit + miss)).toDouble()
+    }
+}
+
 data class TeamPerformance(
         var teamNumber: Int,
         var autoStartPos: StartPosition = StartPosition.CENTER,
         var autoCrossedLine: Boolean = false,
-        var autoCubesOwnSwitch: Int = 0,
-        var autoCubesScale: Int = 0,
-        var autoCubesOppSwitch: Int = 0,
-        var teleCubesFromPortal: Int = 0,
+        var autoCubePlacement: CubePosition = CubePosition.OWN_SWITCH,
+        var autoCubes: Int = 0,
+        var autoTimeRemaining: Int = 15,
+        var teleCubesOwnSwitch: CubeStats = CubeStats(CubePosition.OWN_SWITCH),
+        var teleCubesScale: CubeStats = CubeStats(CubePosition.OWN_SWITCH),
+        var teleCubesOppSwitch: CubeStats = CubeStats(CubePosition.OWN_SWITCH),
         var teleCubesInExchange: Int = 0,
         var endPosition: EndPosition = EndPosition.NONE,
         var defends: Int = 0
 ) : Serializable {
-
-    val autoCubesTotal get(): Int = autoCubesOppSwitch + autoCubesOwnSwitch + autoCubesScale
 
     companion object {
         private const val serialVersionUID: Long = 92387465

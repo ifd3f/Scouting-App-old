@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.burlingamerobotics.scouting.client.R
+import com.burlingamerobotics.scouting.common.data.TeamPerformance
 
 
 /**
@@ -15,11 +16,20 @@ import com.burlingamerobotics.scouting.client.R
  */
 class EditTeamPerformanceFragment : Fragment() {
 
+    lateinit var perf: TeamPerformance
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+
         // Inflate the layout for this fragment
         return inflater!!.inflate(R.layout.fragment_edit_team_performance, container, false)
     }
 
-}// Required empty public constructor
+    companion object {
+        fun create(perf: TeamPerformance): EditTeamPerformanceFragment {
+            val frag = EditTeamPerformanceFragment()
+            frag.perf = perf
+            return frag
+        }
+    }
+
+}
