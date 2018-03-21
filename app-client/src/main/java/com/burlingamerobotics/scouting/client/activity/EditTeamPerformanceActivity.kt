@@ -1,6 +1,8 @@
 package com.burlingamerobotics.scouting.client.activity
 
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -23,6 +25,10 @@ class EditTeamPerformanceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setSupportActionBar(toolbar)
+        supportActionBar!!.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeAsUpIndicator(R.drawable.ic_dialog_close_dark)
+        }
 
         Log.d(TAG, "Creating fields")
 
@@ -68,9 +74,22 @@ class EditTeamPerformanceActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        super.onCreateOptionsMenu(menu)
         menuInflater.inflate(R.menu.edit_team_performance, menu)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item!!.itemId) {
+            R.id.action_save -> {
+                Log.d(TAG, "User wants to save")
+                setResult(Activity.RESULT_OK, Intent().apply {
+                    extras.putSerializable("result", build())
+                })
+                finish()
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
     }
 
     fun build(): TeamPerformance {

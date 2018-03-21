@@ -32,7 +32,7 @@ const val INTENT_CLIENT_CONNECTED = "com.burlingamerobotics.scouting.SERVER_CLIE
 const val INTENT_CLIENT_DISCONNECTED = "com.burlingamerobotics.scouting.SERVER_CLIENT_DISCONNECTED"
 const val INTENT_START_SCOUTING_SERVER = "com.burlingamerobotics.scouting.START_SERVER"
 
-const val REQUEST_CODE_NEW_COMPETITION = 2356847
-const val REQUEST_CODE_EDIT_COMPETITION = 930214785
+const val REQUEST_CODE_NEW = 2356847
+const val REQUEST_CODE_EDIT = 930214785
 
 const val DURATION_SAVE_DATA = 120000L

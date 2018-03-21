@@ -10,8 +10,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT_COMPETITION
-import com.burlingamerobotics.scouting.common.REQUEST_CODE_NEW_COMPETITION
+import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT
+import com.burlingamerobotics.scouting.common.REQUEST_CODE_NEW
 import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.common.data.CompetitionBuilder
 import com.burlingamerobotics.scouting.server.R
@@ -39,12 +39,12 @@ class CompetitionEditorActivity : Activity() {
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
         when (intent.getIntExtra("request", -3524768)) {
-            REQUEST_CODE_NEW_COMPETITION -> {
+            REQUEST_CODE_NEW -> {
                 Log.i(TAG, "Activity was created to make new competition")
                 builder = CompetitionBuilder("", 3, UUID.randomUUID())
                 builder.qualSchedule.addEmpty()
             }
-            REQUEST_CODE_EDIT_COMPETITION -> {
+            REQUEST_CODE_EDIT -> {
                 val comp = intent.getSerializableExtra("competition")
                 builder = when (comp) {
                     is Competition -> {

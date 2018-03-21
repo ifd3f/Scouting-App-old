@@ -8,8 +8,8 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT_COMPETITION
-import com.burlingamerobotics.scouting.common.REQUEST_CODE_NEW_COMPETITION
+import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT
+import com.burlingamerobotics.scouting.common.REQUEST_CODE_NEW
 import com.burlingamerobotics.scouting.common.data.CompetitionBuilder
 import com.burlingamerobotics.scouting.common.data.CompetitionFileHeader
 import com.burlingamerobotics.scouting.server.R
@@ -48,9 +48,9 @@ class CompetitionSelectionActivity : Activity() {
             startActivityForResult(
                     Intent(this, CompetitionEditorActivity::class.java).apply {
                         putExtra("competition", dbScouting.getCompetition(listComps[position]))
-                        putExtra("request", REQUEST_CODE_EDIT_COMPETITION)
+                        putExtra("request", REQUEST_CODE_EDIT)
                     },
-                    REQUEST_CODE_EDIT_COMPETITION
+                    REQUEST_CODE_EDIT
             )
             true
         }
@@ -82,7 +82,7 @@ class CompetitionSelectionActivity : Activity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
-            REQUEST_CODE_NEW_COMPETITION, REQUEST_CODE_EDIT_COMPETITION -> {
+            REQUEST_CODE_NEW, REQUEST_CODE_EDIT -> {
                 if (resultCode == RESULT_CANCELED) {
                     Log.i(TAG, "User cancelled competition creation")
                     return

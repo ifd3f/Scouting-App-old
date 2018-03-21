@@ -11,8 +11,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import com.burlingamerobotics.scouting.common.BlueAllianceAPI
-import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT_COMPETITION
-import com.burlingamerobotics.scouting.common.REQUEST_CODE_NEW_COMPETITION
+import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT
+import com.burlingamerobotics.scouting.common.REQUEST_CODE_NEW
 import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.CompetitionBuilder
 import com.burlingamerobotics.scouting.server.R
@@ -31,9 +31,9 @@ class NewCompetitionDialog(private val parent: CompetitionSelectionActivity) : D
             parent.startActivityForResult(
                     Intent(parent, CompetitionEditorActivity::class.java).apply {
                         putExtra("competition", comp)
-                        putExtra("request", REQUEST_CODE_EDIT_COMPETITION)
+                        putExtra("request", REQUEST_CODE_EDIT)
                     },
-                    REQUEST_CODE_EDIT_COMPETITION
+                    REQUEST_CODE_EDIT
             )
             dismiss()
         } else {
@@ -65,9 +65,9 @@ class NewCompetitionDialog(private val parent: CompetitionSelectionActivity) : D
         btnEmpty.setOnClickListener {
             parent.startActivityForResult(
                     Intent(parent, CompetitionEditorActivity::class.java).apply {
-                        putExtra("request", REQUEST_CODE_NEW_COMPETITION)
+                        putExtra("request", REQUEST_CODE_NEW)
                     },
-                    REQUEST_CODE_NEW_COMPETITION
+                    REQUEST_CODE_NEW
             )
             dismiss()
         }

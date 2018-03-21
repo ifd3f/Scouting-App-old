@@ -13,7 +13,7 @@ import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeUnit
 
 /**
- * It's a service that keeps track of the server-side data.
+ * It's a service that keeps track of the server-side matchData.
  */
 class ScoutingClientService : Service(), CommStrategyListener {
 

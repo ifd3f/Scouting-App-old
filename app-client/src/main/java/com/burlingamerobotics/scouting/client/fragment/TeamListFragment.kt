@@ -75,7 +75,7 @@ class TeamListFragment : Fragment() {
     fun refresh() {
         refresher.isRefreshing = true
         Utils.ioExecutor.submit {
-            Log.d(TAG, "Requesting team data")
+            Log.d(TAG, "Requesting team matchData")
             teamList = service.blockingRequest(TeamListRequest)
             refreshHandler.sendEmptyMessage(0)
         }

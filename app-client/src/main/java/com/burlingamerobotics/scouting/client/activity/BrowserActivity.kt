@@ -31,7 +31,7 @@ class BrowserActivity : AppCompatActivity(), ServiceConnection {
         matchListFragment = MatchListFragment()
         teamListFragment = TeamListFragment()
 
-        Log.d(TAG, "Setting navigation selected listener")
+        Log.d(TAG, "Setting browser_navigation selected listener")
         navigation.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_matches -> {
