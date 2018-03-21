@@ -3,6 +3,7 @@ package com.burlingamerobotics.scouting.client.fragment
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,13 +19,14 @@ import kotlinx.android.synthetic.main.fragment_edit_team_performance.*
  */
 class EditTeamPerformanceFragment : Fragment() {
 
-    private lateinit var perf: TeamPerformance
+    val TAG = "EditTeamPerformance"
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.fragment_edit_team_performance, container, false)
+        Log.d(TAG, "Creating fields")
 
+        val view = inflater!!.inflate(R.layout.fragment_edit_team_performance, container, false)
         val teamNumber: Int = arguments.getInt("team")
-        perf = (arguments.getSerializable("existing") as TeamPerformance?) ?: TeamPerformance(teamNumber)
+        val perf = (arguments.getSerializable("existing") as TeamPerformance?) ?: TeamPerformance(teamNumber)
 
         spinner_auto_start_pos.adapter = ArrayAdapter(
                 context, android.R.layout.simple_spinner_dropdown_item,
@@ -43,6 +45,8 @@ class EditTeamPerformanceFragment : Fragment() {
         spinner_rating_switch.adapter = ratingAdapter
         spinner_rating_defense.adapter = ratingAdapter
 
+        Log.d(TAG, "Writing values to form fields")
+
         spinner_auto_start_pos.setSelection(perf.autoStartPos.ordinal)
         spinner_auto_cube_pos.setSelection(perf.autoCubePlacement.ordinal)
 
@@ -52,6 +56,7 @@ class EditTeamPerformanceFragment : Fragment() {
         spinner_rating_switch.setSelection(perf.ratingSwitch.ordinal)
         spinner_rating_defense.setSelection(perf.ratingDefense.ordinal)
 
+        chk_baseline.isChecked = perf.autoCrossedLine
         edit_team_number.setText(teamNumber.toString())
         edit_auto_remaining_time.setText(perf.autoTimeRemaining.toString())
         edit_tele_cubes_exchange.setText(perf.teleCubesExchange.toString())
@@ -63,14 +68,36 @@ class EditTeamPerformanceFragment : Fragment() {
         return view
     }
 
-    fun validate() {
-        edit_auto_remaining_time.text.toString()
+    fun build(): TeamPerformance {
+        val ratings = enumValues<Rating>()
+
+        return TeamPerformance(
+                autoStartPos = enumValues<StartPosition>()[spinner_auto_start_pos.selectedItemPosition],
+                autoTimeRemaining = edit_auto_remaining_time.text.toString().toInt(),
+                autoCrossedLine = chk_baseline.isChecked,
+                teamNumber = edit_team_number.text.toString().toInt(),
+                autoCubePlacement = enumValues<CubePosition>()[spinner_auto_cube_pos.selectedItemPosition],
+                ratingDefense = ratings[spinner_rating_defense.selectedItemPosition],
+                ratingSwitch = ratings[spinner_rating_switch.selectedItemPosition],
+                ratingScale = ratings[spinner_rating_scale.selectedItemPosition],
+                ratingIntake = ratings[spinner_rating_intake.selectedItemPosition],
+                ratingExchange = ratings[spinner_rating_exchange.selectedItemPosition]
+        ).apply {
+            teleCubesOwnSwitch.readFrom(edit_tele_cubes_switch_hit, edit_tele_cubes_switch_miss)
+            teleCubesScale.readFrom(edit_tele_cubes_scale_hit, edit_tele_cubes_scale_miss)
+            teleCubesOppSwitch.readFrom(edit_tele_cubes_opp_hit, edit_tele_cubes_opp_miss)
+        }
     }
 
     companion object {
         fun CubeStats.writeTo(hit: EditText, miss: EditText) {
             hit.setText(this.hit.toString())
             miss.setText(this.miss.toString())
+        }
+
+        fun CubeStats.readFrom(hit: EditText, miss: EditText) {
+            this.hit = hit.text.toString().toInt()
+            this.miss = miss.text.toString().toInt()
         }
 
         fun create(perf: TeamPerformance): EditTeamPerformanceFragment {
