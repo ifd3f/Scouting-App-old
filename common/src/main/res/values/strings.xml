@@ -9,39 +9,27 @@
     <string name="matchres_draw">Draw</string>
     <string name="matchres_scheduled">Scheduled</string>
 
-    <string-array name="form_auto_start">
-        <item>Exchange</item>
-        <item>Middle</item>
-        <item>Portal</item>
-    </string-array>
+    <string name="start_exchange">Exchange</string>
+    <string name="start_middle">Middle</string>
+    <string name="start_portal">Portal</string>
 
-    <string-array name="form_cube_dest">
-        <item>Own Switch</item>
-        <item>Scale</item>
-        <item>Opposing Switch</item>
-    </string-array>
+    <string name="cube_pos_own_switch">Own Switch</string>
+    <string name="cube_pos_scale">Scale</string>
+    <string name="cube_pos_opp_switch">Opp. Switch</string>
 
-    <string-array name="form_endgame_state">
-        <item>Parked</item>
-        <item>Climbed</item>
-        <item>Levitated</item>
-    </string-array>
+    <string name="endgame_state_none_lev">None/Levitate</string>
+    <string name="endgame_state_parked">Parked</string>
+    <string name="endgame_state_assisted">Assisted</string>
+    <string name="endgame_state_climbed_attempt">Attempted Climb</string>
+    <string name="endgame_state_climbed_1">Climb 1</string>
+    <string name="endgame_state_climbed_2">Climb 2</string>
+    <string name="endgame_state_climbed_3">Climb 3</string>
 
-    <string-array name="form_endgame_assist">
-        <item>Didn't Climb/Levitated</item>
-        <item>Only Itself</item>
-        <item>Was Assisted</item>
-        <item>Assisted 1 Other</item>
-        <item>Assisted 2 Other</item>
-    </string-array>
-
-    <string-array name="form_rating">
-        <item>N/A</item>
-        <item>Very Reliable</item>
-        <item>Usually Reliable</item>
-        <item>Satisfactory</item>
-        <item>Unreliable</item>
-        <item>Terrible</item>
-    </string-array>
+    <string name="rating_0">N/A</string>
+    <string name="rating_1">Terrible</string>
+    <string name="rating_2">Unreliable</string>
+    <string name="rating_3">Satisfactory</string>
+    <string name="rating_4">Mostly Reliable</string>
+    <string name="rating_5">NASA</string>
 
 </resources>

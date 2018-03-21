@@ -2,6 +2,7 @@ package com.burlingamerobotics.scouting.common.data
 
 import android.view.View
 import android.widget.RelativeLayout
+import android.widget.Switch
 import android.widget.TextView
 import com.burlingamerobotics.scouting.common.R
 import java.io.Serializable
@@ -22,17 +23,22 @@ data class CubeStats(val position: CubePosition, var hit: Int = 0, var miss: Int
 
 data class TeamPerformance(
         var teamNumber: Int,
-        var autoStartPos: StartPosition = StartPosition.CENTER,
+        var autoStartPos: StartPosition = StartPosition.MIDDLE,
         var autoCrossedLine: Boolean = false,
         var autoCubePlacement: CubePosition = CubePosition.OWN_SWITCH,
         var autoCubes: Int = 0,
         var autoTimeRemaining: Int = 15,
-        var teleCubesOwnSwitch: CubeStats = CubeStats(CubePosition.OWN_SWITCH),
-        var teleCubesScale: CubeStats = CubeStats(CubePosition.OWN_SWITCH),
-        var teleCubesOppSwitch: CubeStats = CubeStats(CubePosition.OWN_SWITCH),
-        var teleCubesInExchange: Int = 0,
-        var endPosition: EndPosition = EndPosition.NONE,
-        var defends: Int = 0
+        val teleCubesOwnSwitch: CubeStats = CubeStats(CubePosition.OWN_SWITCH),
+        val teleCubesScale: CubeStats = CubeStats(CubePosition.OWN_SWITCH),
+        val teleCubesOppSwitch: CubeStats = CubeStats(CubePosition.OWN_SWITCH),
+        var teleCubesExchange: Int = 0,
+        var endState: EndState = EndState.NONE_OR_LEVITATE,
+        var defends: Int = 0,
+        var ratingSwitch: Rating = Rating.NONE,
+        var ratingScale: Rating = Rating.NONE,
+        var ratingExchange: Rating = Rating.NONE,
+        var ratingDefense: Rating = Rating.NONE,
+        var ratingIntake: Rating = Rating.NONE
 ) : Serializable {
 
     companion object {

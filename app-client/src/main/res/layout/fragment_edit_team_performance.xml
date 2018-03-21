@@ -9,6 +9,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="Team Number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:id="@+id/edit_team_number"
+                android:inputType="number"
+                android:hint="254"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
         <TextView
             android:text="Autonomous"
             style="@style/TextAppearance.AppCompat.Title"
@@ -23,8 +38,8 @@
                 android:text="Start Position"
                 style="@style/AppTheme.FormItemLabel"/>
             <Spinner
-                style="@style/AppTheme.FormItemSpinner"
-                android:entries="@array/form_auto_start" />
+                android:id="@+id/spinner_auto_start_pos"
+                style="@style/AppTheme.FormItemSpinner"/>
 
             <TextView
                 android:text="Baseline?"
@@ -38,8 +53,8 @@
                 android:text="Cube Placement"
                 style="@style/AppTheme.FormItemLabel"/>
             <Spinner
-                style="@style/AppTheme.FormItemSpinner"
-                android:entries="@array/form_cube_dest"/>
+                android:id="@+id/spinner_auto_cube_pos"
+                style="@style/AppTheme.FormItemSpinner"/>
 
             <TextView
                 android:text="Time remaining after last cube"
@@ -47,9 +62,7 @@
                 android:labelFor="@id/edit_auto_remaining_time"/>
             <EditText
                 android:id="@+id/edit_auto_remaining_time"
-                style="@style/AppTheme.FormItemShortField"
-                android:inputType="number"
-                android:maxLength="2"
+                style="@style/AppTheme.FormItemShortNumberField"
                 android:text="15"/>
 
         </GridLayout>
@@ -67,79 +80,65 @@
             <TextView
                 android:text="Succeeded Own Switch"
                 style="@style/AppTheme.FormItemLabel"
-                android:labelFor="@id/tele_cubes_switch_hit"/>
+                android:labelFor="@id/edit_tele_cubes_switch_hit"/>
             <EditText
-                android:id="@+id/tele_cubes_switch_hit"
-                style="@style/AppTheme.FormItemShortField"
-                android:maxLength="2"
-                android:text="0"
-                android:inputType="number"/>
+                android:id="@+id/edit_tele_cubes_switch_hit"
+                style="@style/AppTheme.FormItemShortNumberField"
+                android:text="0"/>
 
             <TextView
                 android:text="Missed Own Switch"
                 style="@style/AppTheme.FormItemLabel"
-                android:labelFor="@id/tele_cubes_switch_miss"/>
+                android:labelFor="@id/edit_tele_cubes_switch_miss"/>
             <EditText
-                android:id="@+id/tele_cubes_switch_miss"
-                style="@style/AppTheme.FormItemShortField"
-                android:text="0"
-                android:maxLength="2"
-                android:inputType="number"/>
+                android:id="@+id/edit_tele_cubes_switch_miss"
+                style="@style/AppTheme.FormItemShortNumberField"
+                android:text="0"/>
 
             <TextView
                 android:text="Succeeded Scale"
                 style="@style/AppTheme.FormItemLabel"
-                android:labelFor="@id/tele_cubes_scale_hit"/>
+                android:labelFor="@id/edit_tele_cubes_scale_hit"/>
             <EditText
-                android:id="@+id/tele_cubes_scale_hit"
-                style="@style/AppTheme.FormItemShortField"
-                android:maxLength="2"
-                android:text="0"
-                android:inputType="number"/>
+                android:id="@+id/edit_tele_cubes_scale_hit"
+                style="@style/AppTheme.FormItemShortNumberField"
+                android:text="0"/>
 
             <TextView
                 android:text="Missed Scale"
                 style="@style/AppTheme.FormItemLabel"
-                android:labelFor="@id/tele_cubes_scale_miss"/>
+                android:labelFor="@id/edit_tele_cubes_scale_miss"/>
             <EditText
-                android:id="@+id/tele_cubes_scale_miss"
-                style="@style/AppTheme.FormItemShortField"
-                android:text="0"
-                android:maxLength="2"
-                android:inputType="number"/>
+                android:id="@+id/edit_tele_cubes_scale_miss"
+                style="@style/AppTheme.FormItemShortNumberField"
+                android:text="0"/>
 
             <TextView
                 android:text="Succeeded Opp. Switch"
                 style="@style/AppTheme.FormItemLabel"
-                android:labelFor="@id/tele_cubes_scale_hit"/>
+                android:labelFor="@id/edit_tele_cubes_scale_hit"/>
             <EditText
-                android:id="@+id/tele_cubes_opp_hit"
-                style="@style/AppTheme.FormItemShortField"
-                android:maxLength="2"
-                android:text="0"
-                android:inputType="number"/>
+                android:id="@+id/edit_tele_cubes_opp_hit"
+                style="@style/AppTheme.FormItemShortNumberField"
+                android:text="0"/>
 
             <TextView
                 android:text="Missed Opp. Switch"
                 style="@style/AppTheme.FormItemLabel"
-                android:labelFor="@id/tele_cubes_scale_miss"/>
+                android:labelFor="@id/edit_tele_cubes_scale_miss"/>
             <EditText
-                android:id="@+id/tele_cubes_opp_miss"
-                style="@style/AppTheme.FormItemShortField"
-                android:text="0"
-                android:maxLength="2"
-                android:inputType="number"/>
+                android:id="@+id/edit_tele_cubes_opp_miss"
+                style="@style/AppTheme.FormItemShortNumberField"
+                android:text="0"/>
 
             <TextView
                 android:text="Exchange"
                 style="@style/AppTheme.FormItemLabel"
-                android:labelFor="@id/tele_cubes_exchange"/>
+                android:labelFor="@id/edit_tele_cubes_exchange"/>
             <EditText
-                android:id="@+id/tele_cubes_exchange"
-                style="@style/AppTheme.FormItemShortField"
-                android:text="0"
-                android:maxLength="2"
-                android:inputType="number"/>
+                android:id="@+id/edit_tele_cubes_exchange"
+                style="@style/AppTheme.FormItemShortNumberField"
+                android:text="0"/>
         </GridLayout>
 
         <TextView
@@ -159,17 +158,7 @@
                 android:labelFor="@id/end_state"/>
             <Spinner
                 android:id="@+id/end_state"
-                style="@style/AppTheme.FormItemSpinner"
-                android:entries="@array/form_endgame_state"/>
-
-            <TextView
-                android:text="Climb Assist?"
-                style="@style/AppTheme.FormItemLabel"
-                android:labelFor="@id/end_assist"/>
-            <Spinner
-                android:id="@+id/end_assist"
-                style="@style/AppTheme.FormItemSpinner"
-                android:entries="@array/form_endgame_assist"/>
+                style="@style/AppTheme.FormItemSpinner"/>
         </GridLayout>
 
         <TextView
@@ -189,8 +178,7 @@
                 android:labelFor="@id/spinner_rating_switch"/>
             <Spinner
                 android:id="@+id/spinner_rating_switch"
-                style="@style/AppTheme.FormItemSpinner"
-                android:entries="@array/form_rating" />
+                style="@style/AppTheme.FormItemSpinner" />
 
             <TextView
                 android:text="Scale"
@@ -198,8 +186,7 @@
                 android:labelFor="@id/spinner_rating_scale"/>
             <Spinner
                 android:id="@+id/spinner_rating_scale"
-                style="@style/AppTheme.FormItemSpinner"
-                android:entries="@array/form_rating" />
+                style="@style/AppTheme.FormItemSpinner"/>
 
             <TextView
                 android:text="Exchange"
@@ -207,8 +194,7 @@
                 android:labelFor="@id/spinner_rating_exchange"/>
             <Spinner
                 android:id="@+id/spinner_rating_exchange"
-                style="@style/AppTheme.FormItemSpinner"
-                android:entries="@array/form_rating" />
+                style="@style/AppTheme.FormItemSpinner" />
 
             <TextView
                 android:text="Defense"
@@ -216,8 +202,7 @@
                 android:labelFor="@id/spinner_rating_defense"/>
             <Spinner
                 android:id="@+id/spinner_rating_defense"
-                style="@style/AppTheme.FormItemSpinner"
-                android:entries="@array/form_rating" />
+                style="@style/AppTheme.FormItemSpinner" />
 
             <TextView
                 android:text="Intake"
@@ -225,8 +210,7 @@
                 android:labelFor="@id/spinner_rating_intake"/>
             <Spinner
                 android:id="@+id/spinner_rating_intake"
-                style="@style/AppTheme.FormItemSpinner"
-                android:entries="@array/form_rating" />
+                style="@style/AppTheme.FormItemSpinner"/>
 
         </GridLayout>
 

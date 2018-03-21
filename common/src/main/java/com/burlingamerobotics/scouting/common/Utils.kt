@@ -20,25 +20,3 @@ object Utils {
     }
 
 }
-
-/**
- * Converts your (hopefully serializable) object into a bytearray.
- */
-fun Any.serializedByteArray(): ByteArray {
-    Utils.oos.writeObject(this)
-    val out = Utils.bos.toByteArray()
-    Utils.bos.reset()
-    return out
-}
-
-/**
- * Converts your bytearray into a serializable object.
- */
-fun ByteArray.deserialized(): Any {
-    val bis = ByteArrayInputStream(this)
-    val out = ObjectInputStream(bis).use {
-        it.readObject()
-    }
-    bis.close()
-    return out
-}
