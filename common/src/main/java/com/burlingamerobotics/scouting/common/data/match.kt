@@ -86,7 +86,7 @@ data class MatchTree(val match: Match?, val left: MatchTree?, val right: MatchTr
 
 }
 
-class Match(
+data class Match(
         val number: Int,
         var red: AlliancePerformance,
         var blue: AlliancePerformance,

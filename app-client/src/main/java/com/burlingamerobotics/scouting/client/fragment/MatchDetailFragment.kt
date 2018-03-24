@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.activity.EditTeamPerformanceActivity
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT
@@ -29,7 +28,7 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "Populating view with match: $matchData")
         listOf(
                 R.id.text_team_red1,
                 R.id.text_team_red2,
@@ -40,9 +39,21 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener {
             view.findViewById<View>(it).setOnLongClickListener(this)
         }
 
-        view.findViewById<TextView>(R.id.text_match_number).text = matchData.number.toString()
-        view.findViewById<TextView>(R.id.text_alliance_red_score).text = matchData.red.points.toString()
-        view.findViewById<TextView>(R.id.text_alliance_blue_score).text = matchData.blue.points.toString()
+        Log.d(TAG, matchData.toString())
+
+        val redAlliance = matchData.red.alliance
+        val blueAlliance = matchData.blue.alliance
+
+        text_team_red1.text = redAlliance.a.toString()
+        text_team_red2.text = redAlliance.b.toString()
+        text_team_red3.text = redAlliance.c.toString()
+        text_team_blue1.text = blueAlliance.a.toString()
+        text_team_blue2.text = blueAlliance.b.toString()
+        text_team_blue3.text = blueAlliance.c.toString()
+
+        text_match_number.text = "Match %s".format(matchData.number.toString())
+        text_alliance_red_score.text = matchData.red.points.toString()
+        text_alliance_blue_score.text = matchData.blue.points.toString()
     }
 
     override fun onLongClick(v: View): Boolean {
