@@ -6,7 +6,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.*
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.Window
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import com.burlingamerobotics.scouting.client.R
@@ -21,19 +24,26 @@ class EditTeamPerformanceActivity : AppCompatActivity() {
 
     private val TAG = "EditTeamPerformance"
 
+    private var teamNumber = -1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        requestWindowFeature(Window.FEATURE_ACTION_BAR)
+        setContentView(R.layout.activity_edit_team_performance)
         setSupportActionBar(toolbar)
-        supportActionBar!!.apply {
+        supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_dialog_close_dark)
         }
 
         Log.d(TAG, "Creating fields")
 
-        val teamNumber: Int = intent.extras.getInt("team")
+        teamNumber = intent.extras.getInt("team")
+        val matchNumber = intent.extras.getInt("match")
         val perf = (intent.extras.getSerializable("existing") as TeamPerformance?) ?: TeamPerformance(teamNumber)
+
+        toolbar.title = "Match $matchNumber, Team $teamNumber"
 
         spinner_auto_start_pos.adapter = ArrayAdapter(
                 this, android.R.layout.simple_spinner_dropdown_item,
@@ -64,7 +74,6 @@ class EditTeamPerformanceActivity : AppCompatActivity() {
         spinner_rating_defense.setSelection(perf.ratingDefense.ordinal)
 
         chk_baseline.isChecked = perf.autoCrossedLine
-        edit_team_number.setText(teamNumber.toString())
         edit_auto_remaining_time.setText(perf.autoTimeRemaining.toString())
         edit_tele_cubes_exchange.setText(perf.teleCubesExchange.toString())
 
@@ -83,7 +92,7 @@ class EditTeamPerformanceActivity : AppCompatActivity() {
             R.id.action_save -> {
                 Log.d(TAG, "User wants to save")
                 setResult(Activity.RESULT_OK, Intent().apply {
-                    extras.putSerializable("result", build())
+                    putExtra("result", build())
                 })
                 finish()
                 return true
@@ -96,10 +105,10 @@ class EditTeamPerformanceActivity : AppCompatActivity() {
         val ratings = enumValues<Rating>()
 
         return TeamPerformance(
+                teamNumber = teamNumber,
                 autoStartPos = enumValues<StartPosition>()[spinner_auto_start_pos.selectedItemPosition],
                 autoTimeRemaining = edit_auto_remaining_time.text.toString().toInt(),
                 autoCrossedLine = chk_baseline.isChecked,
-                teamNumber = edit_team_number.text.toString().toInt(),
                 autoCubePlacement = enumValues<CubePosition>()[spinner_auto_cube_pos.selectedItemPosition],
                 ratingDefense = ratings[spinner_rating_defense.selectedItemPosition],
                 ratingSwitch = ratings[spinner_rating_switch.selectedItemPosition],

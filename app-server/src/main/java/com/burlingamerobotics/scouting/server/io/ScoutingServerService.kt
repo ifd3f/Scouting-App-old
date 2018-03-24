@@ -36,9 +36,10 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
     private var btConnectListener: Future<*>? = null
     private var dataSaveTask: Future<*>? = null
 
-    lateinit var btAdapter: BluetoothAdapter
+    var btAdapter: BluetoothAdapter? = null
+    var serverSocket: BluetoothServerSocket? = null
+
     lateinit var competition: Competition
-    lateinit var serverSocket: BluetoothServerSocket
     lateinit var db: ScoutingDB
 
     override fun onBind(intent: Intent): IBinder {
@@ -73,19 +74,28 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
         intent!!
         db = ScoutingDB(this)
         competition = db.getCompetition(intent.getSerializableExtra("competition") as UUID)!!
-        serverSocket = btAdapter.listenUsingRfcommWithServiceRecord("Scouting Server", SCOUTING_UUID)
 
-        btConnectListener = Utils.ioExecutor.submit {
-            while (true) {
-                val client = BluetoothClientInterface(serverSocket.accept())
-                client.attachClientInputListener(this)
-                Log.i(TAG, "Bluetooth device at ${client.device.address} connected")
-                clients.add(client)
-                client.begin()
-                sendBroadcast(Intent(INTENT_CLIENT_CONNECTED).apply {
-                    putExtra("client", client.getInfo())
-                })
+        val adapter = btAdapter
+        if (adapter != null) {
+            Log.i(TAG, "Bluetooth adapter exists, starting bluetooth server socket")
+            val sock = adapter.listenUsingRfcommWithServiceRecord("Scouting Server", SCOUTING_UUID)
+
+            btConnectListener = Utils.ioExecutor.submit {
+                while (true) {
+                    val client = BluetoothClientInterface(sock.accept())
+                    client.attachClientInputListener(this)
+                    Log.i(TAG, "Bluetooth device at ${client.device.address} connected")
+                    clients.add(client)
+                    client.begin()
+                    sendBroadcast(Intent(INTENT_CLIENT_CONNECTED).apply {
+                        putExtra("client", client.getInfo())
+                    })
+                }
             }
+
+            this.serverSocket = sock
+        } else {
+            Log.w(TAG, "Bluetooth socket does not exist! Clients will not be able to remotely connect!")
         }
 
         dataSaveTask = Utils.ioExecutor.scheduleWithFixedDelay({
