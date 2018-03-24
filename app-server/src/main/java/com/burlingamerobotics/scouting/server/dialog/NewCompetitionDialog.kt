@@ -84,7 +84,7 @@ class NewCompetitionDialog(private val parent: CompetitionSelectionActivity) : D
             fetchTask = Utils.ioExecutor.submit {
                 val msg = Message()
                 val result = BlueAllianceAPI.fetchCompetition(event)
-                Log.d(TAG, "Got $result")
+                Log.d(TAG, "Got response: $result")
                 msg.obj = Pair(result, result != null)
                 startEditorHandler.sendMessage(msg)
             }

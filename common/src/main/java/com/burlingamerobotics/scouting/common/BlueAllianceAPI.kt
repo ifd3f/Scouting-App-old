@@ -49,8 +49,12 @@ object BlueAllianceAPI {
                         3
                 ).apply {
                     qualSchedule.matches.addAll(run {
-                        val json = fetch("event/$event/matches").jsonArray
-                        (0 until json.length()).map { i -> getMatchFrom(json.getJSONObject(i))}
+                        val matchesResponse = fetch("event/$event/matches")
+                        val json = matchesResponse.jsonArray
+                        (0 until json.length())
+                                .map { i -> json.getJSONObject(i) }
+                                .filter { it.getString("comp_level") == "qm" }
+                                .map { getMatchFrom(it)}
                     })
                 }
             }
