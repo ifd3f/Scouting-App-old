@@ -6,7 +6,6 @@ import android.os.Messenger
 import android.util.Log
 import com.burlingamerobotics.scouting.common.MSG_GIVE_RX
 import com.burlingamerobotics.scouting.common.MSG_SEND_OBJ
-import com.burlingamerobotics.scouting.common.deserialized
 import java.io.Serializable
 
 

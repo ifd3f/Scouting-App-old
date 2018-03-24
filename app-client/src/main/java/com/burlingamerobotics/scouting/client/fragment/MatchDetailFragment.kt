@@ -3,9 +3,11 @@ package com.burlingamerobotics.scouting.client.fragment
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.activity.EditTeamPerformanceActivity
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT
@@ -13,6 +15,8 @@ import com.burlingamerobotics.scouting.common.data.Match
 import kotlinx.android.synthetic.main.fragment_match_detail.*
 
 class MatchDetailFragment : Fragment(), View.OnLongClickListener {
+    val TAG = "MatchDetailFragment"
+
     lateinit var matchData: Match
 
     override fun setArguments(args: Bundle?) {
@@ -20,13 +24,12 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener {
         matchData = args!!.get("match") as Match
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater!!.inflate(R.layout.fragment_match_detail, container, false)
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.fragment_match_detail, container, false)
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         listOf(
                 R.id.text_team_red1,
                 R.id.text_team_red2,
@@ -37,10 +40,9 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener {
             view.findViewById<View>(it).setOnLongClickListener(this)
         }
 
-        text_match_number.text = matchData.number.toString()
-        text_alliance_red_score.text = matchData.red.points.toString()
-        text_alliance_blue_score.text = matchData.red.points.toString()
-        return view
+        view.findViewById<TextView>(R.id.text_match_number).text = matchData.number.toString()
+        view.findViewById<TextView>(R.id.text_alliance_red_score).text = matchData.red.points.toString()
+        view.findViewById<TextView>(R.id.text_alliance_blue_score).text = matchData.blue.points.toString()
     }
 
     override fun onLongClick(v: View): Boolean {
@@ -68,8 +70,8 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener {
             }
         }
         startActivityForResult(Intent(context, EditTeamPerformanceActivity::class.java).apply {
-            extras.putInt("existing", teamPerf.teamNumber)
-            extras.putSerializable("existing", teamPerf)
+            putExtra("existing", teamPerf.teamNumber)
+            putExtra("existing", teamPerf)
         }, REQUEST_CODE_EDIT)
         return true
     }

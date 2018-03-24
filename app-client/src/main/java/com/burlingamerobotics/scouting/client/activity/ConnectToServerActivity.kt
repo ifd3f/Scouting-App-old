@@ -24,7 +24,7 @@ class ConnectToServerActivity : AppCompatActivity(), ServiceConnection {
     private val TAG = "ConnectToServer"
 
     private lateinit var swipeRefresh: SwipeRefreshLayout
-    private lateinit var btAdapter: BluetoothAdapter
+    private var btAdapter: BluetoothAdapter? = null
     private lateinit var lvServers: ListView
     private lateinit var lsServers: List<ServerData>
     private var service: ScoutingClientServiceBinder? = null
@@ -113,9 +113,10 @@ class ConnectToServerActivity : AppCompatActivity(), ServiceConnection {
     }
 
     fun listServers(): List<ServerData> {
-        val bluetooth = btAdapter.bondedDevices.toList()
-                .filter { it.bondState == BluetoothDevice.BOND_BONDED }
-                .map { BluetoothServerData(it) }
+        val bluetooth = btAdapter?.bondedDevices?.toList()
+                ?.filter { it.bondState == BluetoothDevice.BOND_BONDED }
+                ?.map { BluetoothServerData(it) }
+            ?: listOf()
         return listOf(LocalServerData) + bluetooth
     }
 

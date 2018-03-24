@@ -27,7 +27,6 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
     val TAG = "ServerManagerActivity"
     val clients: MutableList<ClientInfo> = arrayListOf()
 
-    lateinit var btAdapter: BluetoothAdapter
     lateinit var lvClients: ListView
     lateinit var switchStartServer: Switch
     lateinit var competition: Competition
@@ -46,7 +45,6 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
         //setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
 
-        btAdapter = BluetoothAdapter.getDefaultAdapter()
         competition = intent.getSerializableExtra("competition") as Competition
 
         lvClients = findViewById(R.id.list_connected_clients)
