@@ -2,21 +2,23 @@ package com.burlingamerobotics.scouting.common.data
 
 import java.io.Serializable
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.*
 
 
 class Competition(
-        val uuid: UUID,
-        val name: String,
-        cal: Calendar,
-        val qualifiers: MutableList<Match>,
-        val finals: MatchTree
+        var name: String,
+        cal: Calendar? = null,
+        val uuid: UUID = UUID.randomUUID(),
+        matchList: List<Match> = listOf(),
+        var tbaCode: String? = null
 ) : Serializable {
 
-    val date: Date = cal.time
-    var tbaCode: String? = null
+    val qualifiers = MatchSchedule(matchList)
 
-    fun getHeader(): CompetitionFileHeader = CompetitionFileHeader(uuid, name, date, qualifiers.size)
+    var date: Date = cal?.time ?: Calendar.getInstance().time
+
+    fun getHeader(): CompetitionFileHeader = CompetitionFileHeader(uuid, name, date, qualifiers.count())
 
     fun getFilename(): String = "$uuid.dat"
 

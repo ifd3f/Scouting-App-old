@@ -1,9 +1,7 @@
 package com.burlingamerobotics.scouting.common
 
 import android.util.Log
-import com.burlingamerobotics.scouting.common.data.Alliance
-import com.burlingamerobotics.scouting.common.data.CompetitionBuilder
-import com.burlingamerobotics.scouting.common.data.ScheduledMatch
+import com.burlingamerobotics.scouting.common.data.*
 import khttp.get
 import khttp.responses.Response
 import org.json.JSONArray
@@ -26,7 +24,7 @@ object BlueAllianceAPI {
         return response
     }
 
-    fun fetchCompetition(event: String): CompetitionBuilder? {
+    fun fetchCompetition(event: String): Competition? {
         val response = fetch("event/$event")
         return when (response.statusCode) {
             404 -> null
@@ -44,19 +42,16 @@ object BlueAllianceAPI {
                     cal
                 }
 
-                CompetitionBuilder(
-                        name,
-                        3
-                ).apply {
-                    qualSchedule.matches.addAll(run {
-                        val matchesResponse = fetch("event/$event/matches")
-                        val json = matchesResponse.jsonArray
-                        (0 until json.length())
-                                .map { i -> json.getJSONObject(i) }
-                                .filter { it.getString("comp_level") == "qm" }
-                                .map { getMatchFrom(it)}
-                    })
+                val matches = run {
+                    val matchesResponse = fetch("event/$event/matches")
+                    val json = matchesResponse.jsonArray
+                    (0 until json.length())
+                            .map { i -> json.getJSONObject(i) }
+                            .filter { it.getString("comp_level") == "qm" }
+                            .map { getMatchFrom(it)}
                 }
+
+                Competition(name, cal, UUID.randomUUID(), matches)
             }
         }
     }
@@ -65,7 +60,7 @@ object BlueAllianceAPI {
         return (0 until array.length()).map { i -> array.getString(i).drop(3).toInt() }
     }
 
-    fun getMatchFrom(json: JSONObject): ScheduledMatch {
+    fun getMatchFrom(json: JSONObject): Match {
         val alliances = json.getJSONObject("alliances")
 
         val redJson = alliances.getJSONObject("red").getJSONArray("team_keys")
@@ -78,12 +73,12 @@ object BlueAllianceAPI {
         val redTeams = getTeamsFrom(redJson) + getTeamsFrom(redSurrJson) + getTeamsFrom(redDQJson)
         val blueTeams = getTeamsFrom(blueJson) + getTeamsFrom(blueSurrJson) + getTeamsFrom(blueDQJson)
 
+        val number = json.getInt("match_number")
         val ts = json.getLong("actual_time")
         val time = if (ts == 0L) null else Date(ts * 1000)
-        return ScheduledMatch(
-                Alliance(redTeams),
-                Alliance(blueTeams)
-        )
+        return Match.fromTeams(number, redTeams, blueTeams).also {
+            it.timeStarted = time
+        }
     }
 
 }

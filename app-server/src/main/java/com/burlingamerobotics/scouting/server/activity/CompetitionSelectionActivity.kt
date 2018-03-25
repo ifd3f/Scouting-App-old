@@ -10,7 +10,7 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_NEW
-import com.burlingamerobotics.scouting.common.data.CompetitionBuilder
+import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.common.data.CompetitionFileHeader
 import com.burlingamerobotics.scouting.server.R
 import com.burlingamerobotics.scouting.server.dialog.NewCompetitionDialog
@@ -87,11 +87,9 @@ class CompetitionSelectionActivity : Activity() {
                     Log.i(TAG, "User cancelled competition creation")
                     return
                 }
-                val builder = data!!.getSerializableExtra("builder") as CompetitionBuilder
+                val comp = data!!.getSerializableExtra("comp") as Competition
 
-                Log.i(TAG, "Received competition builder $builder")
-
-                val comp = builder.create()
+                Log.i(TAG, "Received competition $comp")
                 dbScouting.save(comp)
                 refreshCompetitions()
             }

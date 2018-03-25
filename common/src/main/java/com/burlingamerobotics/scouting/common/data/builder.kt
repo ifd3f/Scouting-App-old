@@ -7,39 +7,14 @@ import com.burlingamerobotics.scouting.common.R
 import java.io.Serializable
 import java.util.*
 
-class CompetitionBuilder(
-        var name: String,
-        var finalRounds: Int,
-        var uuid: UUID? = null
-) : Serializable {
+class MatchSchedule(matches: List<Match> = listOf()) : Serializable, MutableIterable<Match> {
 
-    var qualSchedule = MatchSchedule()
-    val calendar: Calendar = Calendar.getInstance()
-
-    fun create(): Competition {
-        return Competition(uuid ?: UUID.randomUUID(), name, calendar, qualSchedule.generateMatches(), MatchTree.generateTournament(finalRounds))
-    }
-
-    companion object {
-        fun from(comp: Competition): CompetitionBuilder {
-            return CompetitionBuilder(comp.name, comp.qualifiers.size, comp.uuid).apply {
-                qualSchedule = MatchSchedule.from(comp.qualifiers)
-            }
-        }
-    }
-
-}
-
-class MatchSchedule : Serializable {
-    val matches: MutableList<ScheduledMatch> = arrayListOf() /*MutableList(number, {
-        Pair(
-                IntArray(3, {0}),
-                IntArray(3, {0})
-        )
-    })*/
+    val matches: MutableList<Match> = matches.toMutableList()
 
     fun generateMatches(): MutableList<Match> {
-        return matches.mapIndexed { i, (red, blue) ->
+        return matches.mapIndexed { i, match ->
+            val red = match.red.alliance
+            val blue = match.blue.alliance
             Match(i + 1,
                     AlliancePerformance.fromTeams(red[0], red[1], red[2]),
                     AlliancePerformance.fromTeams(blue[0], blue[1], blue[2]))
@@ -60,13 +35,15 @@ class MatchSchedule : Serializable {
     }
 
     fun addEmpty() {
-        matches.add(ScheduledMatch())
+        matches.add(Match.empty(matches.size))
     }
+
+    override fun iterator(): MutableIterator<Match> = matches.iterator()
 
     companion object {
         fun from(list: List<Match>): MatchSchedule {
             return MatchSchedule().apply {
-                list.forEach { matches.add(it.scheduledMatch) }
+                list.forEach { matches.add(it) }
             }
         }
     }
@@ -74,11 +51,8 @@ class MatchSchedule : Serializable {
 
 data class Alliance(var a: Int, var b: Int, var c: Int) : Serializable, Iterable<Int> {
     override fun iterator(): Iterator<Int> {
-        return listOf(a, b, c).iterator()
+        return arrayOf(a, b, c).iterator()
     }
-
-    constructor() : this(0, 0, 0)
-    constructor(teams: List<Int>) : this(teams[0], teams[1], teams[2])
 
     val strings get() = Triple(
             if (a < 1) "" else a.toString(),
@@ -96,20 +70,3 @@ data class Alliance(var a: Int, var b: Int, var c: Int) : Serializable, Iterable
 
 }
 
-data class ScheduledMatch(val red: Alliance, val blue: Alliance) : Serializable {
-
-    constructor() : this(Alliance(), Alliance())
-
-    fun applyTo(view: View, index: Int) {
-        val (r1, r2, r3) = red.strings
-        val (b1, b2, b3) = blue.strings
-        view.findViewById<TextView>(R.id.label_match_number).text = index.toString()
-        view.findViewById<EditText>(R.id.edit_team_red1).setText(r1)
-        view.findViewById<EditText>(R.id.edit_team_red2).setText(r2)
-        view.findViewById<EditText>(R.id.edit_team_red3).setText(r3)
-        view.findViewById<EditText>(R.id.edit_team_blue1).setText(b1)
-        view.findViewById<EditText>(R.id.edit_team_blue2).setText(b2)
-        view.findViewById<EditText>(R.id.edit_team_blue3).setText(b3)
-    }
-
-}

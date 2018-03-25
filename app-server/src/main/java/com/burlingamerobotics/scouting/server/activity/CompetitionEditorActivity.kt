@@ -13,24 +13,23 @@ import android.widget.TextView
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_NEW
 import com.burlingamerobotics.scouting.common.data.Competition
-import com.burlingamerobotics.scouting.common.data.CompetitionBuilder
 import com.burlingamerobotics.scouting.server.R
 import java.text.SimpleDateFormat
 import java.util.*
 
 class CompetitionEditorActivity : Activity() {
 
-    val TAG = "CompEditorActivity"
-    val sdf = SimpleDateFormat.getDateInstance()
+    private val TAG = "CompEditorActivity"
+    private val sdf = SimpleDateFormat.getDateInstance()
 
-    lateinit var btnDatePicker: TextView
-    lateinit var builder: CompetitionBuilder
-    lateinit var editRowCount: EditText
-    lateinit var editName: EditText
-    lateinit var lsMatches: LinearLayout
-    lateinit var vBase: View
+    private lateinit var btnDatePicker: TextView
+    private lateinit var comp: Competition
+    private lateinit var editRowCount: EditText
+    private lateinit var editName: EditText
+    private lateinit var lsMatches: LinearLayout
 
-    var baseComp: Competition? = null
+    private val calendar: Calendar = Calendar.getInstance()
+
     val rows: MutableList<View> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,20 +40,16 @@ class CompetitionEditorActivity : Activity() {
         when (intent.getIntExtra("request", -3524768)) {
             REQUEST_CODE_NEW -> {
                 Log.i(TAG, "Activity was created to make new competition")
-                builder = CompetitionBuilder("", 3, UUID.randomUUID())
-                builder.qualSchedule.addEmpty()
+                comp = Competition("", Calendar.getInstance())
+                comp.qualifiers.addEmpty()
             }
             REQUEST_CODE_EDIT -> {
                 val comp = intent.getSerializableExtra("competition")
-                builder = when (comp) {
+                this.comp = when (comp) {
                     is Competition -> {
-                        baseComp = comp
-                        CompetitionBuilder.from(comp)
-                    }
-                    is CompetitionBuilder -> {
                         comp
                     }
-                    else -> throw IllegalArgumentException("Received something other than Competition or CompetitionBuilder!")
+                    else -> throw IllegalArgumentException("Received something other than Competition!")
                 }
                 Log.i(TAG, "Activity was created to edit existing competition")
             }
@@ -67,15 +62,15 @@ class CompetitionEditorActivity : Activity() {
         lsMatches = findViewById(R.id.list_matches)
         editRowCount = findViewById(R.id.edit_rows)
 
-        editName.setText(builder.name)
+        editName.setText(comp.name)
 
         btnDatePicker.setOnClickListener {
             Log.i(TAG, "Spawning DatePicker")
             DatePickerDialog(this, { dp, y, m, d ->
-                builder.calendar.set(y, m, d)
+                calendar.set(y, m, d)
                 Log.d(TAG, "Date has been set: $y-$m-$d")
                 updateDate()
-            }, builder.calendar.get(Calendar.YEAR), builder.calendar.get(Calendar.MONTH), builder.calendar.get(Calendar.DAY_OF_MONTH)).show()
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
         }
 
         findViewById<Button>(R.id.btn_set_rows).setOnClickListener {
@@ -86,24 +81,25 @@ class CompetitionEditorActivity : Activity() {
 
         findViewById<Button>(R.id.btn_add_row).setOnClickListener {
             Log.i(TAG, "Adding a row")
-            builder.qualSchedule.addEmpty()
+            comp.qualifiers.addEmpty()
             updateRows()
         }
 
         findViewById<Button>(R.id.btn_submit).setOnClickListener {
             Log.i(TAG, "Submitting data to parent")
             val name = editName.text.toString()
-            builder.name = name
-            rows.zip(builder.qualSchedule.matches).map { (v, m) ->
-                m.red.a = v.findViewById<TextView>(R.id.edit_team_red1).text.toString().toInt()
-                m.red.b = v.findViewById<TextView>(R.id.edit_team_red2).text.toString().toInt()
-                m.red.c = v.findViewById<TextView>(R.id.edit_team_red3).text.toString().toInt()
-                m.blue.a = v.findViewById<TextView>(R.id.edit_team_blue1).text.toString().toInt()
-                m.blue.b = v.findViewById<TextView>(R.id.edit_team_blue2).text.toString().toInt()
-                m.blue.c = v.findViewById<TextView>(R.id.edit_team_blue3).text.toString().toInt()
+            comp.name = name
+            rows.zip(comp.qualifiers).map { (v, m) ->
+                m.red.alliance.a = v.findViewById<TextView>(R.id.edit_team_red1).text.toString().toInt()
+                m.red.alliance.b = v.findViewById<TextView>(R.id.edit_team_red2).text.toString().toInt()
+                m.red.alliance.c = v.findViewById<TextView>(R.id.edit_team_red3).text.toString().toInt()
+                m.blue.alliance.a = v.findViewById<TextView>(R.id.edit_team_blue1).text.toString().toInt()
+                m.blue.alliance.b = v.findViewById<TextView>(R.id.edit_team_blue2).text.toString().toInt()
+                m.blue.alliance.c = v.findViewById<TextView>(R.id.edit_team_blue3).text.toString().toInt()
             }
+            comp.date = calendar.time
             setResult(Activity.RESULT_OK, Intent().apply {
-                putExtra("builder", builder)
+                putExtra("comp", comp)
             })
             finish()
         }
@@ -113,7 +109,7 @@ class CompetitionEditorActivity : Activity() {
     }
 
     fun updateDate() {
-        val text = sdf.format(builder.calendar.time)
+        val text = sdf.format(comp.date)
         Log.d(TAG, "Updating date to $text")
         btnDatePicker.text = text
     }
@@ -125,12 +121,12 @@ class CompetitionEditorActivity : Activity() {
             return
         }
         Log.d(TAG, "Updating to $count rows")
-        builder.qualSchedule.changeSizeTo(count)
+        comp.qualifiers.changeSizeTo(count)
         updateRows()
     }
 
     fun updateRows() {
-        val matches = builder.qualSchedule.matches
+        val matches = comp.qualifiers.matches
         val countMatches = matches.size
         val countList = lsMatches.childCount
         Log.d(TAG, "Updating rows from $countList to $countMatches")

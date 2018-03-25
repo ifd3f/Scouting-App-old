@@ -14,7 +14,6 @@ import com.burlingamerobotics.scouting.common.BlueAllianceAPI
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_NEW
 import com.burlingamerobotics.scouting.common.Utils
-import com.burlingamerobotics.scouting.common.data.CompetitionBuilder
 import com.burlingamerobotics.scouting.server.R
 import com.burlingamerobotics.scouting.server.activity.CompetitionEditorActivity
 import com.burlingamerobotics.scouting.server.activity.CompetitionSelectionActivity
@@ -25,8 +24,9 @@ class NewCompetitionDialog(private val parent: CompetitionSelectionActivity) : D
     val TAG = "NewCompDialog"
 
     private val startEditorHandler: Handler = Handler { msg ->
-        val (comp, isValid) = msg.obj as Pair<CompetitionBuilder, Boolean>
+        val isValid = msg.data.getBoolean("isValid")
         if (isValid) {
+            val comp = msg.data.getSerializable("competition")!!
             Log.i(TAG, "Starting editor with request to edit")
             parent.startActivityForResult(
                     Intent(parent, CompetitionEditorActivity::class.java).apply {
@@ -85,7 +85,8 @@ class NewCompetitionDialog(private val parent: CompetitionSelectionActivity) : D
                 val msg = Message()
                 val result = BlueAllianceAPI.fetchCompetition(event)
                 Log.d(TAG, "Got response: $result")
-                msg.obj = Pair(result, result != null)
+                msg.data.putSerializable("competition", result)
+                msg.data.putBoolean("isValid", result != null)
                 startEditorHandler.sendMessage(msg)
             }
         }

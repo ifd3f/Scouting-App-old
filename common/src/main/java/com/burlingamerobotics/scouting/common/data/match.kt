@@ -2,7 +2,6 @@ package com.burlingamerobotics.scouting.common.data
 
 import android.view.View
 import android.widget.RelativeLayout
-import android.widget.Switch
 import android.widget.TextView
 import com.burlingamerobotics.scouting.common.R
 import java.io.Serializable
@@ -70,32 +69,14 @@ data class AlliancePerformance(
     }
 }
 
-data class MatchTree(val match: Match?, val left: MatchTree?, val right: MatchTree?) : Serializable {
-    companion object {
-        fun generateTournament(rounds: Int): MatchTree {
-            assert(rounds > 0)
-            if (rounds == 1) {
-                return MatchTree(null, null, null)
-            }
-            val newRounds = rounds - 1
-            return MatchTree(null, generateTournament(newRounds), generateTournament(newRounds))
-        }
-
-        private const val serialVersionUID: Long = 3546987
-    }
-
-}
-
 data class Match(
-        val number: Int,
+        var number: Int,
         var red: AlliancePerformance,
         var blue: AlliancePerformance,
         /**
          * When this match happened, or null if it hasn't happened.
          */
-        var time: Date? = null) : Serializable {
-
-    val scheduledMatch get(): ScheduledMatch = ScheduledMatch(red.alliance, blue.alliance)
+        var timeStarted: Date? = null) : Serializable {
 
     fun applyTo(view: View, index: Int) {
 
@@ -127,7 +108,7 @@ data class Match(
         (result.parent as RelativeLayout).setBackgroundResource(color)
     }
 
-    val hasHappened get() = time != null
+    val hasHappened get() = timeStarted != null
     val matchResult get(): GameResult? = when {
         !hasHappened -> null
         red.points > blue.points -> GameResult.RED_VICTORY
@@ -141,5 +122,14 @@ data class Match(
 
     companion object {
         private const val serialVersionUID: Long = 234905687
+
+        fun empty(number: Int) = Match(
+                number,
+                AlliancePerformance.fromTeams(0, 0, 0),
+                AlliancePerformance.fromTeams(0, 0, 0))
+
+        fun fromTeams(number: Int, red: List<Int>, blue: List<Int>) = Match(
+                number, AlliancePerformance.fromTeams(red), AlliancePerformance.fromTeams(blue)
+        )
     }
 }
