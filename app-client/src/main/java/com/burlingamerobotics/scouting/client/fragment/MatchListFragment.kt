@@ -73,7 +73,7 @@ class MatchListFragment : Fragment() {
         }
     }
 
-    fun getViewAdapter(comp: Competition) = MatchRecyclerViewAdapter(comp.qualifiers) { i ->
+    fun getViewAdapter(comp: Competition) = MatchRecyclerViewAdapter(comp.qualifiers.matches) { i ->
         Utils.ioExecutor.execute {
             Log.i(TAG, "User selected match at position $i")
             val match = service.blockingRequest(QualifierMatchRequest(i))

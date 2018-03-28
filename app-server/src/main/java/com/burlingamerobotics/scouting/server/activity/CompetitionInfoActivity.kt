@@ -33,7 +33,7 @@ class CompetitionInfoActivity : AppCompatActivity() {
         }
 
         matchList.layoutManager = LinearLayoutManager(this)
-        matchList.adapter = MatchRecyclerViewAdapter(competition.qualifiers)
+        matchList.adapter = MatchRecyclerViewAdapter(competition.qualifiers.matches)
 
         /*
         competition.qualifiers.forEachIndexed { i, match ->

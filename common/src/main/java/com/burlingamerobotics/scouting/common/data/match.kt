@@ -56,7 +56,7 @@ data class AlliancePerformance(
         var penalties: Int = 0
 ) : Serializable {
 
-    val alliance = Alliance(teams[0].teamNumber, teams[1].teamNumber, teams[2].teamNumber)
+    val alliance = AllianceView(this)
 
     companion object {
         fun fromTeams(t1: Int, t2: Int, t3: Int) = AlliancePerformance(listOf(

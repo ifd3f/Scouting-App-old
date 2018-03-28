@@ -11,14 +11,8 @@ class MatchSchedule(matches: List<Match> = listOf()) : Serializable, MutableIter
 
     val matches: MutableList<Match> = matches.toMutableList()
 
-    fun generateMatches(): MutableList<Match> {
-        return matches.mapIndexed { i, match ->
-            val red = match.red.alliance
-            val blue = match.blue.alliance
-            Match(i + 1,
-                    AlliancePerformance.fromTeams(red[0], red[1], red[2]),
-                    AlliancePerformance.fromTeams(blue[0], blue[1], blue[2]))
-        }.toMutableList()
+    operator fun get(i: Int): Match {
+        return matches[i]
     }
 
     fun changeSizeTo(newSize: Int) {
@@ -49,15 +43,30 @@ class MatchSchedule(matches: List<Match> = listOf()) : Serializable, MutableIter
     }
 }
 
-data class Alliance(var a: Int, var b: Int, var c: Int) : Serializable, Iterable<Int> {
-    override fun iterator(): Iterator<Int> {
-        return arrayOf(a, b, c).iterator()
-    }
+interface Alliance : Serializable, Iterable<Int> {
+    var a: Int
+    var b: Int
+    var c: Int
+
+    fun component1(): Int = a
+    fun component2(): Int = b
+    fun component3(): Int = c
+
+    override fun iterator() = listOf(a, b, c).iterator()
 
     val strings get() = Triple(
             if (a < 1) "" else a.toString(),
             if (b < 1) "" else b.toString(),
             if (c < 1) "" else c.toString())
+
+}
+
+data class SimpleAlliance(override var a: Int, override var b: Int, override var c: Int) : Alliance {
+    constructor() : this(0, 0, 0)
+
+    override fun iterator(): Iterator<Int> {
+        return arrayOf(a, b, c).iterator()
+    }
 
     operator fun get(i: Int) = when (i) {
         0 -> a
@@ -70,3 +79,22 @@ data class Alliance(var a: Int, var b: Int, var c: Int) : Serializable, Iterable
 
 }
 
+class AllianceView(private val ap: AlliancePerformance) : Alliance {
+
+    override var a: Int
+        get() = ap.teams[0].teamNumber
+        set(v) {
+            ap.teams[0].teamNumber = v
+        }
+    override var c: Int
+        get() = ap.teams[1].teamNumber
+        set(v) {
+            ap.teams[1].teamNumber = v
+        }
+    override var b: Int
+        get() = ap.teams[2].teamNumber
+        set(v) {
+            ap.teams[2].teamNumber = v
+        }
+
+}

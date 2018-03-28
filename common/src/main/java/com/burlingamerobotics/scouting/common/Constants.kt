@@ -8,7 +8,7 @@ const val MSG_SEND_OBJ = 2389
 
 const val API_KEY_TBA = "eeszr95mLfyCJkDqDrXAxsW93MgRYrmn8lLqrUJ76GfSYIWNxA8N5mCUILlX3dFN"
 
-const val PROTOCOL_VERSION = "1.0.07"
+const val PROTOCOL_VERSION = "8"
 
 val SCOUTING_UUID = UUID.nameUUIDFromBytes("ironpanthers-scouting-v${PROTOCOL_VERSION}".toByteArray())
 
