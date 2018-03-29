@@ -92,6 +92,7 @@ class EditTeamPerformanceActivity : AppCompatActivity() {
             R.id.action_save -> {
                 Log.d(TAG, "User wants to save")
                 setResult(Activity.RESULT_OK, Intent().apply {
+                    putExtra("team", teamNumber)
                     putExtra("result", build())
                 })
                 finish()

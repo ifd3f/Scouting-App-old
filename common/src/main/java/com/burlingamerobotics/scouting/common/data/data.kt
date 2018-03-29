@@ -14,13 +14,17 @@ class Competition(
         var tbaCode: String? = null
 ) : Serializable {
 
-    val qualifiers = MatchSchedule(matchList)
+    val qualifiers = MatchSchedule(matchList.toMutableList())
 
     var date: Date = cal?.time ?: Calendar.getInstance().time
 
     fun getHeader(): CompetitionFileHeader = CompetitionFileHeader(uuid, name, date, qualifiers.count())
 
     fun getFilename(): String = "$uuid.dat"
+
+    fun putTeamPerformance(match: Int, perf: TeamPerformance) {
+        qualifiers[match].getTeamPerformanceOf(perf.teamNumber)!!
+    }
 
     override fun toString(): String {
         return "Competition($uuid: $name)"

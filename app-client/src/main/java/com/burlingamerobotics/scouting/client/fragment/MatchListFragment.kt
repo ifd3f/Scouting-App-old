@@ -78,7 +78,9 @@ class MatchListFragment : Fragment() {
             Log.i(TAG, "User selected match at position $i")
             val match = service.blockingRequest(QualifierMatchRequest(i))
             fragmentManager.beginTransaction()
-                    .replace(R.id.client_main_fragment_container, MatchDetailFragment.newInstance(match), "match_info")
+                    .replace(R.id.client_main_fragment_container,
+                            MatchDetailFragment.newInstance(match, service),
+                            "match_info")
                     .addToBackStack(null)
                     .commit()
         }

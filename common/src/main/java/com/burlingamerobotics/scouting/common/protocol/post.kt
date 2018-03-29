@@ -1,6 +1,7 @@
 package com.burlingamerobotics.scouting.common.protocol
 
 import com.burlingamerobotics.scouting.common.data.Team
+import com.burlingamerobotics.scouting.common.data.TeamPerformance
 import java.io.Serializable
 
 
@@ -9,8 +10,9 @@ import java.io.Serializable
  */
 interface Post : Serializable
 
-data class PostMatchInfo(
-        val team: Int
+data class PostTeamPerformance(
+        val team: Int,
+        val teamPerformance: TeamPerformance
 ) : Post
 
 data class PostTeamInfo(val team: Team) : Post

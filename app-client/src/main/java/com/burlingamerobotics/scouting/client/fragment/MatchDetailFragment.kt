@@ -1,5 +1,6 @@
 package com.burlingamerobotics.scouting.client.fragment
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -9,14 +10,18 @@ import android.view.View
 import android.view.ViewGroup
 import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.activity.EditTeamPerformanceActivity
+import com.burlingamerobotics.scouting.client.io.ScoutingClientServiceBinder
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT
 import com.burlingamerobotics.scouting.common.data.Match
+import com.burlingamerobotics.scouting.common.data.TeamPerformance
+import com.burlingamerobotics.scouting.common.protocol.PostTeamPerformance
 import kotlinx.android.synthetic.main.fragment_match_detail.*
 
 class MatchDetailFragment : Fragment(), View.OnLongClickListener {
     val TAG = "MatchDetailFragment"
 
     lateinit var matchData: Match
+    lateinit var service: ScoutingClientServiceBinder
 
     override fun setArguments(args: Bundle?) {
         super.setArguments(args)
@@ -87,10 +92,28 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener {
         return true
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (resultCode) {
+            Activity.RESULT_OK -> {
+                Log.i(TAG, "Received result back from ETPActivity")
+                data!!
+                val num = data.getIntExtra("team", -1)
+                assert(num > 0, { "Did not receive a valid team number!" })
+                val res = data.getSerializableExtra("result") as TeamPerformance
+                service.post(PostTeamPerformance(matchData.number, res))
+            }
+            Activity.RESULT_CANCELED -> {
+                Log.i(TAG, "Received canceled result from ETPActivity")
+            }
+        }
+    }
+
     companion object {
 
-        fun newInstance(match: Match): MatchDetailFragment {
-            val fragment = MatchDetailFragment()
+        fun newInstance(match: Match, service: ScoutingClientServiceBinder): MatchDetailFragment {
+            val fragment = MatchDetailFragment().also {
+                it.service = service
+            }
             val args = Bundle()
             args.putSerializable("match", match)
             fragment.arguments = args

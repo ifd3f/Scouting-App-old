@@ -27,9 +27,9 @@ data class TeamPerformance(
         var autoCubePlacement: CubePosition = CubePosition.OWN_SWITCH,
         var autoCubes: Int = 0,
         var autoTimeRemaining: Int = 15,
-        val teleCubesOwnSwitch: CubeStats = CubeStats(CubePosition.OWN_SWITCH),
-        val teleCubesScale: CubeStats = CubeStats(CubePosition.OWN_SWITCH),
-        val teleCubesOppSwitch: CubeStats = CubeStats(CubePosition.OWN_SWITCH),
+        var teleCubesOwnSwitch: CubeStats = CubeStats(CubePosition.OWN_SWITCH),
+        var teleCubesScale: CubeStats = CubeStats(CubePosition.OWN_SWITCH),
+        var teleCubesOppSwitch: CubeStats = CubeStats(CubePosition.OWN_SWITCH),
         var teleCubesExchange: Int = 0,
         var endState: EndState = EndState.NONE_OR_LEVITATE,
         var defends: Int = 0,
@@ -118,6 +118,33 @@ data class Match(
 
     override fun toString(): String {
         return "Match(red=${red.alliance}, blue=${blue.alliance})"
+    }
+
+    fun getTeamPerformanceOf(team: Int): TeamPerformance? {
+        return red.teams.find { it.teamNumber == team } ?: blue.teams.find { it.teamNumber == team }
+    }
+
+    fun putTeamPerformance(perf: TeamPerformance) {
+        red.teams.find { it.teamNumber == perf.teamNumber } ?: blue.teams.find { it.teamNumber == perf.teamNumber }
+                ?.apply {
+                    teamNumber = perf.teamNumber
+                    autoStartPos = perf.autoStartPos
+                    autoCrossedLine = perf.autoCrossedLine
+                    autoCubePlacement = perf.autoCubePlacement
+                    autoCubes = perf.autoCubes
+                    autoTimeRemaining = perf.autoTimeRemaining
+                    teleCubesOwnSwitch = perf.teleCubesOwnSwitch
+                    teleCubesScale = perf.teleCubesScale
+                    teleCubesOppSwitch = perf.teleCubesOppSwitch
+                    teleCubesExchange = perf.teleCubesExchange
+                    endState = perf.endState
+                    defends = perf.defends
+                    ratingSwitch = perf.ratingSwitch
+                    ratingScale = perf.ratingScale
+                    ratingExchange = perf.ratingExchange
+                    ratingDefense = perf.ratingDefense
+                    ratingIntake = perf.ratingIntake
+                }
     }
 
     companion object {

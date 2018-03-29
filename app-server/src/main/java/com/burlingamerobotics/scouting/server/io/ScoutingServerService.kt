@@ -143,6 +143,10 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
 
     fun processPost(client: ScoutingClientInterface, post: Post) {
         when (post) {
+            is PostTeamPerformance -> {
+                Log.d(TAG, "  The post is a team performance change")
+                competition.qualifiers.matches[post.team].putTeamPerformance(post.teamPerformance)
+            }
             is PostTeamInfo -> {
                 Log.d(TAG, "  The post is a team change")
                 db.putTeam(post.team)

@@ -1,25 +1,14 @@
 package com.burlingamerobotics.scouting.common.data
 
-import android.view.View
-import android.widget.EditText
-import android.widget.TextView
-import com.burlingamerobotics.scouting.common.R
 import java.io.Serializable
-import java.util.*
 
-class MatchSchedule(matches: List<Match> = listOf()) : Serializable, MutableIterable<Match> {
-
-    val matches: MutableList<Match> = matches.toMutableList()
-
-    operator fun get(i: Int): Match {
-        return matches[i]
-    }
+class MatchSchedule(val matches: MutableList<Match> = mutableListOf()) : Serializable, MutableList<Match> by matches {
 
     fun changeSizeTo(newSize: Int) {
-        val currentSize = matches.size
+        val currentSize = size
         if (newSize < currentSize) {
             for (i in (currentSize - 1) downTo newSize) {
-                matches.removeAt(i)
+                removeAt(i)
             }
         } else if (newSize > currentSize) {
             for (i in 1..(newSize - currentSize)) {
@@ -29,10 +18,8 @@ class MatchSchedule(matches: List<Match> = listOf()) : Serializable, MutableIter
     }
 
     fun addEmpty() {
-        matches.add(Match.empty(matches.size))
+        add(Match.empty(size))
     }
-
-    override fun iterator(): MutableIterator<Match> = matches.iterator()
 
     companion object {
         fun from(list: List<Match>): MatchSchedule {
