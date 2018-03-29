@@ -11,6 +11,7 @@ import com.burlingamerobotics.scouting.common.protocol.Request
 import com.burlingamerobotics.scouting.common.protocol.Response
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 /**
  * It's a service that keeps track of the server-side matchData.
@@ -38,7 +39,14 @@ class ScoutingClientService : Service(), CommStrategyListener {
     internal fun request(rq: Request<*>): Response<*> {
         Log.d(TAG, "Sending request to strategy: $rq")
         serverCommStrategy.sendObject(rq)
-        val received = responseQueue.poll(10000L, TimeUnit.MILLISECONDS)
+        var res: Response<*>
+        for (i in 1..3) {
+            res = responseQueue.poll(10000L, TimeUnit.MILLISECONDS)
+            if (rq.uuid == res.to) {
+                return res
+            }
+        }
+        throw TimeoutException()
         Log.d(TAG, "Received from Server: $received")
         return received
     }
