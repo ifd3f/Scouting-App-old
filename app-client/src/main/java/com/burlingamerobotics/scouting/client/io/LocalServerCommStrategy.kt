@@ -65,7 +65,7 @@ class LocalServerCommStrategy(val context: Context) : ServerCommStrategy(), Serv
         msg.what = MSG_SEND_OBJ
         msg.replyTo = rx
         msg.data.putSerializable("object", obj as Serializable)
-        Log.d(TAG, "Sending to ServerService: $msg")
+        Log.d(TAG, "  Sending to ServerService: $msg")
         tx.send(msg)
     }
 

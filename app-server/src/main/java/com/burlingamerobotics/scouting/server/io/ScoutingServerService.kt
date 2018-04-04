@@ -168,7 +168,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
                 Log.d(TAG, "  The request is for all competition data")
                 competition
             }
-            is QualifierMatchRequest -> {
+            is MatchRequest -> {
                 Log.d(TAG, "  The request is for .match info")
                 competition.qualifiers[request.number]
             }

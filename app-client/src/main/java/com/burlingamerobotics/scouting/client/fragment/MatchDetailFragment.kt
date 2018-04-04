@@ -3,7 +3,9 @@ package com.burlingamerobotics.scouting.client.fragment
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.Fragment
+import android.support.v4.widget.SwipeRefreshLayout
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,16 +14,23 @@ import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.activity.EditTeamPerformanceActivity
 import com.burlingamerobotics.scouting.client.io.ScoutingClientServiceBinder
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT
+import com.burlingamerobotics.scouting.common.Utils
 import com.burlingamerobotics.scouting.common.data.Match
 import com.burlingamerobotics.scouting.common.data.TeamPerformance
+import com.burlingamerobotics.scouting.common.protocol.MatchRequest
 import com.burlingamerobotics.scouting.common.protocol.PostTeamPerformance
 import kotlinx.android.synthetic.main.fragment_match_detail.*
 
-class MatchDetailFragment : Fragment(), View.OnLongClickListener {
-    val TAG = "MatchDetailFragment"
+class MatchDetailFragment : Fragment(), View.OnLongClickListener, SwipeRefreshLayout.OnRefreshListener {
 
-    lateinit var matchData: Match
-    lateinit var service: ScoutingClientServiceBinder
+    private val TAG = "MatchDetailFragment"
+
+    private val refreshHandler = Handler(Handler.Callback {
+        updateViews()
+        true
+    })
+    private lateinit var matchData: Match
+    private var service: ScoutingClientServiceBinder? = null
 
     override fun setArguments(args: Bundle?) {
         super.setArguments(args)
@@ -33,7 +42,7 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        Log.d(TAG, "Populating view with match: $matchData")
+        Log.d(TAG, "Attaching listeners to views")
         listOf(
                 R.id.text_team_red1,
                 R.id.text_team_red2,
@@ -44,7 +53,68 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener {
             view.findViewById<View>(it).setOnLongClickListener(this)
         }
 
-        Log.d(TAG, matchData.toString())
+        refresh_match_info.setOnRefreshListener(this)
+        updateViews()
+    }
+
+    override fun onLongClick(v: View): Boolean {
+        val teamPerf = when (v.id) {
+            R.id.text_team_red1 -> {
+                matchData.red.teams[0]
+            }
+            R.id.text_team_red2 -> {
+                matchData.red.teams[1]
+            }
+            R.id.text_team_red3 -> {
+                matchData.red.teams[2]
+            }
+            R.id.text_team_blue1 -> {
+                matchData.blue.teams[0]
+            }
+            R.id.text_team_blue2 -> {
+                matchData.blue.teams[1]
+            }
+            R.id.text_team_blue3 -> {
+                matchData.blue.teams[2]
+            }
+            else -> {
+                throw IllegalArgumentException("View does not have an allowed ID!")
+            }
+        }
+        startActivityForResult(Intent(context, EditTeamPerformanceActivity::class.java).apply {
+            putExtra("team", teamPerf.teamNumber)
+            putExtra("match", matchData.number)
+            putExtra("existing", teamPerf)
+        }, REQUEST_CODE_EDIT)
+        return true
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (resultCode) {
+            Activity.RESULT_OK -> {
+                Log.i(TAG, "Received result back from ETPActivity")
+                data!!
+                val num = data.getIntExtra("team", -1)
+                assert(num > 0, { "Did not receive a valid team number!" })
+                val res = data.getSerializableExtra("result") as TeamPerformance
+                service!!.post(PostTeamPerformance(matchData.number, res))
+            }
+            Activity.RESULT_CANCELED -> {
+                Log.i(TAG, "Received canceled result from ETPActivity")
+            }
+        }
+    }
+
+    override fun onRefresh() {
+        Log.i(TAG, "User wants to refresh")
+        Utils.ioExecutor.submit {
+            matchData = service!!.blockingRequest(MatchRequest(matchData.number))
+            refreshHandler.sendEmptyMessage(0)
+        }
+    }
+
+    private fun updateViews() {
+        Log.d(TAG, "Updating with ${matchData.toString()}")
 
         val redAlliance = matchData.red.alliance
         val blueAlliance = matchData.blue.alliance
@@ -59,53 +129,7 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener {
         text_match_number.text = "Match %s".format(matchData.number.toString())
         text_alliance_red_score.text = matchData.red.points.toString()
         text_alliance_blue_score.text = matchData.blue.points.toString()
-    }
 
-    override fun onLongClick(v: View): Boolean {
-        val teamPerf = when (v.id) {
-            R.id.text_team_blue1 -> {
-                matchData.blue.teams[0]
-            }
-            R.id.text_team_blue2 -> {
-                matchData.blue.teams[1]
-            }
-            R.id.text_team_blue3 -> {
-                matchData.blue.teams[2]
-            }
-            R.id.text_team_red1 -> {
-                matchData.red.teams[0]
-            }
-            R.id.text_team_red2 -> {
-                matchData.red.teams[1]
-            }
-            R.id.text_team_red3 -> {
-                matchData.red.teams[2]
-            }
-            else -> {
-                throw IllegalArgumentException("View does not have an allowed ID!")
-            }
-        }
-        startActivityForResult(Intent(context, EditTeamPerformanceActivity::class.java).apply {
-            putExtra("existing", teamPerf.teamNumber)
-            putExtra("existing", teamPerf)
-        }, REQUEST_CODE_EDIT)
-        return true
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (resultCode) {
-            Activity.RESULT_OK -> {
-                Log.i(TAG, "Received result back from ETPActivity")
-                data!!
-                val num = data.getIntExtra("team", -1)
-                assert(num > 0, { "Did not receive a valid team number!" })
-                val res = data.getSerializableExtra("result") as TeamPerformance
-                service.post(PostTeamPerformance(matchData.number, res))
-            }
-            Activity.RESULT_CANCELED -> {
-                Log.i(TAG, "Received canceled result from ETPActivity")
-            }
-        }
     }
 
     companion object {

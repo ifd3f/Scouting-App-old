@@ -46,7 +46,7 @@ data class TeamPerformance(
 }
 
 data class AlliancePerformance(
-        val teams: List<TeamPerformance>,
+        val teams: Array<TeamPerformance>,
         var points: Int = 0,
         var pwrBoost: Int = 0,
         var pwrLevi: Int = 0,
@@ -59,13 +59,45 @@ data class AlliancePerformance(
     val alliance = AllianceView(this)
 
     companion object {
-        fun fromTeams(t1: Int, t2: Int, t3: Int) = AlliancePerformance(listOf(
+        fun fromTeams(t1: Int, t2: Int, t3: Int) = AlliancePerformance(arrayOf(
                 TeamPerformance(t1),
                 TeamPerformance(t2),
                 TeamPerformance(t3)
         ))
 
         fun fromTeams(seq: List<Int>) = fromTeams(seq[0], seq[1], seq[2])
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as AlliancePerformance
+
+        if (!Arrays.equals(teams, other.teams)) return false
+        if (points != other.points) return false
+        if (pwrBoost != other.pwrBoost) return false
+        if (pwrLevi != other.pwrLevi) return false
+        if (pwrForce != other.pwrForce) return false
+        if (endVaultCubes != other.endVaultCubes) return false
+        if (vaultCubes != other.vaultCubes) return false
+        if (penalties != other.penalties) return false
+        if (alliance != other.alliance) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = Arrays.hashCode(teams)
+        result = 31 * result + points
+        result = 31 * result + pwrBoost
+        result = 31 * result + pwrLevi
+        result = 31 * result + pwrForce
+        result = 31 * result + endVaultCubes
+        result = 31 * result + vaultCubes
+        result = 31 * result + penalties
+        result = 31 * result + alliance.hashCode()
+        return result
     }
 }
 
@@ -125,26 +157,13 @@ data class Match(
     }
 
     fun putTeamPerformance(perf: TeamPerformance) {
-        red.teams.find { it.teamNumber == perf.teamNumber } ?: blue.teams.find { it.teamNumber == perf.teamNumber }
-                ?.apply {
-                    teamNumber = perf.teamNumber
-                    autoStartPos = perf.autoStartPos
-                    autoCrossedLine = perf.autoCrossedLine
-                    autoCubePlacement = perf.autoCubePlacement
-                    autoCubes = perf.autoCubes
-                    autoTimeRemaining = perf.autoTimeRemaining
-                    teleCubesOwnSwitch = perf.teleCubesOwnSwitch
-                    teleCubesScale = perf.teleCubesScale
-                    teleCubesOppSwitch = perf.teleCubesOppSwitch
-                    teleCubesExchange = perf.teleCubesExchange
-                    endState = perf.endState
-                    defends = perf.defends
-                    ratingSwitch = perf.ratingSwitch
-                    ratingScale = perf.ratingScale
-                    ratingExchange = perf.ratingExchange
-                    ratingDefense = perf.ratingDefense
-                    ratingIntake = perf.ratingIntake
-                }
+        val red = red.teams.indexOfFirst { it.teamNumber == perf.teamNumber }
+        val blue = blue.teams.indexOfFirst { it.teamNumber == perf.teamNumber }
+        if (red != -1) {
+            this.red.teams[red] = perf
+        } else if (blue != -1) {
+            this.blue.teams[blue] = perf
+        }
     }
 
     companion object {

@@ -30,16 +30,16 @@ class LocalClientInterface : Handler.Callback, ScoutingClientInterface() {
         Log.d(TAG, "Received from ClientService: $msg")
         when (msg.what) {
             MSG_GIVE_RX -> {
-                Log.d(TAG,"Received a RX messenger")
+                Log.d(TAG,"  Received a RX messenger")
                 tx = msg.replyTo
             }
             MSG_SEND_OBJ -> {
                 val obj = msg.data.getSerializable("object")
-                Log.d(TAG, "Unpacked object from ClientService: $obj")
+                Log.d(TAG, "  Unpacked object from ClientService: $obj")
                 listener?.onReceivedFromClient(this, obj) ?: Log.w(TAG, "No listener attached to receive it!")
             }
             else -> {
-                Log.w(TAG, "Could not process ${msg.what}!")
+                Log.e(TAG, "  Could not process ${msg.what}!")
             }
         }
         return true

@@ -19,7 +19,7 @@ object CompetitionRequest : Request<Competition>
 
 object TeamListRequest : Request<List<Team>>
 
-data class QualifierMatchRequest(val number: Int) : Request<Match>
+data class MatchRequest(val number: Int) : Request<Match>
 
 data class TeamInfoRequest(val team: Int) : Request<Team>
 
