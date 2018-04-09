@@ -73,12 +73,12 @@ class AllianceView(private val ap: AlliancePerformance) : Alliance {
         set(v) {
             ap.teams[0].teamNumber = v
         }
-    override var c: Int
+    override var b: Int
         get() = ap.teams[1].teamNumber
         set(v) {
             ap.teams[1].teamNumber = v
         }
-    override var b: Int
+    override var c: Int
         get() = ap.teams[2].teamNumber
         set(v) {
             ap.teams[2].teamNumber = v

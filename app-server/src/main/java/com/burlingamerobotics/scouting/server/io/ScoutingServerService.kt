@@ -121,7 +121,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
         when (obj) {
             is Request<*> -> {
                 Log.d(TAG, "  It's a request")
-                val response = Response(getItemByRequest(obj))
+                val response = Response(getItemByRequest(obj), obj.uuid)
                 Log.d(TAG, "Writing $response")
                 client.sendObject(response)
             }
