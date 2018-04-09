@@ -27,7 +27,8 @@
         <activity
             android:name=".activity.BrowserActivity"
             android:label="@string/title_activity_client_browser"
-            android:parentActivityName=".activity.ConnectToServerActivity">
+            android:parentActivityName=".activity.ConnectToServerActivity"
+            android:alwaysRetainTaskState="true">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.burlingamerobotics.scouting.client.activity.ConnectToServerActivity" />

@@ -19,12 +19,14 @@ import kotlinx.android.synthetic.main.activity_browser.*
 class BrowserActivity : AppCompatActivity(), ServiceConnection {
 
     private val TAG = "BrowserActivity"
+
     private lateinit var service: ScoutingClientServiceBinder
     private lateinit var matchListFragment: MatchListFragment
     private lateinit var teamListFragment: TeamListFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_browser)
         supportActionBar!!.setDisplayHomeAsUpEnabled(false)
 
@@ -55,9 +57,8 @@ class BrowserActivity : AppCompatActivity(), ServiceConnection {
             }
             false
         })
-        //setSupportActionBar(toolbar)
 
-        //val fragmentFrame = findViewById<FrameLayout>(R.id.client_main_fragment_container)
+        Log.d(TAG, "SavedInstanceState: $savedInstanceState")
     }
 
     override fun onStart() {

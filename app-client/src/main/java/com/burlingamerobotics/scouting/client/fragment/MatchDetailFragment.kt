@@ -114,7 +114,7 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener, SwipeRefreshLa
     }
 
     private fun updateViews() {
-        Log.d(TAG, "Updating with ${matchData.toString()}")
+        Log.d(TAG, "Updating with $matchData")
 
         val redAlliance = matchData.red.alliance
         val blueAlliance = matchData.blue.alliance
