@@ -89,7 +89,7 @@ class MatchListFragment : Fragment(), Handler.Callback {
         Log.d(TAG, "Refreshing")
         refresher.isRefreshing = true
         Utils.ioExecutor.execute {
-            val obj = service.blockingRequest(CompetitionRequest)
+            val obj = service.blockingRequest(CompetitionRequest())
             Log.d(TAG, "Received after request: $obj")
             extThreadHandler.sendMessage(Message.obtain().also {
                 it.what = MSG_REFRESH

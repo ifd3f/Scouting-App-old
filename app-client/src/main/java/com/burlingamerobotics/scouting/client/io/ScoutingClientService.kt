@@ -39,16 +39,20 @@ class ScoutingClientService : Service(), CommStrategyListener {
     internal fun request(rq: Request<*>): Response<*> {
         Log.d(TAG, "Sending request to strategy: $rq")
         serverCommStrategy.sendObject(rq)
-        var res: Response<*>
         for (i in 1..3) {
-            res = responseQueue.poll(10000L, TimeUnit.MILLISECONDS)
-            if (rq.uuid == res.to) {
-                return res
+            Log.d(TAG, "Polling attempt $i/3")
+            val res = responseQueue.poll(10000L, TimeUnit.MILLISECONDS)
+            Log.d(TAG, "Received from queue: $res")
+            when {
+                res == null -> Log.w(TAG, "")
+                rq.uuid == res.to -> return res
+                else -> {
+                    Log.w(TAG, "It's not a response to the one we want. Putting in queue and trying again")
+                    responseQueue.put(res)
+                }
             }
         }
-        throw TimeoutException()
-        Log.d(TAG, "Received from Server: $received")
-        return received
+        throw TimeoutException("Did not receive a response in time!")
     }
 
     internal fun post(post: Post) {
