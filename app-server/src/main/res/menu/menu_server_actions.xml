@@ -3,6 +3,11 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/action_export_csv"
-        android:title="Export as CSV..." />
+        android:id="@+id/action_export_matches_csv"
+        android:title="Export Matches CSV" />
+    <item
+        android:id="@+id/action_export_pits_csv"
+        android:enabled="false"
+        android:title="Export Pits CSV"
+        android:visible="false" />
 </menu>

@@ -3,29 +3,29 @@ package com.burlingamerobotics.scouting.server.activity
 import android.Manifest
 import android.app.AlertDialog
 import android.app.Service
-import android.bluetooth.BluetoothAdapter
 import android.content.*
-import android.net.Uri
-import android.os.*
+import android.os.Bundle
+import android.os.Handler
+import android.os.IBinder
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import com.burlingamerobotics.scouting.common.INTENT_BIND_SERVER_WRAPPER
 import com.burlingamerobotics.scouting.common.INTENT_CLIENT_CONNECTED
 import com.burlingamerobotics.scouting.common.INTENT_CLIENT_DISCONNECTED
-import com.burlingamerobotics.scouting.common.SCOUTING_UUID
 import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.server.R
 import com.burlingamerobotics.scouting.server.io.ClientInfo
 import com.burlingamerobotics.scouting.server.io.ScoutingServerService
 import com.burlingamerobotics.scouting.server.io.ScoutingServerServiceWrapper
+import kotlinx.android.synthetic.main.content_server_manager.*
+import java.io.BufferedWriter
 import java.io.File
+import java.io.FileOutputStream
+import java.io.FileWriter
 
 class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
 
@@ -33,7 +33,6 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
     val clients: MutableList<ClientInfo> = arrayListOf()
 
     lateinit var lvClients: ListView
-    lateinit var switchStartServer: Switch
     lateinit var competition: Competition
     lateinit var txtCompetitionName: TextView
 
@@ -56,8 +55,7 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
         txtCompetitionName = findViewById(R.id.text_competition_name)
         txtCompetitionName.text = competition.name
 
-        switchStartServer = findViewById(R.id.switch_server)
-        switchStartServer.setOnCheckedChangeListener { buttonView, isChecked ->
+        switch_server.setOnCheckedChangeListener { buttonView, isChecked ->
             setServerState(isChecked)
         }
 
@@ -93,18 +91,22 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
-            R.id.action_export_csv -> {
+            R.id.action_export_matches_csv -> {
                 Log.i(TAG, "User wants to export a CSV")
                 val viewEditPath = EditText(this)
                 viewEditPath.setText(File("/storage/self/primary", "matchdata.csv").absolutePath)
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
+
                 val builder = AlertDialog.Builder(this)
                         .setView(viewEditPath)
                         .setPositiveButton("Export", { d, _ ->
                             Log.i(TAG, "User saving the file")
                             val out = File(viewEditPath.text.toString())
                             Log.d(TAG, "Location read from EditText: $out")
-                            out.writeText("1,2,23,4")
+                            out.parentFile.mkdirs()
+                            BufferedWriter(FileWriter(out)).use {
+                                it.write("asdf,gfe")
+                            }
                             Toast.makeText(this, "Created file: $out", Toast.LENGTH_SHORT).show()
                             d.dismiss()
                         })
@@ -112,10 +114,14 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
                             Log.i(TAG, "User canceled the operation")
                             d.cancel()
                         })
+
                 val dialog = builder.create()
-                //dialog.findViewById<FrameLayout>(android.R.id.custom)!!.addView(viewEditPath, ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT))
                 dialog.show()
                 true
+            }
+            R.id.action_export_pits_csv -> {
+                //Log.w(TAG, "User wants to export ")
+                false
             }
             else -> super.onOptionsItemSelected(item)
         }

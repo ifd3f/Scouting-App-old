@@ -1,5 +1,6 @@
 package com.burlingamerobotics.scouting.common.data
 
+import java.io.BufferedWriter
 import java.io.Serializable
 
 class MatchSchedule(val matches: MutableList<Match> = mutableListOf()) : Serializable, MutableList<Match> by matches {
@@ -19,6 +20,10 @@ class MatchSchedule(val matches: MutableList<Match> = mutableListOf()) : Seriali
 
     fun addEmpty() {
         add(Match.empty(size))
+    }
+
+    fun writeCSV(writer: BufferedWriter) {
+        //writer.write()
     }
 
     companion object {
