@@ -8,6 +8,11 @@ dependencies {
 
 sourceCompatibility = "1.6"
 targetCompatibility = "1.6"
+
+//com.burlingamerobotics.scouting.shared.test
+sourceSets.main.java.srcDirs = ["src/main/java"]
+sourceSets.test.java.srcDirs = ["src/test/java"]
+
 buildscript {
     ext.kotlin_version = '1.2.31'
     repositories {
@@ -34,4 +39,5 @@ compileTestKotlin {
 dependencies {
     implementation 'com.beust:klaxon:2.1.6'
     implementation 'com.github.jkcclemens:khttp:-SNAPSHOT'
+    implementation 'junit:junit:4.12'
 }

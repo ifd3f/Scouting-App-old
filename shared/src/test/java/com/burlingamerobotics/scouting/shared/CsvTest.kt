@@ -1,4 +1,4 @@
-package com.burlingamerobotics.scouting.common
+package com.burlingamerobotics.scouting.shared
 
 import com.burlingamerobotics.scouting.shared.csv.CSVColumn
 import com.burlingamerobotics.scouting.shared.csv.CSVSerializer
@@ -6,10 +6,10 @@ import org.junit.Test
 
 data class boi(val name: String, val age: Int, val comment: String)
 
-class BoiTest() {
+class CsvTest {
 
     @Test
-    fun test(args: Array<String>) {
+    fun testCSV() {
         val dudes = listOf(
                 boi("Meme McMeme", 30, "He's a funny, silly, man"),
                 boi("asdf", 5, "sol dfjd asdlf"),
@@ -24,5 +24,6 @@ class BoiTest() {
 
         println(csv.write())
     }
+
 
 }
