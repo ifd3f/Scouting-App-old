@@ -14,11 +14,11 @@ import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.activity.EditTeamPerformanceActivity
 import com.burlingamerobotics.scouting.client.io.ScoutingClientServiceBinder
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT
-import com.burlingamerobotics.scouting.common.Utils
-import com.burlingamerobotics.scouting.common.data.Match
-import com.burlingamerobotics.scouting.common.data.TeamPerformance
-import com.burlingamerobotics.scouting.common.protocol.MatchRequest
-import com.burlingamerobotics.scouting.common.protocol.PostTeamPerformance
+import com.burlingamerobotics.scouting.shared.Utils
+import com.burlingamerobotics.scouting.shared.data.Match
+import com.burlingamerobotics.scouting.shared.data.TeamPerformance
+import com.burlingamerobotics.scouting.shared.protocol.MatchRequest
+import com.burlingamerobotics.scouting.shared.protocol.PostTeamPerformance
 import kotlinx.android.synthetic.main.fragment_match_detail.*
 
 class MatchDetailFragment : Fragment(), View.OnLongClickListener, SwipeRefreshLayout.OnRefreshListener {

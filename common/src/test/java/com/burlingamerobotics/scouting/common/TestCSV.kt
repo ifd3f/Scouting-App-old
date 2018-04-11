@@ -1,7 +1,7 @@
 package com.burlingamerobotics.scouting.common
 
-import com.burlingamerobotics.scouting.common.csv.CSVColumn
-import com.burlingamerobotics.scouting.common.csv.CSVSerializer
+import com.burlingamerobotics.scouting.shared.csv.CSVColumn
+import com.burlingamerobotics.scouting.shared.csv.CSVSerializer
 import org.junit.Test
 
 data class boi(val name: String, val age: Int, val comment: String)

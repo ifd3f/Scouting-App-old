@@ -1,4 +1,4 @@
-package com.burlingamerobotics.scouting.common.data
+package com.burlingamerobotics.scouting.shared.data
 
 import java.io.BufferedWriter
 import java.io.Serializable

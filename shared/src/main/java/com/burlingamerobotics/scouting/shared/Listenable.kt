@@ -1,4 +1,4 @@
-package com.burlingamerobotics.scouting.common
+package com.burlingamerobotics.scouting.shared
 
 class Listenable<T> {
 

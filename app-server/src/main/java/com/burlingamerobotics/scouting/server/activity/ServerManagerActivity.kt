@@ -16,15 +16,14 @@ import android.widget.*
 import com.burlingamerobotics.scouting.common.INTENT_BIND_SERVER_WRAPPER
 import com.burlingamerobotics.scouting.common.INTENT_CLIENT_CONNECTED
 import com.burlingamerobotics.scouting.common.INTENT_CLIENT_DISCONNECTED
-import com.burlingamerobotics.scouting.common.data.Competition
 import com.burlingamerobotics.scouting.server.R
 import com.burlingamerobotics.scouting.server.io.ClientInfo
 import com.burlingamerobotics.scouting.server.io.ScoutingServerService
 import com.burlingamerobotics.scouting.server.io.ScoutingServerServiceWrapper
+import com.burlingamerobotics.scouting.shared.data.Competition
 import kotlinx.android.synthetic.main.content_server_manager.*
 import java.io.BufferedWriter
 import java.io.File
-import java.io.FileOutputStream
 import java.io.FileWriter
 
 class ServerManagerActivity : AppCompatActivity(), ServiceConnection {

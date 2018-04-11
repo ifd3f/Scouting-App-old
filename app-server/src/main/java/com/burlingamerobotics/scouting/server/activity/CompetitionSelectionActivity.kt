@@ -10,11 +10,11 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_NEW
-import com.burlingamerobotics.scouting.common.data.Competition
-import com.burlingamerobotics.scouting.common.data.CompetitionFileHeader
 import com.burlingamerobotics.scouting.server.R
 import com.burlingamerobotics.scouting.server.dialog.NewCompetitionDialog
 import com.burlingamerobotics.scouting.server.io.ScoutingDB
+import com.burlingamerobotics.scouting.shared.data.Competition
+import com.burlingamerobotics.scouting.shared.data.CompetitionFileHeader
 
 class CompetitionSelectionActivity : Activity() {
 

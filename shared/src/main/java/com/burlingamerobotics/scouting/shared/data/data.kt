@@ -1,8 +1,7 @@
-package com.burlingamerobotics.scouting.common.data
+package com.burlingamerobotics.scouting.shared.data
 
 import java.io.Serializable
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.util.*
 
 

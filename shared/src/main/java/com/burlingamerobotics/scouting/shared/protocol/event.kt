@@ -1,7 +1,7 @@
-package com.burlingamerobotics.scouting.common.protocol
+package com.burlingamerobotics.scouting.shared.protocol
 
-import com.burlingamerobotics.scouting.common.data.Match
-import com.burlingamerobotics.scouting.common.data.Team
+import com.burlingamerobotics.scouting.shared.data.Match
+import com.burlingamerobotics.scouting.shared.data.Team
 import java.io.Serializable
 
 /**

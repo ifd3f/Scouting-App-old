@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,10 +15,10 @@ import android.widget.EditText
 import android.widget.TextView
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_NEW
-import com.burlingamerobotics.scouting.common.data.Competition
-import com.burlingamerobotics.scouting.common.data.Match
-import com.burlingamerobotics.scouting.common.data.MatchSchedule
 import com.burlingamerobotics.scouting.server.R
+import com.burlingamerobotics.scouting.shared.data.Competition
+import com.burlingamerobotics.scouting.shared.data.Match
+import com.burlingamerobotics.scouting.shared.data.MatchSchedule
 import kotlinx.android.synthetic.main.activity_competition_editor.*
 import java.text.SimpleDateFormat
 import java.util.*

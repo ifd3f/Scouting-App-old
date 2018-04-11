@@ -10,10 +10,10 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
-import com.burlingamerobotics.scouting.common.BlueAllianceAPI
+import com.burlingamerobotics.scouting.shared.BlueAllianceAPI
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_NEW
-import com.burlingamerobotics.scouting.common.Utils
+import com.burlingamerobotics.scouting.shared.Utils
 import com.burlingamerobotics.scouting.server.R
 import com.burlingamerobotics.scouting.server.activity.CompetitionEditorActivity
 import com.burlingamerobotics.scouting.server.activity.CompetitionSelectionActivity

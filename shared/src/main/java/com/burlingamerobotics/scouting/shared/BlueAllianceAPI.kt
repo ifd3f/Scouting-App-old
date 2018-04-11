@@ -1,7 +1,7 @@
-package com.burlingamerobotics.scouting.common
+package com.burlingamerobotics.scouting.shared
 
-import android.util.Log
-import com.burlingamerobotics.scouting.common.data.*
+import com.burlingamerobotics.scouting.shared.data.Competition
+import com.burlingamerobotics.scouting.shared.data.Match
 import khttp.get
 import khttp.responses.Response
 import org.json.JSONArray
@@ -17,14 +17,12 @@ object BlueAllianceAPI {
 
     fun fetch(location: String): Response {
         val url = URL_TBA_API + location
-        Log.d(TAG, "Sending request to $url")
         val response = get(url, mapOf("X-TBA-Auth-Key" to API_KEY_TBA))
-        Log.d(TAG, "Received response from TBA")
         response.encoding = Charsets.UTF_8
         return response
     }
 
-    fun fetchCompetition(event: String): Competition? {
+    fun fetchCompetition(event: String): com.burlingamerobotics.scouting.shared.data.Competition? {
         val response = fetch("event/$event")
         return when (response.statusCode) {
             404 -> null
@@ -48,7 +46,7 @@ object BlueAllianceAPI {
                     (0 until json.length())
                             .map { i -> json.getJSONObject(i) }
                             .filter { it.getString("comp_level") == "qm" }
-                            .map { getMatchFrom(it)}
+                            .map { getMatchFrom(it) }
                 }
 
                 Competition(name, cal, UUID.randomUUID(), matches)
@@ -60,7 +58,7 @@ object BlueAllianceAPI {
         return (0 until array.length()).map { i -> array.getString(i).drop(3).toInt() }
     }
 
-    fun getMatchFrom(json: JSONObject): Match {
+    fun getMatchFrom(json: JSONObject): com.burlingamerobotics.scouting.shared.data.Match {
         val alliances = json.getJSONObject("alliances")
 
         val redJson = alliances.getJSONObject("red").getJSONArray("team_keys")

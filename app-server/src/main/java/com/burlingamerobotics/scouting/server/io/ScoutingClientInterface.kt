@@ -1,6 +1,5 @@
 package com.burlingamerobotics.scouting.server.io
 
-import java.io.Closeable
 import java.io.Serializable
 import java.util.*
 

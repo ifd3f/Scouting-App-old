@@ -13,12 +13,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.io.ScoutingClientServiceBinder
-import com.burlingamerobotics.scouting.common.Utils
-import com.burlingamerobotics.scouting.common.data.Competition
-import com.burlingamerobotics.scouting.common.data.Match
-import com.burlingamerobotics.scouting.common.protocol.CompetitionRequest
-import com.burlingamerobotics.scouting.common.protocol.MatchRequest
 import com.burlingamerobotics.scouting.common.view.MatchRecyclerViewAdapter
+import com.burlingamerobotics.scouting.shared.Utils
+import com.burlingamerobotics.scouting.shared.data.Competition
+import com.burlingamerobotics.scouting.shared.data.Match
+import com.burlingamerobotics.scouting.shared.protocol.CompetitionRequest
+import com.burlingamerobotics.scouting.shared.protocol.MatchRequest
 
 /**
  * Lists all the matches at a certain competition.

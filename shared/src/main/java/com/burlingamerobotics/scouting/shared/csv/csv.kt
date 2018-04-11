@@ -1,4 +1,4 @@
-package com.burlingamerobotics.scouting.common.csv
+package com.burlingamerobotics.scouting.shared.csv
 
 import java.lang.StringBuilder
 

@@ -1,18 +1,7 @@
 package com.burlingamerobotics.scouting.common
 
 import android.content.ComponentName
-import java.util.*
 
-const val MSG_GIVE_RX = 12421
-const val MSG_SEND_OBJ = 2389
-
-const val API_KEY_TBA = "eeszr95mLfyCJkDqDrXAxsW93MgRYrmn8lLqrUJ76GfSYIWNxA8N5mCUILlX3dFN"
-
-const val PROTOCOL_VERSION = "8"
-
-val SCOUTING_UUID = UUID.nameUUIDFromBytes("ironpanthers-scouting-v${PROTOCOL_VERSION}".toByteArray())
-
-const val URL_TBA_API = "https://www.thebluealliance.com/api/v3/"
 val COMPONENT_SCOUTING_SERVER_SERVICE = ComponentName(
         "com.burlingamerobotics.scouting.server",
         "com.burlingamerobotics.scouting.server.io.ScoutingServerService")
@@ -34,5 +23,3 @@ const val INTENT_START_SCOUTING_SERVER = "com.burlingamerobotics.scouting.START_
 
 const val REQUEST_CODE_NEW = 0xabcd
 const val REQUEST_CODE_EDIT = 0xed17
-
-const val DURATION_SAVE_DATA = 120000L

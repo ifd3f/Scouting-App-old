@@ -5,9 +5,9 @@ import android.util.Log
 import com.beust.klaxon.JsonArray
 import com.beust.klaxon.JsonReader
 import com.beust.klaxon.Klaxon
-import com.burlingamerobotics.scouting.common.data.Competition
-import com.burlingamerobotics.scouting.common.data.CompetitionFileHeader
-import com.burlingamerobotics.scouting.common.data.Team
+import com.burlingamerobotics.scouting.shared.data.Competition
+import com.burlingamerobotics.scouting.shared.data.CompetitionFileHeader
+import com.burlingamerobotics.scouting.shared.data.Team
 import java.io.*
 import java.util.*
 

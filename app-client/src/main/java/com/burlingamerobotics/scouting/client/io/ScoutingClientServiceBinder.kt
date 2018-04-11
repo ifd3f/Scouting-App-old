@@ -2,8 +2,8 @@ package com.burlingamerobotics.scouting.client.io
 
 import android.os.Binder
 import android.util.Log
-import com.burlingamerobotics.scouting.common.protocol.Post
-import com.burlingamerobotics.scouting.common.protocol.Request
+import com.burlingamerobotics.scouting.shared.protocol.Post
+import com.burlingamerobotics.scouting.shared.protocol.Request
 
 class ScoutingClientServiceBinder(private val parent: ScoutingClientService) : Binder() {
 

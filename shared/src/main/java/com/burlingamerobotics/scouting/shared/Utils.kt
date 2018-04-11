@@ -1,4 +1,4 @@
-package com.burlingamerobotics.scouting.common
+package com.burlingamerobotics.scouting.shared
 
 import java.io.*
 import java.util.concurrent.Executors
@@ -12,7 +12,7 @@ object Utils {
     //val ioExecutor = ThreadPoolExecutor(8, 16, 10L, TimeUnit.SECONDS, LinkedBlockingDeque<Runnable>())
 
     internal val bos = ByteArrayOutputStream()
-    internal val oos = ObjectOutputStream(Utils.bos)
+    internal val oos = ObjectOutputStream(bos)
 
     fun close() {
         bos.close()

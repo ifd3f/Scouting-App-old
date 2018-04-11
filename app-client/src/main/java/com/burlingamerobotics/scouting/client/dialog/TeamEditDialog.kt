@@ -7,7 +7,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import com.burlingamerobotics.scouting.client.R
-import com.burlingamerobotics.scouting.common.data.Team
+import com.burlingamerobotics.scouting.shared.data.Team
 
 class TeamEditDialog(context: Context, val team: Team? = null, val onFinished: (Team?) -> Unit) : Dialog(context) {
 

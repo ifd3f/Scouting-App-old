@@ -43,6 +43,8 @@ dependencies {
     implementation 'com.android.support:design:26.1.0'
     implementation 'com.beust:klaxon:2.1.6'
 
+    implementation project(':common')
+    implementation project(':shared')
 }
 repositories {
     mavenCentral()

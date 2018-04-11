@@ -14,10 +14,10 @@ import android.widget.ListView
 import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.dialog.TeamEditDialog
 import com.burlingamerobotics.scouting.client.io.ScoutingClientServiceBinder
-import com.burlingamerobotics.scouting.common.Utils
-import com.burlingamerobotics.scouting.common.data.Team
-import com.burlingamerobotics.scouting.common.protocol.PostTeamInfo
-import com.burlingamerobotics.scouting.common.protocol.TeamListRequest
+import com.burlingamerobotics.scouting.shared.Utils
+import com.burlingamerobotics.scouting.shared.data.Team
+import com.burlingamerobotics.scouting.shared.protocol.PostTeamInfo
+import com.burlingamerobotics.scouting.shared.protocol.TeamListRequest
 
 
 class TeamListFragment : Fragment() {

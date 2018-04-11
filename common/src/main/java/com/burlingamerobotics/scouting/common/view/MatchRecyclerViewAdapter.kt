@@ -6,8 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.burlingamerobotics.scouting.common.R
-import com.burlingamerobotics.scouting.common.data.GameResult
-import com.burlingamerobotics.scouting.common.data.Match
+import com.burlingamerobotics.scouting.shared.data.GameResult
+import com.burlingamerobotics.scouting.shared.data.Match
 
 class MatchRecyclerViewAdapter(val matches: List<Match>, val onClickCb: (Int) -> Unit = {})
     : RecyclerView.Adapter<MatchViewHolder>(), View.OnClickListener {

@@ -8,12 +8,12 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.view.Window
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import com.burlingamerobotics.scouting.client.R
-import com.burlingamerobotics.scouting.common.data.*
+import com.burlingamerobotics.scouting.common.resId
+import com.burlingamerobotics.scouting.shared.data.*
 import kotlinx.android.synthetic.main.activity_edit_team_performance.*
 
 

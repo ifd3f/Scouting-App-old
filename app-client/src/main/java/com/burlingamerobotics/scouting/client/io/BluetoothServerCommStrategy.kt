@@ -3,7 +3,7 @@ package com.burlingamerobotics.scouting.client.io
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.util.Log
-import com.burlingamerobotics.scouting.common.SCOUTING_UUID
+import com.burlingamerobotics.scouting.shared.SCOUTING_UUID
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import kotlin.concurrent.thread
