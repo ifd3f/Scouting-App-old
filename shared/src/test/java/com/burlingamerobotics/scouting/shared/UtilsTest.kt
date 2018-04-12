@@ -4,6 +4,7 @@ import com.burlingamerobotics.scouting.shared.csv.CSVColumn
 import com.burlingamerobotics.scouting.shared.csv.CSVSerializer
 import org.junit.Assert
 import org.junit.Test
+import kotlin.reflect.full.memberFunctions
 
 data class Boi(val name: String, val age: Int, val comment: String)
 
@@ -30,4 +31,8 @@ sajdflk,413,"vdsf132,43141313,""432"""""")
     }
 
 
+}
+
+fun main(args: Array<String>) {
+    println(Boi::class.memberFunctions)
 }

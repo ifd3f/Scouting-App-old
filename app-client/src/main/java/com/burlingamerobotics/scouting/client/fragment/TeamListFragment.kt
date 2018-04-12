@@ -42,15 +42,15 @@ class TeamListFragment : Fragment() {
         refresh()
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val view = inflater!!.inflate(R.layout.fragment_team_list, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val view = inflater.inflate(R.layout.fragment_team_list, container, false)
 
         refresher = view.findViewById(R.id.refresh_list_teams)
         lvTeamList = view.findViewById(R.id.list_teams)
 
         view.findViewById<FloatingActionButton>(R.id.btn_add_team).setOnClickListener {
             Log.i(TAG, "User pressed add team button, creating edit dialog")
-            TeamEditDialog(activity) {
+            TeamEditDialog(activity!!) {
                 if (it != null) {
                     Log.i(TAG, "Received $it from dialog, posting")
                     service.post(PostTeamInfo(it))

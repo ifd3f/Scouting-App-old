@@ -37,10 +37,10 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
 
     var serviceWrapper: ScoutingServerServiceWrapper? = null
 
-    val msgRefreshListHandler = Handler({ msg ->
+    val msgRefreshListHandler = Handler { _ ->
         refreshList()
         true
-    })
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +54,7 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
         txtCompetitionName = findViewById(R.id.text_competition_name)
         txtCompetitionName.text = competition.name
 
-        switch_server.setOnCheckedChangeListener { buttonView, isChecked ->
+        switch_server.setOnCheckedChangeListener { _, isChecked ->
             setServerState(isChecked)
         }
 

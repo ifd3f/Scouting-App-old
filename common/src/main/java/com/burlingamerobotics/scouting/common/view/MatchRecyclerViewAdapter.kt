@@ -14,8 +14,8 @@ class MatchRecyclerViewAdapter(val matches: List<Match>, val onClickCb: (Int) ->
 
     private lateinit var recyclerView: RecyclerView
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
-        this.recyclerView = recyclerView!!
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        this.recyclerView = recyclerView
     }
 
     override fun onClick(v: View?) {
@@ -26,8 +26,8 @@ class MatchRecyclerViewAdapter(val matches: List<Match>, val onClickCb: (Int) ->
         return matches.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): MatchViewHolder {
-        val view = LayoutInflater.from(parent!!.context).inflate(R.layout.item_show_match_row, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MatchViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_show_match_row, parent, false)
         return MatchViewHolder(this, view)
     }
 

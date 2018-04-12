@@ -16,10 +16,10 @@ import com.burlingamerobotics.scouting.client.R
 class TeamPerformanceDetailFragment : Fragment() {
 
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_team_performance_detail, container, false)
+        return inflater.inflate(R.layout.fragment_team_performance_detail, container, false)
     }
 
 }// Required empty public constructor

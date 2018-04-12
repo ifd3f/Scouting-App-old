@@ -1,6 +1,7 @@
 package com.burlingamerobotics.scouting.shared.csv
 
 import java.lang.StringBuilder
+import kotlin.reflect.full.declaredMembers
 
 class CSVSerializer<T>(val sep: String = ",") {
 
@@ -29,3 +30,11 @@ class CSVSerializer<T>(val sep: String = ",") {
 }
 
 data class CSVColumn<T>(val name: String, val ser: (T) -> String)
+
+/*
+inline fun <reified T> getColumnSerializers(): List<CSVColumn<T>> {
+    return T::class.declaredMembers.map { prop ->
+        prop.
+        //CSVColumn(prop.name) { obj ->  }
+    }
+}*/

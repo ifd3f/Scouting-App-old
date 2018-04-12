@@ -26,7 +26,7 @@ class CompetitionInfoActivity : AppCompatActivity() {
         competition = intent.getSerializableExtra("competition") as Competition
         matchList = findViewById(R.id.list_matches)
 
-        fab.setOnClickListener { view ->
+        fab.setOnClickListener { _ ->
             startActivity(Intent(this, ServerManagerActivity::class.java).apply {
                 putExtra("competition", competition)
             })

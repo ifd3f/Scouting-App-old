@@ -49,8 +49,8 @@ class MatchListFragment : Fragment(), Handler.Callback {
         refresh()
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.fragment_match_list, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater.inflate(R.layout.fragment_match_list, container, false)
 
         lvMatches = view.findViewById(R.id.list_matches)
         refresher = view.findViewById(R.id.refresh_list_matches)
@@ -74,7 +74,7 @@ class MatchListFragment : Fragment(), Handler.Callback {
             MSG_START_MDF -> {
                 val match = msg.obj as Match
                 Log.d(TAG, "Received START_MDF signal with $match")
-                fragmentManager.beginTransaction()
+                fragmentManager!!.beginTransaction()
                         .replace(R.id.client_main_fragment_container,
                                 MatchDetailFragment.newInstance(match, service),
                                 "match_info")

@@ -67,7 +67,7 @@ class CompetitionEditorActivity : Activity() {
 
         btn_pick_date.setOnClickListener {
             Log.i(TAG, "Spawning DatePicker")
-            DatePickerDialog(this, { dp, y, m, d ->
+            DatePickerDialog(this, { _, y, m, d ->
                 calendar.set(y, m, d)
                 Log.d(TAG, "Date has been set: $y-$m-$d")
                 updateDate()
@@ -137,15 +137,15 @@ class CompetitionEditorActivity : Activity() {
 }
 
 class EditMatchListRecyclerAdapter(val schedule: MatchSchedule) : RecyclerView.Adapter<EditMatchRowViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): EditMatchRowViewHolder {
-        val view = LayoutInflater.from(parent!!.context).inflate(R.layout.item_edit_match_row, parent, false)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EditMatchRowViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_edit_match_row, parent, false)
         return EditMatchRowViewHolder(view)
     }
 
     override fun getItemCount(): Int = schedule.count()
 
-    override fun onBindViewHolder(holder: EditMatchRowViewHolder?, position: Int) {
-        holder!!.attachTo(schedule[position], position + 1)
+    override fun onBindViewHolder(holder: EditMatchRowViewHolder, position: Int) {
+        holder.attachTo(schedule[position], position + 1)
     }
 
 }
