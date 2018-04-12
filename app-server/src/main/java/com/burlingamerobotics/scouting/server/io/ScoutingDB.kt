@@ -14,7 +14,7 @@ import java.util.*
 
 class ScoutingDB(context: Context) {
 
-    val TAG = "ScoutingDB-${context.packageName}"
+    val TAG = "ScoutingDB"
 
     val dirCompetitions = File(context.filesDir, "competitions/")
     val dirTeamsData = File(context.filesDir, "teams.json")
