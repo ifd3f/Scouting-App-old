@@ -1,5 +1,7 @@
 package com.burlingamerobotics.scouting.shared.data
 
+import com.burlingamerobotics.scouting.shared.csv.CSVColumn
+import com.burlingamerobotics.scouting.shared.csv.CSVSerializer
 import java.io.Serializable
 import java.util.*
 
@@ -134,6 +136,11 @@ data class Match(
 
     companion object {
         private const val serialVersionUID: Long = 234905687
+
+        val CSV_SER = CSVSerializer<TeamPerformance>(listOf(
+                CSVColumn("team") { it.teamNumber.toString() }
+        ))
+
 
         fun empty(number: Int) = Match(
                 number,

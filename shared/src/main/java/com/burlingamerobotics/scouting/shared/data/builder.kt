@@ -1,5 +1,7 @@
 package com.burlingamerobotics.scouting.shared.data
 
+import com.burlingamerobotics.scouting.shared.csv.CSVColumn
+import com.burlingamerobotics.scouting.shared.csv.CSVSerializer
 import java.io.BufferedWriter
 import java.io.Serializable
 
@@ -20,10 +22,6 @@ class MatchSchedule(val matches: MutableList<Match> = mutableListOf()) : Seriali
 
     fun addEmpty() {
         add(Match.empty(size))
-    }
-
-    fun writeCSV(writer: BufferedWriter) {
-        //writer.write()
     }
 
     companion object {

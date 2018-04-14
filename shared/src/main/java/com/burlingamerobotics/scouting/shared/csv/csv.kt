@@ -1,14 +1,11 @@
 package com.burlingamerobotics.scouting.shared.csv
 
 import java.lang.StringBuilder
-import kotlin.reflect.full.declaredMembers
+import kotlin.reflect.full.declaredMemberProperties
 
-class CSVSerializer<T>(val sep: String = ",") {
+class CSVSerializer<T>(val cols: List<CSVColumn<T>>, val sep: String = ",") {
 
-    val objects = mutableListOf<T>()
-    val cols = mutableListOf<CSVColumn<T>>()
-
-    fun write(): String {
+    fun makeCSV(objects: List<T>): String {
         val sb = StringBuilder()
         cols.joinTo(sb, sep) { sanitized(it.name) }
 
@@ -29,12 +26,10 @@ class CSVSerializer<T>(val sep: String = ",") {
 
 }
 
-data class CSVColumn<T>(val name: String, val ser: (T) -> String)
+data class CSVColumn<in T>(val name: String, val ser: (T) -> String)
 
-/*
-inline fun <reified T> getColumnSerializers(): List<CSVColumn<T>> {
-    return T::class.declaredMembers.map { prop ->
-        prop.
-        //CSVColumn(prop.name) { obj ->  }
+inline fun <reified T : Any> createSerializers(): List<CSVColumn<T>> {
+    return T::class.declaredMemberProperties.map { prop ->
+        CSVColumn<T>(prop.name) { prop.call(it).toString() }
     }
-}*/
+}
