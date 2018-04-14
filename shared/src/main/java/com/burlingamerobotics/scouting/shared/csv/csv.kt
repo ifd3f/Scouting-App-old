@@ -28,8 +28,13 @@ class CSVSerializer<T>(val cols: List<CSVColumn<T>>, val sep: String = ",") {
 
 data class CSVColumn<in T>(val name: String, val ser: (T) -> String)
 
-inline fun <reified T : Any> createSerializers(): List<CSVColumn<T>> {
-    return T::class.declaredMemberProperties.map { prop ->
-        CSVColumn<T>(prop.name) { prop.call(it).toString() }
+/**
+ * Make columns.
+ *
+ * @param blacklist don't make columns for parameters named this
+ */
+inline fun <reified T : Any> createSerializers(blacklist: List<String> = emptyList()): List<CSVColumn<T>> {
+    return T::class.declaredMemberProperties.filter { !blacklist.contains(it.name) }.flatMap { prop ->
+        listOf(CSVColumn<T>(prop.name) { prop.call(it).toString() })
     }
 }

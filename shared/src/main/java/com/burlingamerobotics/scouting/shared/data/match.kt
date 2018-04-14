@@ -2,6 +2,7 @@ package com.burlingamerobotics.scouting.shared.data
 
 import com.burlingamerobotics.scouting.shared.csv.CSVColumn
 import com.burlingamerobotics.scouting.shared.csv.CSVSerializer
+import com.burlingamerobotics.scouting.shared.csv.createSerializers
 import java.io.Serializable
 import java.util.*
 
@@ -139,10 +140,32 @@ data class Match(
     companion object {
         private const val serialVersionUID: Long = 234905687
 
-        val CSV_SER = CSVSerializer<TeamPerformance>(listOf(
-                CSVColumn("team") { it.teamNumber.toString() }
-        ))
-
+        val CSV_SER = CSVSerializer(
+                createSerializers<TeamPerformance>(listOf(
+                        "teleCubesOwnSwitch",
+                        "teleCubesScale",
+                        "teleCubesOppSwitch"
+                )) + listOf(
+                        CSVColumn("teleCubesOwnSwitch_hit") {
+                            it.teleCubesOwnSwitch.hit.toString()
+                        },
+                        CSVColumn("teleCubesOwnSwitch_miss") {
+                            it.teleCubesOwnSwitch.miss.toString()
+                        },
+                        CSVColumn("teleCubesScale_hit") {
+                            it.teleCubesScale.hit.toString()
+                        },
+                        CSVColumn("teleCubesScale_miss") {
+                            it.teleCubesScale.miss.toString()
+                        },
+                        CSVColumn("teleCubesOppSwitch_hit") {
+                            it.teleCubesOppSwitch.hit.toString()
+                        },
+                        CSVColumn("teleCubesOppSwitch_miss") {
+                            it.teleCubesOppSwitch.miss.toString()
+                        }
+                )
+        )
 
         fun empty(number: Int) = Match(
                 number,

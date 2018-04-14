@@ -20,7 +20,10 @@ import com.burlingamerobotics.scouting.server.R
 import com.burlingamerobotics.scouting.server.io.ClientInfo
 import com.burlingamerobotics.scouting.server.io.ScoutingServerService
 import com.burlingamerobotics.scouting.server.io.ScoutingServerServiceWrapper
+import com.burlingamerobotics.scouting.shared.csv.CSVSerializer
+import com.burlingamerobotics.scouting.shared.csv.createSerializers
 import com.burlingamerobotics.scouting.shared.data.Competition
+import com.burlingamerobotics.scouting.shared.data.Match
 import kotlinx.android.synthetic.main.content_server_manager.*
 import java.io.BufferedWriter
 import java.io.File
@@ -104,7 +107,7 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
                             Log.d(TAG, "Location read from EditText: $out")
                             out.parentFile.mkdirs()
                             BufferedWriter(FileWriter(out)).use {
-                                it.write("asdf,gfe")
+                                it.write(Match.CSV_SER.makeCSV(competition.qualifiers.performances))
                             }
                             Toast.makeText(this, "Created file: $out", Toast.LENGTH_SHORT).show()
                             d.dismiss()
