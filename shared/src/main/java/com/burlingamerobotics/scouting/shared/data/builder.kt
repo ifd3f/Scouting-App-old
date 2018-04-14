@@ -90,4 +90,5 @@ class AllianceView(private val ap: AlliancePerformance) : Alliance {
             ap.teams[2].teamNumber = v
         }
 
+    override fun toString(): String = "Alliance($a, $b, $c)"
 }

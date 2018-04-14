@@ -124,21 +124,21 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
         Log.d(TAG, "Received $obj from ${client.displayName}")
         when (obj) {
             is Action -> {
-                Log.d(TAG, "  It's an action")
-                client.sendObject(processAction(obj))
+                Log.d(TAG, "It's an action")
+                client.sendObject(Response(obj.uuid, processAction(obj)))
             }
             is Request<*> -> {
-                Log.d(TAG, "  It's a request")
+                Log.d(TAG, "It's a request")
                 val response = Response(obj.uuid, getItemByRequest(obj))
                 Log.d(TAG, "Writing $response")
                 client.sendObject(response)
             }
             is Post -> {
-                Log.d(TAG, "  It's a post")
+                Log.d(TAG, "It's a post")
                 processPost(client, obj)
             }
             else -> {
-                Log.e(TAG, "  We don't know what to do with: $obj")
+                Log.e(TAG, "We don't know what to do with: $obj")
             }
         }
     }
@@ -152,22 +152,29 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
     fun processAction(action: Action): ActionResult {
         return when (action) {
             is EditTeamPerformanceAction -> {
-                Log.d(TAG, "  The action is an intent to edit team performance")
                 val resourceToLock = action.asResource()
-                val result = lockedResources.add(resourceToLock)
-                if (result) {
-                    Log.d(TAG, "  Successfully locked resource $resourceToLock")
-                    ActionResult(true, competition.qualifiers.get(action.match).getTeamPerformanceOf(action.team))
-                } else {
-                    Log.w(TAG, "  Already locked: $resourceToLock")
+                Log.d(TAG, "The action is an intent to edit team performance of $resourceToLock")
+                if (lockedResources.contains(resourceToLock)) {
+                    Log.w(TAG, "Already locked: $resourceToLock")
                     ActionResult(false)
+                } else {
+                    Log.d(TAG, "$resourceToLock is not locked")
+                    val perf = competition.qualifiers[action.match - 1].getTeamPerformanceOf(action.team)
+                    if (perf != null) {
+                        Log.d(TAG, "Sending to client: $perf")
+                        lockedResources.add(resourceToLock)
+                        ActionResult(true, perf)
+                    } else {
+                        Log.d(TAG, "There is no TeamPerformance corresponding to $resourceToLock!")
+                        ActionResult(false)
+                    }
                 }
             }
             is EndEditTeamPerformanceAction -> {
                 Log.d(TAG, "  The action is an intent to stop editing team performance")
                 val tp = action.teamPerformance
                 if (tp != null) {
-                    Log.d(TAG, "  It provides a TeamPerformance: $tp")
+                    Log.d(TAG, "It provides a TeamPerformance: $tp")
                     competition.qualifiers.matches[action.team].putTeamPerformance(tp)
                 }
                 lockedResources.remove(MatchListResource(action.match, action.team))

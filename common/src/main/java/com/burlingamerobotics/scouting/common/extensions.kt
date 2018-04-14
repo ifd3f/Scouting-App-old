@@ -1,9 +1,17 @@
 package com.burlingamerobotics.scouting.common
 
+import android.os.Handler
+import android.os.Message
 import android.view.View
 import android.widget.RelativeLayout
 import android.widget.TextView
 import com.burlingamerobotics.scouting.shared.data.*
+
+fun Handler.sendMessage(receiver: Message.() -> Unit) {
+    val msg = obtainMessage()
+    msg.receiver()
+    sendMessage(msg)
+}
 
 fun Match.applyTo(view: View, index: Int) {
 

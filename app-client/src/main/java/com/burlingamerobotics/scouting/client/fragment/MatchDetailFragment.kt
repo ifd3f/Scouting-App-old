@@ -16,6 +16,7 @@ import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.activity.EditTeamPerformanceActivity
 import com.burlingamerobotics.scouting.client.io.ScoutingClientServiceBinder
 import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT
+import com.burlingamerobotics.scouting.common.sendMessage
 import com.burlingamerobotics.scouting.shared.Utils
 import com.burlingamerobotics.scouting.shared.data.Match
 import com.burlingamerobotics.scouting.shared.data.TeamPerformance
@@ -33,14 +34,16 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener, SwipeRefreshLa
     private val MSG_EDIT_SUCCESS = 23479
 
     private val threadHandler = Handler {
+        Log.d(TAG, "Handler received message")
         when (it.what) {
             MSG_REFRESH -> {
                 Log.d(TAG, "Handler received message to refresh")
                 updateViews()
+                refresh_match_info.isRefreshing = false
             }
             MSG_EDIT_FAILURE -> {
                 Log.d(TAG, "Handler received message to toast a lock error")
-                Toast.makeText(activity, "Someone else is editing ${it.arg1}'s performance!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "Error: Someone else is editing ${it.arg1}'s performance", Toast.LENGTH_SHORT).show()
             }
             MSG_EDIT_SUCCESS -> {
                 Log.d(TAG, "Handler received a message to start ETP")
@@ -106,19 +109,21 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener, SwipeRefreshLa
             }
         }
         Utils.ioExecutor.submit {
+            Log.d(TAG, "Sending ETPA to Server")
             val result = cli.blockingAction(EditTeamPerformanceAction(teamPerf.match, teamPerf.teamNumber))
             if (result.status) {
-                Log.d(TAG, "We may edit the TeamPerformance")
-                threadHandler.sendMessage(Message.obtain().apply {
+                val perf = result.payload as TeamPerformance
+                Log.d(TAG, "We may edit the TeamPerformance: $perf")
+                threadHandler.sendMessage {
                     what = MSG_EDIT_SUCCESS
-                    obj = result.payload as TeamPerformance
-                })
+                    obj = perf
+                }
             } else {
-                Log.d(TAG, "Someone else is editing the TeamPerformance")
-                threadHandler.sendMessage(Message.obtain().apply {
+                Log.d(TAG, "Someone else is already editing the TeamPerformance")
+                threadHandler.sendMessage {
                     what = MSG_EDIT_FAILURE
                     arg1 = teamPerf.teamNumber
-                })
+                }
             }
         }
         return true
@@ -126,11 +131,10 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener, SwipeRefreshLa
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        val perf = data!!.getSerializableExtra("result") as TeamPerformance
         when (resultCode) {
             Activity.RESULT_OK -> {
-                Log.i(TAG, "Received result back from ETPActivity")
-                data!!
-                val perf = data.getSerializableExtra("result") as TeamPerformance
+                Log.i(TAG, "Received save result back from ETPActivity")
                 Utils.ioExecutor.submit {
                     val actionres = service!!.blockingAction(EndEditTeamPerformanceAction(perf.match, perf.teamNumber, perf))
                     Log.d(TAG, actionres.toString())
@@ -139,7 +143,7 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener, SwipeRefreshLa
             Activity.RESULT_CANCELED -> {
                 Log.i(TAG, "Received canceled result from ETPActivity")
                 Utils.ioExecutor.submit {
-                    service!!.blockingAction(EndEditTeamPerformanceAction())
+                    service!!.blockingAction(EndEditTeamPerformanceAction(perf.match, perf.teamNumber, null))
                 }
             }
         }
