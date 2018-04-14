@@ -4,10 +4,7 @@ import android.app.Service
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothServerSocket
 import android.content.Intent
-import android.os.Handler
-import android.os.IBinder
-import android.os.Message
-import android.os.Messenger
+import android.os.*
 import android.util.Log
 import com.burlingamerobotics.scouting.common.INTENT_BIND_LOCAL_CLIENT_TO_SERVER
 import com.burlingamerobotics.scouting.common.INTENT_BIND_SERVER_WRAPPER
@@ -41,6 +38,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
     private val clients = mutableListOf<ScoutingClientInterface>()
     private var btConnectListener: Future<*>? = null
     private var dataSaveTask: Future<*>? = null
+    private val lockedResources = hashSetOf<MatchListResource>()
 
     var btAdapter: BluetoothAdapter? = null
     var serverSocket: BluetoothServerSocket? = null
@@ -125,6 +123,10 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
     override fun onReceivedFromClient(client: ScoutingClientInterface, obj: Any) {
         Log.d(TAG, "Received $obj from ${client.displayName}")
         when (obj) {
+            is Action -> {
+                Log.d(TAG, "  It's an action")
+                client.sendObject(processAction(obj))
+            }
             is Request<*> -> {
                 Log.d(TAG, "  It's a request")
                 val response = Response(obj.uuid, getItemByRequest(obj))
@@ -136,7 +138,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
                 processPost(client, obj)
             }
             else -> {
-                Log.e(TAG, "  We don't know what to do with it!")
+                Log.e(TAG, "  We don't know what to do with: $obj")
             }
         }
     }
@@ -145,6 +147,33 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
         Log.i(TAG, "$client disconnected, removing from list")
         clients.remove(client)
         sendBroadcast(Intent(INTENT_CLIENT_DISCONNECTED).apply { putExtra("client", client.getInfo()) })
+    }
+
+    fun processAction(action: Action): ActionResult {
+        return when (action) {
+            is EditTeamPerformanceAction -> {
+                Log.d(TAG, "  The action is an intent to edit team performance")
+                val resourceToLock = action.asResource()
+                val result = lockedResources.add(resourceToLock)
+                if (result) {
+                    Log.d(TAG, "  Successfully locked resource $resourceToLock")
+                    ActionResult(true, competition.qualifiers.get(action.match).getTeamPerformanceOf(action.team))
+                } else {
+                    Log.w(TAG, "  Already locked: $resourceToLock")
+                    ActionResult(false)
+                }
+            }
+            is EndEditTeamPerformanceAction -> {
+                Log.d(TAG, "  The action is an intent to stop editing team performance")
+                val tp = action.teamPerformance
+                if (tp != null) {
+                    Log.d(TAG, "  It provides a TeamPerformance: $tp")
+                    competition.qualifiers.matches[action.team].putTeamPerformance(tp)
+                }
+                lockedResources.remove(MatchListResource(action.match, action.team))
+                ActionResult(true)
+            }
+        }
     }
 
     fun processPost(client: ScoutingClientInterface, post: Post) {
@@ -198,3 +227,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
     }
 
 }
+
+data class MatchListResource(val match: Int, val team: Int)
+
+fun EditTeamPerformanceAction.asResource(): MatchListResource = MatchListResource(match, team)
