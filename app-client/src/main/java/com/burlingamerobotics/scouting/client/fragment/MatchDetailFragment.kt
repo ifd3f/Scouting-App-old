@@ -4,12 +4,14 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.os.Message
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.activity.EditTeamPerformanceActivity
 import com.burlingamerobotics.scouting.client.io.ScoutingClientServiceBinder
@@ -17,18 +19,38 @@ import com.burlingamerobotics.scouting.common.REQUEST_CODE_EDIT
 import com.burlingamerobotics.scouting.shared.Utils
 import com.burlingamerobotics.scouting.shared.data.Match
 import com.burlingamerobotics.scouting.shared.data.TeamPerformance
+import com.burlingamerobotics.scouting.shared.protocol.EditTeamPerformanceAction
+import com.burlingamerobotics.scouting.shared.protocol.EndEditTeamPerformanceAction
 import com.burlingamerobotics.scouting.shared.protocol.MatchRequest
-import com.burlingamerobotics.scouting.shared.protocol.PostTeamPerformance
 import kotlinx.android.synthetic.main.fragment_match_detail.*
 
 class MatchDetailFragment : Fragment(), View.OnLongClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private val TAG = "MatchDetailFragment"
 
-    private val refreshHandler = Handler(Handler.Callback {
-        updateViews()
+    private val MSG_REFRESH = 834
+    private val MSG_EDIT_FAILURE = 31289
+    private val MSG_EDIT_SUCCESS = 23479
+
+    private val threadHandler = Handler {
+        when (it.what) {
+            MSG_REFRESH -> {
+                Log.d(TAG, "Handler received message to refresh")
+                updateViews()
+            }
+            MSG_EDIT_FAILURE -> {
+                Log.d(TAG, "Handler received message to toast a lock error")
+                Toast.makeText(activity, "Someone else is editing ${it.arg1}'s performance!", Toast.LENGTH_SHORT).show()
+            }
+            MSG_EDIT_SUCCESS -> {
+                Log.d(TAG, "Handler received a message to start ETP")
+                startActivityForResult(Intent(context, EditTeamPerformanceActivity::class.java).apply {
+                    putExtra("existing", it.obj as TeamPerformance)
+                }, REQUEST_CODE_EDIT)
+            }
+        }
         true
-    })
+    }
     private lateinit var matchData: Match
     private var service: ScoutingClientServiceBinder? = null
 
@@ -58,6 +80,8 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener, SwipeRefreshLa
     }
 
     override fun onLongClick(v: View): Boolean {
+        val cli = service!!
+
         val teamPerf = when (v.id) {
             R.id.text_team_red1 -> {
                 matchData.red.teams[0]
@@ -81,10 +105,24 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener, SwipeRefreshLa
                 throw IllegalArgumentException("View does not have an allowed ID!")
             }
         }
-        startActivityForResult(Intent(context, EditTeamPerformanceActivity::class.java).apply {
-            putExtra("existing", teamPerf)
-        }, REQUEST_CODE_EDIT)
+        Utils.ioExecutor.submit {
+            val result = cli.blockingAction(EditTeamPerformanceAction(teamPerf.match, teamPerf.teamNumber))
+            if (result.status) {
+                Log.d(TAG, "We may edit the TeamPerformance")
+                threadHandler.sendMessage(Message.obtain().apply {
+                    what = MSG_EDIT_SUCCESS
+                    obj = result.payload as TeamPerformance
+                })
+            } else {
+                Log.d(TAG, "Someone else is editing the TeamPerformance")
+                threadHandler.sendMessage(Message.obtain().apply {
+                    what = MSG_EDIT_FAILURE
+                    arg1 = teamPerf.teamNumber
+                })
+            }
+        }
         return true
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -92,13 +130,17 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener, SwipeRefreshLa
             Activity.RESULT_OK -> {
                 Log.i(TAG, "Received result back from ETPActivity")
                 data!!
-                val num = data.getIntExtra("team", -1)
-                assert(num > 0, { "Did not receive a valid team number!" })
-                val res = data.getSerializableExtra("result") as TeamPerformance
-                service!!.post(PostTeamPerformance(matchData.number, res))
+                val perf = data.getSerializableExtra("result") as TeamPerformance
+                Utils.ioExecutor.submit {
+                    val actionres = service!!.blockingAction(EndEditTeamPerformanceAction(perf.match, perf.teamNumber, perf))
+                    Log.d(TAG, actionres.toString())
+                }
             }
             Activity.RESULT_CANCELED -> {
                 Log.i(TAG, "Received canceled result from ETPActivity")
+                Utils.ioExecutor.submit {
+                    service!!.blockingAction(EndEditTeamPerformanceAction())
+                }
             }
         }
     }
@@ -107,7 +149,7 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener, SwipeRefreshLa
         Log.i(TAG, "User wants to refresh")
         Utils.ioExecutor.submit {
             matchData = service!!.blockingRequest(MatchRequest(matchData.number))
-            refreshHandler.sendEmptyMessage(0)
+            threadHandler.sendEmptyMessage(MSG_REFRESH)
         }
     }
 

@@ -47,6 +47,7 @@ object BlueAllianceAPI {
                             .map { i -> json.getJSONObject(i) }
                             .filter { it.getString("comp_level") == "qm" }
                             .map { getMatchFrom(it) }
+                            .sortedBy { it.number }
                 }
 
                 Competition(name, cal, UUID.randomUUID(), matches)

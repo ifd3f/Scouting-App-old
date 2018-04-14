@@ -2,6 +2,8 @@ package com.burlingamerobotics.scouting.client.io
 
 import android.os.Binder
 import android.util.Log
+import com.burlingamerobotics.scouting.shared.protocol.Action
+import com.burlingamerobotics.scouting.shared.protocol.ActionResult
 import com.burlingamerobotics.scouting.shared.protocol.Post
 import com.burlingamerobotics.scouting.shared.protocol.Request
 
@@ -22,6 +24,10 @@ class ScoutingClientServiceBinder(private val parent: ScoutingClientService) : B
 
     fun connectTo(server: ServerData) {
         parent.connectTo(server)
+    }
+
+    fun blockingAction(action: Action): ActionResult {
+        return parent.request(action).payload as ActionResult
     }
 
 }

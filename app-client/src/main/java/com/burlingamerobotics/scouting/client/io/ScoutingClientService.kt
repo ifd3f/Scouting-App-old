@@ -5,10 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import android.util.Log
 import com.burlingamerobotics.scouting.common.INTENT_CLIENT_EVENT_RECEIVED
-import com.burlingamerobotics.scouting.shared.protocol.Event
-import com.burlingamerobotics.scouting.shared.protocol.Post
-import com.burlingamerobotics.scouting.shared.protocol.Request
-import com.burlingamerobotics.scouting.shared.protocol.Response
+import com.burlingamerobotics.scouting.shared.protocol.*
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException

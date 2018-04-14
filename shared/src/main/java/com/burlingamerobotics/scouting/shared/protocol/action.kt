@@ -3,7 +3,7 @@ package com.burlingamerobotics.scouting.shared.protocol
 import com.burlingamerobotics.scouting.shared.data.TeamPerformance
 import java.io.Serializable
 
-sealed class Action : Serializable
+sealed class Action : Request<ActionResult>()
 
 data class EditTeamPerformanceAction(val match: Int, val team: Int) : Action()
 

@@ -9,7 +9,7 @@ import java.util.*
 /**
  * Base interface for an object sent to the server for querying.
  */
-sealed class Request<ResponseType> : Serializable {
+abstract class Request<ResponseType> : Serializable {
     val uuid: UUID = UUID.randomUUID()
 }
 
