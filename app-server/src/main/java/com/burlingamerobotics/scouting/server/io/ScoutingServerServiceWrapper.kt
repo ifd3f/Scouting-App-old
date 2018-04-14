@@ -23,7 +23,7 @@ class ScoutingServerServiceWrapper : ServiceConnection, Handler.Callback {
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
         Log.d(TAG, "Connected to service $name")
         tx = Messenger(service)
-        thread(isDaemon = true) {
+        handlerThread = thread(isDaemon = true) {
             Log.d(TAG, "Created handler thread in thread ${Thread.currentThread().id}")
             Looper.prepare()
             rx = Messenger(Handler(this))

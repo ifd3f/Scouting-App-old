@@ -6,9 +6,8 @@ import java.io.BufferedWriter
 import java.io.Serializable
 
 class MatchSchedule(val matches: MutableList<Match> = mutableListOf()) : Serializable, MutableList<Match> by matches {
-    val performances: List<TeamPerformance> by lazy {
-        matches.flatMap { (it.red.teams + it.blue.teams).toList() }
-    }
+    val performances: List<TeamPerformance> get() = matches.flatMap { (it.red.teams + it.blue.teams).toList() }
+
 
     fun changeSizeTo(newSize: Int) {
         val currentSize = size
