@@ -6,10 +6,7 @@ import android.bluetooth.BluetoothServerSocket
 import android.content.Intent
 import android.os.*
 import android.util.Log
-import com.burlingamerobotics.scouting.common.INTENT_BIND_LOCAL_CLIENT_TO_SERVER
-import com.burlingamerobotics.scouting.common.INTENT_BIND_SERVER_WRAPPER
-import com.burlingamerobotics.scouting.common.INTENT_CLIENT_CONNECTED
-import com.burlingamerobotics.scouting.common.INTENT_CLIENT_DISCONNECTED
+import com.burlingamerobotics.scouting.common.*
 import com.burlingamerobotics.scouting.shared.DURATION_SAVE_DATA
 import com.burlingamerobotics.scouting.shared.SCOUTING_UUID
 import com.burlingamerobotics.scouting.shared.Utils
@@ -26,10 +23,24 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
      * Handle requests from [ScoutingServerServiceWrapper].
      */
     override fun handleMessage(msg: Message): Boolean {
+        Log.i(TAG, "Received from ServiceWrapper: $msg")
         when (msg.what) {
-
+            REQUEST_COMPETITION -> {
+                Log.d(TAG, "It's a request for competition data, sending: $competition")
+                val out = Message.obtain().apply {
+                    what = MSG_RESPONSE
+                    data.putSerializable("result", competition)
+                }
+                msg.replyTo.send(out)
+                Log.d(TAG, "Replying to: ${msg.replyTo} with $out")
+            }
+            MSG_PING -> {
+                Log.d(TAG, "It's a ping! We'll send a pong!")
+                msg.replyTo.send(Message.obtain().apply {
+                    what = MSG_PONG
+                })
+            }
         }
-        msg.replyTo
         return true
     }
 
@@ -175,7 +186,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
                 val tp = action.teamPerformance
                 if (tp != null) {
                     Log.d(TAG, "It provides a TeamPerformance: $tp")
-                    competition.qualifiers.matches[action.team].putTeamPerformance(tp)
+                    competition.qualifiers[action.match - 1].putTeamPerformance(tp)
                 }
                 lockedResources.remove(MatchListResource(action.match, action.team))
                 ActionResult(true)

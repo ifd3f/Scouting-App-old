@@ -2,6 +2,7 @@ package com.burlingamerobotics.scouting.common
 
 import android.os.Handler
 import android.os.Message
+import android.os.Messenger
 import android.view.View
 import android.widget.RelativeLayout
 import android.widget.TextView
@@ -11,6 +12,18 @@ fun Handler.sendMessage(receiver: Message.() -> Unit) {
     val msg = obtainMessage()
     msg.receiver()
     sendMessage(msg)
+}
+
+fun Messenger.send(receiver: Message.() -> Unit) {
+    val msg = Message.obtain()
+    msg.receiver()
+    send(msg)
+}
+
+fun Messenger.send(what: Int) {
+    send(Message.obtain().also {
+        it.what = what
+    })
 }
 
 fun Match.applyTo(view: View, index: Int) {

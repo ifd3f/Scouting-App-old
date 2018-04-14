@@ -5,4 +5,3 @@ const val MSG_REQUEST = 3
 
 const val MSG_BEGIN_CLIENT = 24598413
 const val MSG_RESPONSE = 23578012
-

@@ -29,7 +29,7 @@ import java.io.BufferedWriter
 import java.io.File
 import java.io.FileWriter
 
-class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
+class ServerManagerActivity : AppCompatActivity() {
 
     val TAG = "ServerManagerActivity"
     val clients: MutableList<ClientInfo> = arrayListOf()
@@ -38,7 +38,7 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
     lateinit var competition: Competition
     lateinit var txtCompetitionName: TextView
 
-    var serviceWrapper: ScoutingServerServiceWrapper? = null
+    private var serviceWrapper: ScoutingServerServiceWrapper? = null
 
     val msgRefreshListHandler = Handler { _ ->
         refreshList()
@@ -95,8 +95,11 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
         return when (item!!.itemId) {
             R.id.action_export_matches_csv -> {
                 Log.i(TAG, "User wants to export a CSV of matches")
+
+                val comp = serviceWrapper?.getCompetition() ?: competition
+
                 val viewEditPath = EditText(this)
-                viewEditPath.setText(File("/storage/self/primary", "matchdata.csv").absolutePath)
+                viewEditPath.setText(File("/storage/self/primary", "matchdata.csv").absolutePath)  // default path
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
 
                 val builder = AlertDialog.Builder(this)
@@ -106,9 +109,7 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
                             val out = File(viewEditPath.text.toString())
                             Log.d(TAG, "Location read from EditText: $out")
                             out.parentFile.mkdirs()
-                            BufferedWriter(FileWriter(out)).use {
-                                it.write(Match.CSV_SER.makeCSV(competition.qualifiers.performances))
-                            }
+                            out.writeText(Match.CSV_SER.makeCSV(comp.qualifiers.performances))
                             Toast.makeText(this, "Created file: $out", Toast.LENGTH_SHORT).show()
                             d.dismiss()
                         })
@@ -129,22 +130,9 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
     private fun refreshList() {
         Log.d("MasterMgmt", "Refreshing connected clients list")
         lvClients.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, clients.map { it.displayName })
-    }
-
-    override fun onServiceConnected(name: ComponentName?, service: IBinder) {
-        Log.i(TAG, "Service bound successfully!")
-        serviceWrapper = ScoutingServerServiceWrapper(service)
-    }
-
-    override fun onServiceDisconnected(name: ComponentName?) {
-        clients.clear()
     }
 
     private fun setServerState(state: Boolean) {
@@ -157,8 +145,9 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
             Log.d(TAG, "Server started successfully")
             val intent = Intent(this, ScoutingServerService::class.java)
             intent.action = INTENT_BIND_SERVER_WRAPPER
+            serviceWrapper = ScoutingServerServiceWrapper()
             Log.d(TAG, "Binding to server with $intent")
-            bindService(intent, this, Service.BIND_IMPORTANT)
+            bindService(intent, serviceWrapper, Service.BIND_ABOVE_CLIENT)
         } else {
             Log.i("MasterMgmt", "Stopping scouting server")
             stopService(Intent(this, ScoutingServerService::class.java))
