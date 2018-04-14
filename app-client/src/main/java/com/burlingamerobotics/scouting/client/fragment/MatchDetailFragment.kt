@@ -82,8 +82,6 @@ class MatchDetailFragment : Fragment(), View.OnLongClickListener, SwipeRefreshLa
             }
         }
         startActivityForResult(Intent(context, EditTeamPerformanceActivity::class.java).apply {
-            putExtra("team", teamPerf.teamNumber)
-            putExtra("match", matchData.number)
             putExtra("existing", teamPerf)
         }, REQUEST_CODE_EDIT)
         return true

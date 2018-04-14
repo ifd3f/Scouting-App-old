@@ -24,7 +24,7 @@ enum class EndAssistStatus : Serializable {
 }
 
 enum class TeamColor(val victory: GameResult) : Serializable {
-    RED(GameResult.RED_VICTORY), BLUE(GameResult.BLUE_VICTORY)
+    RED(GameResult.RED_VICTORY), BLUE(GameResult.BLUE_VICTORY), NONE(GameResult.DRAW)
 }
 
 enum class GameResult : Serializable {

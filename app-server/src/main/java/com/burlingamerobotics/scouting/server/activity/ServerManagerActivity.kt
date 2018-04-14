@@ -91,7 +91,7 @@ class ServerManagerActivity : AppCompatActivity(), ServiceConnection {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item!!.itemId) {
             R.id.action_export_matches_csv -> {
-                Log.i(TAG, "User wants to export a CSV")
+                Log.i(TAG, "User wants to export a CSV of matches")
                 val viewEditPath = EditText(this)
                 viewEditPath.setText(File("/storage/self/primary", "matchdata.csv").absolutePath)
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)

@@ -24,7 +24,7 @@ class EditTeamPerformanceActivity : AppCompatActivity() {
 
     private val TAG = "EditTeamPerformance"
 
-    private var teamNumber = -1
+    private lateinit var perf: TeamPerformance
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,11 +39,9 @@ class EditTeamPerformanceActivity : AppCompatActivity() {
 
         Log.d(TAG, "Creating fields")
 
-        teamNumber = intent.extras.getInt("team")
-        val matchNumber = intent.extras.getInt("match")
-        val perf = (intent.extras.getSerializable("existing") as TeamPerformance?) ?: TeamPerformance(teamNumber)
+        perf = intent.extras.getSerializable("existing") as TeamPerformance
 
-        toolbar.title = "Match $matchNumber, Team $teamNumber"
+        toolbar.title = "Match ${perf.match}, Team ${perf.teamNumber}"
 
         spinner_auto_start_pos.adapter = ArrayAdapter(
                 this, android.R.layout.simple_spinner_dropdown_item,
@@ -92,7 +90,6 @@ class EditTeamPerformanceActivity : AppCompatActivity() {
             R.id.action_save -> {
                 Log.d(TAG, "User wants to save")
                 setResult(Activity.RESULT_OK, Intent().apply {
-                    putExtra("team", teamNumber)
                     putExtra("result", build())
                 })
                 finish()
@@ -106,7 +103,9 @@ class EditTeamPerformanceActivity : AppCompatActivity() {
         val ratings = enumValues<Rating>()
 
         return TeamPerformance(
-                teamNumber = teamNumber,
+                match = perf.match,
+                team = perf.team,
+                teamNumber = perf.teamNumber,
                 autoStartPos = enumValues<StartPosition>()[spinner_auto_start_pos.selectedItemPosition],
                 autoTimeRemaining = edit_auto_remaining_time.text.toString().toInt(),
                 autoCrossedLine = chk_baseline.isChecked,

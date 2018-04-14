@@ -19,6 +19,8 @@ data class CubeStats(val position: CubePosition, var hit: Int = 0, var miss: Int
 }
 
 data class TeamPerformance(
+        var match: Int,
+        var team: TeamColor,
         var teamNumber: Int,
         var autoStartPos: StartPosition = StartPosition.MIDDLE,
         var autoCrossedLine: Boolean = false,
@@ -57,13 +59,13 @@ data class AlliancePerformance(
     val alliance = AllianceView(this)
 
     companion object {
-        fun fromTeams(t1: Int, t2: Int, t3: Int) = AlliancePerformance(arrayOf(
-                TeamPerformance(t1),
-                TeamPerformance(t2),
-                TeamPerformance(t3)
+        fun fromTeams(match: Int, teamColor: TeamColor, t1: Int, t2: Int, t3: Int) = AlliancePerformance(arrayOf(
+                TeamPerformance(match, teamColor, t1),
+                TeamPerformance(match, teamColor, t2),
+                TeamPerformance(match, teamColor, t3)
         ))
 
-        fun fromTeams(seq: List<Int>) = fromTeams(seq[0], seq[1], seq[2])
+        fun fromTeams(match: Int, teamColor: TeamColor, seq: List<Int>) = fromTeams(match, teamColor, seq[0], seq[1], seq[2])
     }
 
     override fun equals(other: Any?): Boolean {
@@ -144,11 +146,13 @@ data class Match(
 
         fun empty(number: Int) = Match(
                 number,
-                AlliancePerformance.fromTeams(0, 0, 0),
-                AlliancePerformance.fromTeams(0, 0, 0))
+                AlliancePerformance.fromTeams(number, TeamColor.RED, 0, 0, 0),
+                AlliancePerformance.fromTeams(number, TeamColor.BLUE, 0, 0, 0))
 
         fun fromTeams(number: Int, red: List<Int>, blue: List<Int>) = Match(
-                number, AlliancePerformance.fromTeams(red), AlliancePerformance.fromTeams(blue)
+                number,
+                AlliancePerformance.fromTeams(number, TeamColor.RED, red),
+                AlliancePerformance.fromTeams(number, TeamColor.BLUE, blue)
         )
     }
 }
