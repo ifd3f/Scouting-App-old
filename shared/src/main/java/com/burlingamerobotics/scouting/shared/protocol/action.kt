@@ -5,8 +5,13 @@ import java.io.Serializable
 
 sealed class Action : Request<ActionResult>()
 
+data class ActionResult(val status: Boolean, val payload: Any? = null) : Serializable
+
 data class EditTeamPerformanceAction(val match: Int, val team: Int) : Action()
 
 data class EndEditTeamPerformanceAction(val match: Int, val team: Int, val teamPerformance: TeamPerformance?) : Action()
 
-data class ActionResult(val status: Boolean, val payload: Any? = null) : Serializable
+/**
+ * Sent to the server to notify the client is disconnecting.
+ */
+class DisconnectAction : Action()

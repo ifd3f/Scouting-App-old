@@ -7,9 +7,7 @@ import android.content.Intent
 import android.os.*
 import android.util.Log
 import com.burlingamerobotics.scouting.common.*
-import com.burlingamerobotics.scouting.shared.DURATION_SAVE_DATA
-import com.burlingamerobotics.scouting.shared.SCOUTING_UUID
-import com.burlingamerobotics.scouting.shared.Utils
+import com.burlingamerobotics.scouting.shared.*
 import com.burlingamerobotics.scouting.shared.data.Competition
 import com.burlingamerobotics.scouting.shared.protocol.*
 import java.util.*
@@ -18,6 +16,19 @@ import java.util.concurrent.TimeUnit
 
 
 class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
+
+    private val TAG = "ScoutingServerService"
+
+    private val clients = mutableListOf<ScoutingClientInterface>()
+    private var btConnectListener: Future<*>? = null
+    private var dataSaveTask: Future<*>? = null
+    private val lockedResources = hashSetOf<MatchListResource>()
+
+    private var btAdapter: BluetoothAdapter? = null
+    private var serverSocket: BluetoothServerSocket? = null
+
+    private lateinit var competition: Competition
+    private lateinit var db: ScoutingDB
 
     /**
      * Handle requests from [ScoutingServerServiceWrapper].
@@ -34,6 +45,17 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
                 msg.replyTo.send(out)
                 Log.d(TAG, "Replying to: ${msg.replyTo} with $out")
             }
+            MSG_FORCE_DISCONNECT -> {
+                val id = msg.obj as Long
+                val reason = msg.arg1
+                Log.d(TAG, "It's a command to disconnect $id because $reason")
+                val client = clients.find { it.id == id }
+                if (client != null) {
+                    forceDisconnect(client, reason)
+                } else {
+                    Log.e(TAG, "$id does not exist! Cannot disconnect someone who doesn't exist!")
+                }
+            }
             MSG_PING -> {
                 Log.d(TAG, "It's a ping! We'll send a pong!")
                 msg.replyTo.send(Message.obtain().apply {
@@ -43,19 +65,6 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
         }
         return true
     }
-
-    val TAG = "ScoutingServerService"
-
-    private val clients = mutableListOf<ScoutingClientInterface>()
-    private var btConnectListener: Future<*>? = null
-    private var dataSaveTask: Future<*>? = null
-    private val lockedResources = hashSetOf<MatchListResource>()
-
-    var btAdapter: BluetoothAdapter? = null
-    var serverSocket: BluetoothServerSocket? = null
-
-    lateinit var competition: Competition
-    lateinit var db: ScoutingDB
 
     override fun onBind(intent: Intent): IBinder {
         Log.d(TAG, "Received intent to bind: $intent")
@@ -125,6 +134,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
     override fun onDestroy() {
         super.onDestroy()
         Log.i(TAG, "Destroying")
+        broadcast(EventForceDisconnect(DISCONNECT_REASON_SHUTDOWN))
         btConnectListener?.cancel(true)
         dataSaveTask?.cancel(true)
         clients.forEach { it.close() }
@@ -136,7 +146,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
         when (obj) {
             is Action -> {
                 Log.d(TAG, "It's an action")
-                client.sendObject(Response(obj.uuid, processAction(obj)))
+                client.sendObject(Response(obj.uuid, processAction(obj, client)))
             }
             is Request<*> -> {
                 Log.d(TAG, "It's a request")
@@ -155,15 +165,16 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
     }
 
     override fun onClientDisconnected(client: ScoutingClientInterface) {
-        Log.i(TAG, "$client disconnected, removing from list")
+        Log.i(TAG, "$client disconnected")
         clients.remove(client)
+        lockedResources.removeAll { it.client == client }
         sendBroadcast(Intent(INTENT_CLIENT_DISCONNECTED).apply { putExtra("client", client.getInfo()) })
     }
 
-    fun processAction(action: Action): ActionResult {
+    private fun processAction(action: Action, client: ScoutingClientInterface): ActionResult {
         return when (action) {
             is EditTeamPerformanceAction -> {
-                val resourceToLock = action.asResource()
+                val resourceToLock = action.asResource(client)
                 Log.d(TAG, "The action is an intent to edit team performance of $resourceToLock")
                 if (lockedResources.contains(resourceToLock)) {
                     Log.w(TAG, "Already locked: $resourceToLock")
@@ -182,70 +193,79 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
                 }
             }
             is EndEditTeamPerformanceAction -> {
-                Log.d(TAG, "  The action is an intent to stop editing team performance")
+                Log.d(TAG, "The action is an intent to stop editing team performance")
                 val tp = action.teamPerformance
                 if (tp != null) {
                     Log.d(TAG, "It provides a TeamPerformance: $tp")
                     competition.qualifiers[action.match - 1].putTeamPerformance(tp)
                 }
-                lockedResources.remove(MatchListResource(action.match, action.team))
+                lockedResources.remove(MatchListResource(client, action.match, action.team))
+                ActionResult(true)
+            }
+            is DisconnectAction -> {
+                Log.d(TAG, "The client wants to disconnect")
                 ActionResult(true)
             }
         }
     }
 
-    fun processPost(client: ScoutingClientInterface, post: Post) {
+    private fun processPost(client: ScoutingClientInterface, post: Post) {
         when (post) {
+            /*
             is PostTeamPerformance -> {
-                Log.d(TAG, "  The post is a team performance change")
+                Log.d(TAG, "The post is a team performance change")
                 competition.qualifiers.matches[post.team].putTeamPerformance(post.teamPerformance)
-            }
+            }*/
             is PostTeamInfo -> {
-                Log.d(TAG, "  The post is a team change")
+                Log.d(TAG, "The post is a team change")
                 db.putTeam(post.team)
                 broadcast(EventTeamChange(post.team))
             }
             is PostChatMessage -> {
-                Log.d(TAG, "  The post is a chat message")
+                Log.d(TAG, "The post is a chat message")
                 broadcast(EventChatMessage(client.displayName, post.message))
             }
             else -> {
-                Log.e(TAG, "  We don't know how to react to $post!")
+                Log.e(TAG, "We don't know how to react to $post!")
             }
         }
     }
 
-    fun <T> getItemByRequest(request: Request<T>): Any? {
+    private fun <T> getItemByRequest(request: Request<T>): Any? {
         return when (request) {
             is CompetitionRequest -> {
-                Log.d(TAG, "  The request is for all competition data")
+                Log.d(TAG, "The request is for all competition data")
                 competition
             }
             is MatchRequest -> {
-                Log.d(TAG, "  The request is for .match info")
+                Log.d(TAG, "The request is for .match info")
                 competition.qualifiers[request.number]
             }
             is TeamInfoRequest -> {
-                Log.d(TAG, "  The request is for team info")
+                Log.d(TAG, "The request is for team info")
                 db.getTeam(request.team)
             }
             is TeamListRequest -> {
-                Log.d(TAG, "  The request is for a list of teams")
+                Log.d(TAG, "The request is for a list of teams")
                 db.listTeams()
             }
             else -> {
-                Log.e(TAG, "  We don't know how to respond to $request!")
+                Log.e(TAG, "We don't know how to respond to $request!")
                 null
             }
         }
     }
 
-    fun broadcast(event: Event) {
+    private fun broadcast(event: Event) {
         clients.forEach { it.sendObject(event) }
+    }
+
+    fun forceDisconnect(client: ScoutingClientInterface, reason: Int) {
+        client.sendObject(EventForceDisconnect(reason))
     }
 
 }
 
-data class MatchListResource(val match: Int, val team: Int)
+data class MatchListResource(val client: ScoutingClientInterface, val match: Int, val team: Int)
 
-fun EditTeamPerformanceAction.asResource(): MatchListResource = MatchListResource(match, team)
+fun EditTeamPerformanceAction.asResource(client: ScoutingClientInterface): MatchListResource = MatchListResource(client, match, team)
