@@ -4,7 +4,8 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
-import com.burlingamerobotics.scouting.common.INTENT_CLIENT_EVENT_RECEIVED
+import com.burlingamerobotics.scouting.client.INTENT_CLIENT_EVENT_RECEIVED
+import com.burlingamerobotics.scouting.common.INTENT_SERVER_CLIENT_CONNECTED
 import com.burlingamerobotics.scouting.shared.protocol.*
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -31,6 +32,9 @@ class ScoutingClientService : Service(), CommStrategyListener {
             Log.e(TAG, "Failed to connect!", e)
             throw e
         }
+        sendBroadcast(Intent().apply {
+            action = INTENT_SERVER_CLIENT_CONNECTED
+        })
     }
 
     internal fun request(rq: Request<*>): Response<*> {
@@ -57,6 +61,17 @@ class ScoutingClientService : Service(), CommStrategyListener {
         serverCommStrategy.sendObject(post)
     }
 
+    internal fun disconnect() {
+        Log.d(TAG, "Sending disconnect action to strategy")
+        request(DisconnectAction())
+        Log.i(TAG, "Received disconnect confirmation")
+    }
+
+    override fun onDisconnect() {
+        Log.d(TAG, "Stream closed, fully disconnected")
+        sendBroadcast(Intent())
+    }
+
     override fun onBind(intent: Intent?): IBinder {
         Log.d(TAG, "Someone wants to bind to me")
         return ScoutingClientServiceBinder(this)
@@ -75,10 +90,6 @@ class ScoutingClientService : Service(), CommStrategyListener {
     override fun onDestroy() {
         super.onDestroy()
         Log.i(TAG, "Stopping")
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onReceivedObject(obj: Any) {

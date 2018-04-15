@@ -3,31 +3,29 @@ package com.burlingamerobotics.scouting.server.activity
 import android.Manifest
 import android.app.AlertDialog
 import android.app.Service
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
-import android.os.IBinder
 import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.*
-import com.burlingamerobotics.scouting.common.INTENT_BIND_SERVER_WRAPPER
-import com.burlingamerobotics.scouting.common.INTENT_CLIENT_CONNECTED
-import com.burlingamerobotics.scouting.common.INTENT_CLIENT_DISCONNECTED
+import com.burlingamerobotics.scouting.common.INTENT_SERVER_CLIENT_CONNECTED
+import com.burlingamerobotics.scouting.server.INTENT_BIND_SERVER_WRAPPER
+import com.burlingamerobotics.scouting.server.INTENT_SERVER_CLIENT_DISCONNECTED
 import com.burlingamerobotics.scouting.server.R
 import com.burlingamerobotics.scouting.server.io.ClientInfo
 import com.burlingamerobotics.scouting.server.io.ScoutingServerService
 import com.burlingamerobotics.scouting.server.io.ScoutingServerServiceWrapper
-import com.burlingamerobotics.scouting.shared.csv.CSVSerializer
-import com.burlingamerobotics.scouting.shared.csv.createSerializers
 import com.burlingamerobotics.scouting.shared.data.Competition
 import com.burlingamerobotics.scouting.shared.data.Match
 import kotlinx.android.synthetic.main.content_server_manager.*
-import java.io.BufferedWriter
 import java.io.File
-import java.io.FileWriter
 
 class ServerManagerActivity : AppCompatActivity() {
 
@@ -61,17 +59,17 @@ class ServerManagerActivity : AppCompatActivity() {
             setServerState(isChecked)
         }
 
-        val itf = IntentFilter(INTENT_CLIENT_CONNECTED)
+        val itf = IntentFilter(INTENT_SERVER_CLIENT_CONNECTED)
         registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent) {
                 when (intent.action) {
-                    INTENT_CLIENT_CONNECTED -> {
+                    INTENT_SERVER_CLIENT_CONNECTED -> {
                         val client = intent.getSerializableExtra("client") as ClientInfo
                         Log.i(TAG, "Client connected: $client")
                         clients.add(client)
                         msgRefreshListHandler.sendEmptyMessage(0)
                     }
-                    INTENT_CLIENT_DISCONNECTED -> {
+                    INTENT_SERVER_CLIENT_DISCONNECTED -> {
                         val client = intent.getSerializableExtra("client") as ClientInfo
                         Log.i(TAG, "Client disconnected: $client")
                         clients.remove(client)

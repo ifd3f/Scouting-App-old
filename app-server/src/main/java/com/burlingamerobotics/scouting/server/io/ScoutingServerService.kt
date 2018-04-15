@@ -4,10 +4,19 @@ import android.app.Service
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothServerSocket
 import android.content.Intent
-import android.os.*
+import android.os.Handler
+import android.os.IBinder
+import android.os.Message
+import android.os.Messenger
 import android.util.Log
-import com.burlingamerobotics.scouting.common.*
-import com.burlingamerobotics.scouting.shared.*
+import com.burlingamerobotics.scouting.common.INTENT_BIND_LOCAL_CLIENT_TO_SERVER
+import com.burlingamerobotics.scouting.server.INTENT_BIND_SERVER_WRAPPER
+import com.burlingamerobotics.scouting.server.INTENT_SERVER_CLIENT_CONNECTED
+import com.burlingamerobotics.scouting.server.INTENT_SERVER_CLIENT_DISCONNECTED
+import com.burlingamerobotics.scouting.shared.DISCONNECT_REASON_SHUTDOWN
+import com.burlingamerobotics.scouting.shared.DURATION_SAVE_DATA
+import com.burlingamerobotics.scouting.shared.SCOUTING_UUID
+import com.burlingamerobotics.scouting.shared.Utils
 import com.burlingamerobotics.scouting.shared.data.Competition
 import com.burlingamerobotics.scouting.shared.protocol.*
 import java.util.*
@@ -74,7 +83,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
                 val newClient = LocalClientInterface()
                 newClient.attachClientInputListener(this)
                 clients.add(newClient)
-                sendBroadcast(Intent(INTENT_CLIENT_CONNECTED).apply { putExtra("client", newClient.getInfo()) })
+                sendBroadcast(Intent(INTENT_SERVER_CLIENT_CONNECTED).apply { putExtra("client", newClient.getInfo()) })
                 return newClient.rx.binder
             }
             INTENT_BIND_SERVER_WRAPPER -> {
@@ -111,7 +120,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
                     Log.i(TAG, "Bluetooth device at ${client.device.address} connected")
                     clients.add(client)
                     client.begin()
-                    sendBroadcast(Intent(INTENT_CLIENT_CONNECTED).apply {
+                    sendBroadcast(Intent(INTENT_SERVER_CLIENT_CONNECTED).apply {
                         putExtra("client", client.getInfo())
                     })
                 }
@@ -128,7 +137,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
             db.commitTeams()
         }, DURATION_SAVE_DATA, DURATION_SAVE_DATA, TimeUnit.MILLISECONDS)
 
-        return super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
     override fun onDestroy() {
@@ -168,7 +177,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
         Log.i(TAG, "$client disconnected")
         clients.remove(client)
         lockedResources.removeAll { it.client == client }
-        sendBroadcast(Intent(INTENT_CLIENT_DISCONNECTED).apply { putExtra("client", client.getInfo()) })
+        sendBroadcast(Intent(INTENT_SERVER_CLIENT_DISCONNECTED).apply { putExtra("client", client.getInfo()) })
     }
 
     private fun processAction(action: Action, client: ScoutingClientInterface): ActionResult {

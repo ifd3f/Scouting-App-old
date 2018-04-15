@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.util.Log
 import com.burlingamerobotics.scouting.shared.SCOUTING_UUID
+import java.io.IOException
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import kotlin.concurrent.thread
@@ -24,10 +25,19 @@ class BluetoothServerCommStrategy(val device: BluetoothDevice) : ServerCommStrat
         ois = ObjectInputStream(socket.inputStream)
         listenerThread = thread(start = true, isDaemon = true) {
             while (true) {
-                val obj = ois.readObject()
-                Log.d(TAG, "Received $obj from bluetooth")
-                listener?.onReceivedObject(obj) ?: Log.w(TAG, "There was no listener to receive it")
+                try {
+                    val obj = ois.readObject()
+                    Log.d(TAG, "Received $obj from bluetooth")
+                    listener?.onReceivedObject(obj)
+                            ?: Log.w(TAG, "There was no listener to receive it")
+                } catch (e: IOException) {
+                    Log.e(TAG, "Received disconnect signal", e)
+                    listener?.onDisconnect()
+                            ?: Log.w(TAG, "There was no listener to get the DC signal")
+                    break
+                }
             }
+            Log.d(TAG, "Thread ending")
         }
         return true
     }

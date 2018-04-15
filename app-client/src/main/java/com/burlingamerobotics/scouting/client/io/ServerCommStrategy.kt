@@ -18,9 +18,8 @@ abstract class ServerCommStrategy : Closeable {
 }
 
 interface CommStrategyListener {
-
     fun onReceivedObject(obj: Any)
-
+    fun onDisconnect()
 }
 
 interface ServerData {

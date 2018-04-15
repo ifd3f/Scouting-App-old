@@ -57,7 +57,7 @@
             android:process="com.burlingamerobotics.scouting.server.service"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.burlingamerobotics.scouting.BIND_LOCAL_CLIENT_TO_SERVER"/>
+                <action android:name="com.burlingamerobotics.scouting.server.BIND_LOCAL_CLIENT_TO_SERVER"/>
             </intent-filter>
         </service>
     </application>
