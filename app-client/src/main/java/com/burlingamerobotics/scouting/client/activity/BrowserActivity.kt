@@ -76,8 +76,8 @@ class BrowserActivity : AppCompatActivity(), ServiceConnection {
     }
 
     override fun onBackPressed() {
-        if (supportFragmentManager.fragments.count() <= 1) {
-            Log.i(TAG, "Back pressed with 1 fragment on stack. User wants to DC")
+        if (supportFragmentManager.backStackEntryCount == 0) {
+            Log.i(TAG, "Back pressed with 0 fragment on back stack. User wants to DC")
             AlertDialog.Builder(this)
                     .setTitle("Do you want to disconnect?")
                     .setPositiveButton("Disconnect") { dialog, _ ->
