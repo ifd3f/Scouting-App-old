@@ -13,7 +13,6 @@ abstract class ServerCommStrategy : Closeable {
     }
 
     abstract fun onStart(): Boolean
-
     abstract fun sendObject(obj: Any)
 }
 

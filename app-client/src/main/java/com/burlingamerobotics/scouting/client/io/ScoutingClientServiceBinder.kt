@@ -2,10 +2,8 @@ package com.burlingamerobotics.scouting.client.io
 
 import android.os.Binder
 import android.util.Log
-import com.burlingamerobotics.scouting.shared.protocol.Action
-import com.burlingamerobotics.scouting.shared.protocol.ActionResult
-import com.burlingamerobotics.scouting.shared.protocol.Post
-import com.burlingamerobotics.scouting.shared.protocol.Request
+import com.burlingamerobotics.scouting.shared.protocol.*
+import java.util.concurrent.TimeoutException
 
 class ScoutingClientServiceBinder(private val parent: ScoutingClientService) : Binder() {
 
@@ -28,6 +26,17 @@ class ScoutingClientServiceBinder(private val parent: ScoutingClientService) : B
 
     fun blockingAction(action: Action): ActionResult {
         return parent.request(action).payload as ActionResult
+    }
+
+    fun disconnect() {
+        Log.i(TAG, "We're disconnecting")
+        try {
+            blockingAction(DisconnectAction())
+        } catch (e: TimeoutException) {
+            Log.e(TAG, "Oh no! We timed out!", e)
+        } finally {
+            parent.close()
+        }
     }
 
 }

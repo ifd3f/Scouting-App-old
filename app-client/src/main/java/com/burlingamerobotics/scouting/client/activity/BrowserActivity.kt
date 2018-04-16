@@ -1,5 +1,6 @@
 package com.burlingamerobotics.scouting.client.activity
 
+import android.app.AlertDialog
 import android.app.Service
 import android.content.ComponentName
 import android.content.Intent
@@ -64,14 +65,36 @@ class BrowserActivity : AppCompatActivity(), ServiceConnection {
     override fun onStart() {
         super.onStart()
 
-        Log.d(TAG, "Binding to service")
+        Log.i(TAG, "Binding to service")
         bindService(Intent(this, ScoutingClientService::class.java), this, Service.BIND_ABOVE_CLIENT)
     }
 
     override fun onStop() {
         super.onStop()
-        Log.d(TAG, "Unbinding from service")
+        Log.i(TAG, "Unbinding from service")
         unbindService(this)
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.fragments.count() <= 1) {
+            Log.i(TAG, "Back pressed with 1 fragment on stack. User wants to DC")
+            AlertDialog.Builder(this)
+                    .setTitle("Do you want to disconnect?")
+                    .setPositiveButton("Disconnect") { dialog, _ ->
+                        Log.i(TAG, "User wants to disconnect")
+                        dialog.dismiss()
+                        super.onBackPressed()
+                        service.disconnect()
+                    }
+                    .setNegativeButton("Back") { dialog, _ ->
+                        Log.i(TAG, "User doesn't want to disconnect")
+                        dialog.cancel()
+                    }
+                    .create().show()
+        } else {
+            Log.i(TAG, "Back pressed with lots of fragments on stack")
+            super.onBackPressed()
+        }
     }
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {

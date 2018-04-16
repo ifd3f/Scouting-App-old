@@ -2,6 +2,7 @@ package com.burlingamerobotics.scouting.client.activity
 
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -97,6 +98,22 @@ class EditTeamPerformanceActivity : AppCompatActivity() {
             }
             else -> return super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onBackPressed() {
+        AlertDialog.Builder(this)
+                .setTitle("Discard changes?")
+                .setPositiveButton("Discard") { dialog, _ ->
+                    setResult(Activity.RESULT_CANCELED, Intent().apply {
+                        putExtra("result", perf)
+                    })
+                    finish()
+                    dialog.dismiss()
+                }
+                .setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.cancel()
+                }
+                .create().show()
     }
 
     fun build(): TeamPerformance {

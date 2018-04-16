@@ -97,4 +97,8 @@ class ScoutingClientService : Service(), CommStrategyListener {
         }
     }
 
+    internal fun close() {
+        serverCommStrategy.close()
+    }
+
 }
