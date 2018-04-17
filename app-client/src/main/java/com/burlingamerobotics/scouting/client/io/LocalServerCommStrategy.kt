@@ -5,23 +5,23 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.os.Handler
-import android.os.IBinder
-import android.os.Message
-import android.os.Messenger
+import android.os.*
 import android.util.Log
 import com.burlingamerobotics.scouting.common.COMPONENT_SCOUTING_SERVER_SERVICE
 import com.burlingamerobotics.scouting.common.INTENT_BIND_LOCAL_CLIENT_TO_SERVER
 import com.burlingamerobotics.scouting.shared.MSG_GIVE_RX
 import com.burlingamerobotics.scouting.shared.MSG_SEND_OBJ
 import java.io.Serializable
+import kotlin.concurrent.thread
 
 class LocalServerCommStrategy(val context: Context) : ServerCommStrategy(), ServiceConnection, Handler.Callback {
 
     private val TAG = "LocalServerComm"
 
+    private lateinit var rx: Messenger
     private lateinit var tx: Messenger
-    private val rx: Messenger = Messenger(Handler(this))
+
+    private lateinit var rxListenerThread: Thread
 
     override fun onStart(): Boolean {
         val intent = Intent()
@@ -37,11 +37,16 @@ class LocalServerCommStrategy(val context: Context) : ServerCommStrategy(), Serv
     override fun onServiceConnected(name: ComponentName?, service: IBinder) {
         Log.i(TAG, "Successfully bound to server!")
         tx = Messenger(service)
-        Log.d(TAG, "Sending our RX messenger")
-        tx.send(Message.obtain().apply {
-            what = MSG_GIVE_RX
-            replyTo = rx
-        })
+        rxListenerThread = thread(isDaemon = true) {
+            Looper.prepare()
+            rx = Messenger(Handler(this))
+            Log.d(TAG, "Sending our RX messenger")
+            tx.send(Message.obtain().apply {
+                what = MSG_GIVE_RX
+                replyTo = rx
+            })
+            Looper.loop()
+        }
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
@@ -70,7 +75,7 @@ class LocalServerCommStrategy(val context: Context) : ServerCommStrategy(), Serv
     }
 
     override fun close() {
-
+        rxListenerThread.interrupt()
     }
 
 }

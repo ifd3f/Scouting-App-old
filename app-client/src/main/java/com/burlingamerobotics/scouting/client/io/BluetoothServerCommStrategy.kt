@@ -10,8 +10,7 @@ import java.io.ObjectOutputStream
 import kotlin.concurrent.thread
 
 class BluetoothServerCommStrategy(val device: BluetoothDevice) : ServerCommStrategy() {
-
-    val TAG = "ScoutingClient"
+    private val TAG = "ScoutingClient"
 
     lateinit var socket: BluetoothSocket
     lateinit var oos: ObjectOutputStream
