@@ -85,7 +85,11 @@ class ScoutingClientService : Service(), CommStrategyListener {
         Log.i(TAG, "Received object from strategy: $obj")
         when (obj) {
             is EventForceDisconnect -> {
-                Log.d(TAG, "Received a force disconnect event")
+                Log.i(TAG, "Received a force disconnect event!")
+                close()
+                sendBroadcast(Intent(INTENT_CLIENT_DISCONNECTED).apply {
+                    putExtra("reason", obj.reason)
+                })
             }
             is Event -> {
                 Log.d(TAG, "Object is event, broadcasting")

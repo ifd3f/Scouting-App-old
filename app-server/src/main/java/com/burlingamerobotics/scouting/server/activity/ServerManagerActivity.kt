@@ -22,6 +22,7 @@ import com.burlingamerobotics.scouting.server.R
 import com.burlingamerobotics.scouting.server.io.ClientInfo
 import com.burlingamerobotics.scouting.server.io.ScoutingServerService
 import com.burlingamerobotics.scouting.server.io.ScoutingServerServiceWrapper
+import com.burlingamerobotics.scouting.shared.DISCONNECT_REASON_KICK
 import com.burlingamerobotics.scouting.shared.data.Competition
 import com.burlingamerobotics.scouting.shared.data.Match
 import kotlinx.android.synthetic.main.content_server_manager.*
@@ -32,9 +33,7 @@ class ServerManagerActivity : AppCompatActivity() {
     val TAG = "ServerManagerActivity"
     val clients: MutableList<ClientInfo> = arrayListOf()
 
-    lateinit var lvClients: ListView
     lateinit var competition: Competition
-    lateinit var txtCompetitionName: TextView
 
     private var serviceWrapper: ScoutingServerServiceWrapper? = null
 
@@ -51,9 +50,7 @@ class ServerManagerActivity : AppCompatActivity() {
 
         competition = intent.getSerializableExtra("competition") as Competition
 
-        lvClients = findViewById(R.id.list_connected_clients)
-        txtCompetitionName = findViewById(R.id.text_competition_name)
-        txtCompetitionName.text = competition.name
+        text_competition_name.text = competition.name
 
         switch_server.setOnCheckedChangeListener { _, isChecked ->
             setServerState(isChecked)
@@ -81,6 +78,27 @@ class ServerManagerActivity : AppCompatActivity() {
                 }
             }
         }, itf)
+
+        list_connected_clients.setOnItemClickListener { _, _, position, _ ->
+            Log.i(TAG, "User wants to do something with client at position $position")
+            val client = clients[position]
+            AlertDialog.Builder(this)
+                    .setTitle("Client Actions")
+                    .setNeutralButton("Cancel") { dialog, _ ->
+                        dialog.cancel()
+                    }
+                    .setNegativeButton("Kick") { dialog, _ ->
+                        Log.i(TAG, "User wants to kick $client")
+                        serviceWrapper!!.disconnect(client.sessId, DISCONNECT_REASON_KICK)
+                        Toast.makeText(this, "Kicked ${client.displayName}", Toast.LENGTH_SHORT).show()
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton("Ban") { dialog, _ ->
+                        Log.i(TAG, "User wants to ban $client (NYI)")
+                        dialog.dismiss()
+                    }
+                    .create().show()
+        }
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
@@ -133,7 +151,7 @@ class ServerManagerActivity : AppCompatActivity() {
 
     private fun refreshList() {
         Log.d(TAG, "Refreshing connected clients list")
-        lvClients.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, clients.map { it.displayName })
+        list_connected_clients.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, clients.map { it.displayName })
     }
 
     private fun setServerState(state: Boolean) {

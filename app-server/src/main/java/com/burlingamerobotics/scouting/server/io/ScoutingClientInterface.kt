@@ -7,12 +7,13 @@ abstract class ScoutingClientInterface : AutoCloseable {
     val id: Long = System.nanoTime() * 437985 + System.nanoTime()  // shitty random
 
     abstract val displayName: String
+    abstract val uniqueId: String
 
     abstract fun begin()
     abstract fun sendObject(obj: Serializable)
     abstract fun attachClientInputListener(listener: ClientInputListener)
 
-    fun getInfo() = ClientInfo(id, displayName)
+    fun getInfo() = ClientInfo(id, displayName, uniqueId)
 
 }
 
@@ -30,4 +31,4 @@ interface ClientInputListener {
 
 }
 
-data class ClientInfo(val id: Long, val displayName: String) : Serializable
+data class ClientInfo(val sessId: Long, val displayName: String, val uniqueId: String) : Serializable

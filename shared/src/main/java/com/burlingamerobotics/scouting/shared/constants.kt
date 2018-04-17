@@ -17,6 +17,7 @@ const val URL_TBA_API = "https://www.thebluealliance.com/api/v3/"
 const val DURATION_SAVE_DATA = 120000L
 
 const val DISCONNECT_REASON_NONE = 0
+const val DISCONNECT_REASON_TIMEOUT = 87349
 const val DISCONNECT_REASON_SHUTDOWN = 23549
 const val DISCONNECT_REASON_KICK = 45231
 const val DISCONNECT_REASON_BAN = 92837

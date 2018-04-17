@@ -45,17 +45,17 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
     override fun handleMessage(msg: Message): Boolean {
         Log.i(TAG, "Received from ServiceWrapper: $msg")
         when (msg.what) {
-            REQUEST_COMPETITION -> {
+            SW_REQUEST_COMPETITION -> {
                 Log.d(TAG, "It's a request for competition data, sending: $competition")
                 val out = Message.obtain().apply {
-                    what = MSG_RESPONSE
+                    what = SW_RESPONSE
                     data.putSerializable("result", competition)
                 }
                 msg.replyTo.send(out)
                 Log.d(TAG, "Replying to: ${msg.replyTo} with $out")
             }
-            MSG_FORCE_DISCONNECT -> {
-                val id = msg.obj as Long
+            SW_FORCE_DISCONNECT -> {
+                val id = msg.data.getLong("sessid")
                 val reason = msg.arg1
                 Log.d(TAG, "It's a command to disconnect $id because $reason")
                 val client = clients.find { it.id == id }
@@ -65,10 +65,10 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
                     Log.e(TAG, "$id does not exist! Cannot disconnect someone who doesn't exist!")
                 }
             }
-            MSG_PING -> {
+            SW_PING -> {
                 Log.d(TAG, "It's a ping! We'll send a pong!")
                 msg.replyTo.send(Message.obtain().apply {
-                    what = MSG_PONG
+                    what = SW_PONG
                 })
             }
         }
@@ -84,7 +84,7 @@ class ScoutingServerService : Service(), Handler.Callback, ClientInputListener {
                 newClient.attachClientInputListener(this)
                 clients.add(newClient)
                 sendBroadcast(Intent(INTENT_SERVER_CLIENT_CONNECTED).apply { putExtra("client", newClient.getInfo()) })
-                return newClient.rx.binder
+                return newClient.binder
             }
             INTENT_BIND_SERVER_WRAPPER -> {
                 Log.i(TAG, "Server manager wrapper wants to bind")

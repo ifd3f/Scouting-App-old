@@ -5,6 +5,7 @@ import android.content.ServiceConnection
 import android.os.*
 import android.util.Log
 import com.burlingamerobotics.scouting.common.send
+import com.burlingamerobotics.scouting.shared.DISCONNECT_REASON_KICK
 import com.burlingamerobotics.scouting.shared.data.Competition
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -28,7 +29,7 @@ class ScoutingServerServiceWrapper : ServiceConnection, Handler.Callback {
             Looper.prepare()
             rx = Messenger(Handler(this))
             tx.send(Message.obtain().apply {
-                what = MSG_PING
+                what = SW_PING
                 replyTo = rx
             })
             Looper.loop()
@@ -41,11 +42,11 @@ class ScoutingServerServiceWrapper : ServiceConnection, Handler.Callback {
 
     override fun handleMessage(msg: Message?): Boolean {
         return when (msg!!.what) {
-            MSG_PONG -> {
+            SW_PONG -> {
                 Log.d(TAG, "We got a pong! we usually don't get any fucking messages at all")
                 true
             }
-            MSG_RESPONSE -> {
+            SW_RESPONSE -> {
                 val obj = msg.data.getSerializable("result")
                 Log.d(TAG, "Received message, putting in queue: $obj")
                 messageQueue.add(obj)
@@ -58,13 +59,21 @@ class ScoutingServerServiceWrapper : ServiceConnection, Handler.Callback {
     fun getCompetition(): Competition {
         Log.d(TAG, "Sending a request for competition data, replyTo = $rx")
         tx.send {
-            what = REQUEST_COMPETITION
+            what = SW_REQUEST_COMPETITION
             replyTo = rx
         }
         Log.d(TAG, "Awaiting response from ServerService")
         val response = messageQueue.poll(10000L, TimeUnit.MILLISECONDS)
         Log.d(TAG, "Got response $response")
         return response as Competition
+    }
+
+    fun disconnect(sessId: Long, reason: Int, ban: Boolean = false) {
+        tx.send {
+            what = SW_FORCE_DISCONNECT
+            arg1 = reason
+            data.putLong("sessid", sessId)
+        }
     }
 
 }

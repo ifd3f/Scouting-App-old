@@ -1,6 +1,7 @@
 package com.burlingamerobotics.scouting.server.io
 
 import android.os.Handler
+import android.os.IBinder
 import android.os.Message
 import android.os.Messenger
 import android.util.Log
@@ -10,11 +11,14 @@ import java.io.Serializable
 
 
 class LocalClientInterface : Handler.Callback, ScoutingClientInterface() {
-    val TAG = "LocalClientInterface"
+    private val TAG = "LocalClientInterface"
+    override val uniqueId: String = "__LOCAL__"
 
-    lateinit var tx: Messenger
-    val rx = Messenger(Handler(this))
-    var listener: ClientInputListener? = null
+    private lateinit var tx: Messenger
+    private val rx = Messenger(Handler(this))
+    private var listener: ClientInputListener? = null
+
+    val binder: IBinder get() = rx.binder
 
     override fun attachClientInputListener(listener: ClientInputListener) {
         this.listener = listener

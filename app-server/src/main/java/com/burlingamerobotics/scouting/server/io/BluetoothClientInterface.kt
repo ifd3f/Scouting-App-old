@@ -12,7 +12,6 @@ import java.io.Serializable
  * The server's view of the client.
  */
 class BluetoothClientInterface(private val btSocket: BluetoothSocket) : ScoutingClientInterface(), Runnable {
-
     val device: BluetoothDevice = btSocket.remoteDevice
     private val TAG: String = "BluetoothInterface[${device.address}]"
 
@@ -24,6 +23,7 @@ class BluetoothClientInterface(private val btSocket: BluetoothSocket) : Scouting
     private var inputListener: ClientInputListener? = null
 
     override val displayName get(): String = device.name
+    override val uniqueId: String get() = device.address
 
     override fun attachClientInputListener(listener: ClientInputListener) {
         inputListener = listener

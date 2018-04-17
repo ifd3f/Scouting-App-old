@@ -2,6 +2,7 @@ package com.burlingamerobotics.scouting.client.activity
 
 import android.app.AlertDialog
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
@@ -10,11 +11,16 @@ import android.os.IBinder
 import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.widget.TextView
+import com.burlingamerobotics.scouting.client.INTENT_CLIENT_DISCONNECTED
 import com.burlingamerobotics.scouting.client.R
 import com.burlingamerobotics.scouting.client.fragment.MatchListFragment
 import com.burlingamerobotics.scouting.client.fragment.TeamListFragment
 import com.burlingamerobotics.scouting.client.io.ScoutingClientService
 import com.burlingamerobotics.scouting.client.io.ScoutingClientServiceBinder
+import com.burlingamerobotics.scouting.common.KBroadcastReceiver
+import com.burlingamerobotics.scouting.common.intentFilter
+import com.burlingamerobotics.scouting.shared.*
 import kotlinx.android.synthetic.main.activity_browser.*
 
 class BrowserActivity : AppCompatActivity(), ServiceConnection {
@@ -24,6 +30,7 @@ class BrowserActivity : AppCompatActivity(), ServiceConnection {
     private lateinit var service: ScoutingClientServiceBinder
     private lateinit var matchListFragment: MatchListFragment
     private lateinit var teamListFragment: TeamListFragment
+    private lateinit var disconnectReceiver: BroadcastReceiver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +66,30 @@ class BrowserActivity : AppCompatActivity(), ServiceConnection {
             false
         })
 
-        Log.d(TAG, "SavedInstanceState: $savedInstanceState")
+        disconnectReceiver = KBroadcastReceiver { _, i ->
+            Log.i(TAG, "Client service disconnected")
+            val reasonCode = i.getIntExtra("reason", DISCONNECT_REASON_NONE)
+            val reason = when (reasonCode) {
+                DISCONNECT_REASON_KICK -> "Kicked by server"
+                DISCONNECT_REASON_BAN -> "Banned by server"
+                DISCONNECT_REASON_SHUTDOWN -> "Server shutdown"
+                DISCONNECT_REASON_TIMEOUT -> "Timed out"
+                else -> "No reason given"
+            }
+            AlertDialog.Builder(this)
+                    .setTitle("Disconnected")
+                    .setView(TextView(this).apply {
+                        text = "Reason: %s".format(reason)
+                    })
+                    .setPositiveButton("Connect to another server") { dialog, _ ->
+                        dialog.dismiss()
+                        finish()
+                    }
+                    .setCancelable(false)
+                    .create().show()
+        }
+
+        registerReceiver(disconnectReceiver, intentFilter(INTENT_CLIENT_DISCONNECTED))
     }
 
     override fun onStart() {
@@ -73,6 +103,11 @@ class BrowserActivity : AppCompatActivity(), ServiceConnection {
         super.onStop()
         Log.i(TAG, "Unbinding from service")
         unbindService(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(disconnectReceiver)
     }
 
     override fun onBackPressed() {

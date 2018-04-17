@@ -1,5 +1,9 @@
 package com.burlingamerobotics.scouting.common
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Handler
 import android.os.Message
 import android.os.Messenger
@@ -84,4 +88,14 @@ val Rating.resId get(): Int = when (this) {
     Rating.R_3 -> R.string.rating_3
     Rating.R_4 -> R.string.rating_4
     Rating.R_5 -> R.string.rating_5
+}
+
+class KBroadcastReceiver(val listener: (Context, Intent) -> Unit) : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) = listener(context, intent)
+}
+
+fun intentFilter(vararg actions: String): IntentFilter {
+    val out = IntentFilter()
+    actions.forEach(out::addAction)
+    return out
 }
