@@ -50,7 +50,8 @@ class LocalServerCommStrategy(val context: Context) : ServerCommStrategy(), Serv
     }
 
     override fun onServiceDisconnected(name: ComponentName?) {
-
+        Log.d(TAG, "Server disconnected!")
+        listener?.onDisconnect()
     }
 
     /**

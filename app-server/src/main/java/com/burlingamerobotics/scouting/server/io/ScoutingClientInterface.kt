@@ -1,6 +1,5 @@
 package com.burlingamerobotics.scouting.server.io
 
-import android.os.Message
 import java.io.Serializable
 
 abstract class ScoutingClientInterface : AutoCloseable {

@@ -15,8 +15,8 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.*
-import com.burlingamerobotics.scouting.common.INTENT_SERVER_CLIENT_CONNECTED
 import com.burlingamerobotics.scouting.server.INTENT_BIND_SERVER_WRAPPER
+import com.burlingamerobotics.scouting.server.INTENT_SERVER_CLIENT_CONNECTED
 import com.burlingamerobotics.scouting.server.INTENT_SERVER_CLIENT_DISCONNECTED
 import com.burlingamerobotics.scouting.server.R
 import com.burlingamerobotics.scouting.server.io.ClientInfo
@@ -59,7 +59,10 @@ class ServerManagerActivity : AppCompatActivity() {
             setServerState(isChecked)
         }
 
-        val itf = IntentFilter(INTENT_SERVER_CLIENT_CONNECTED)
+        val itf = IntentFilter().apply {
+            addAction(INTENT_SERVER_CLIENT_CONNECTED)
+            addAction(INTENT_SERVER_CLIENT_DISCONNECTED)
+        }
         registerReceiver(object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent) {
                 when (intent.action) {
@@ -129,13 +132,13 @@ class ServerManagerActivity : AppCompatActivity() {
     }
 
     private fun refreshList() {
-        Log.d("MasterMgmt", "Refreshing connected clients list")
+        Log.d(TAG, "Refreshing connected clients list")
         lvClients.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, clients.map { it.displayName })
     }
 
     private fun setServerState(state: Boolean) {
         if (state) {
-            Log.i("MasterMgmt", "Starting scouting server")
+            Log.i(TAG, "Starting scouting server")
             //val serverSocket = btAdapter.listenUsingRfcommWithServiceRecord("Scouting Server", SCOUTING_UUID)
             startService(Intent(this, ScoutingServerService::class.java).apply {
                 putExtra("competition", competition.uuid)

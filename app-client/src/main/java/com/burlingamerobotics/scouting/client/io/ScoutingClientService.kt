@@ -4,8 +4,10 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
+import com.burlingamerobotics.scouting.client.INTENT_CLIENT_CONNECTED
+import com.burlingamerobotics.scouting.client.INTENT_CLIENT_DISCONNECTED
 import com.burlingamerobotics.scouting.client.INTENT_CLIENT_EVENT_RECEIVED
-import com.burlingamerobotics.scouting.common.INTENT_SERVER_CLIENT_CONNECTED
+import com.burlingamerobotics.scouting.shared.DISCONNECT_REASON_NONE
 import com.burlingamerobotics.scouting.shared.protocol.*
 import java.util.concurrent.ArrayBlockingQueue
 import java.util.concurrent.TimeUnit
@@ -33,7 +35,7 @@ class ScoutingClientService : Service(), CommStrategyListener {
             throw e
         }
         sendBroadcast(Intent().apply {
-            action = INTENT_SERVER_CLIENT_CONNECTED
+            action = INTENT_CLIENT_CONNECTED
         })
     }
 
@@ -69,7 +71,9 @@ class ScoutingClientService : Service(), CommStrategyListener {
 
     override fun onDisconnect() {
         Log.d(TAG, "Stream closed, fully disconnected")
-        sendBroadcast(Intent())
+        sendBroadcast(Intent(INTENT_CLIENT_DISCONNECTED).apply {
+            putExtra("reason", DISCONNECT_REASON_NONE)
+        })
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -77,24 +81,12 @@ class ScoutingClientService : Service(), CommStrategyListener {
         return ScoutingClientServiceBinder(this)
     }
 
-    override fun onUnbind(intent: Intent?): Boolean {
-        Log.d(TAG, "Someone wants to unbind from me")
-        return super.onUnbind(intent)
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-        Log.i(TAG, "Starting")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.i(TAG, "Stopping")
-    }
-
     override fun onReceivedObject(obj: Any) {
-        Log.d(TAG, "Received object from strategy: $obj")
+        Log.i(TAG, "Received object from strategy: $obj")
         when (obj) {
+            is EventForceDisconnect -> {
+                Log.d(TAG, "Received a force disconnect event")
+            }
             is Event -> {
                 Log.d(TAG, "Object is event, broadcasting")
                 sendBroadcast(Intent(INTENT_CLIENT_EVENT_RECEIVED).apply {
